@@ -112,3 +112,14 @@ export async function addRequest(owner: string, client: string, itemId: string):
   });
   return ref.id;
 }
+
+export async function getMetadata(itemId: string) {
+  const db = admin.firestore();
+  const ref = await db.collection('items').doc(itemId).get();
+  const data = ref.data();
+  return {
+    name: data.name,
+    description: data.description,
+    image: data.imageURL,
+  };
+}

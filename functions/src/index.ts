@@ -1,6 +1,7 @@
 import * as functions from 'firebase-functions';
 import * as util from 'ethereumjs-util';
 import * as pathMatch from 'path-match';
+import * as express from 'express';
 import * as logic from './logic';
 import * as infrastructure from './infrastructure';
 
@@ -65,7 +66,7 @@ exports.add_requests = functions.https.onRequest(async (req, resp) => {
   }
 
   const requestId = await logic.addRequest(owner, client, itemId);
-  resp.status(200).json({requestId});
+  resp.status(200).json({ requestId });
 });
 
 exports.generateThumbnail = functions.storage.object().onChange(async (event) => {
@@ -107,4 +108,34 @@ exports.generateThumbnail = functions.storage.object().onChange(async (event) =>
   }
   // サムネイルを生成
   await logic.generateThumbnail(itemId, imagePath);
+});
+
+const app = express();
+app.get('/erc721/:id', async (req, resp) => {
+  const itemId = req.body.id;
+  if (!(await infrastructure.isValidItem(itemId))) {
+    console.log(`'${itemId}' is not valid item id.`)
+    resp.sendStatus(400); // Bad Request
+    return;
+  }
+  const data = await infrastructure.getMetadata(itemId);
+  const metadata = {
+    title: 'Asset Metadata',
+    type: 'object',
+    properties: {
+      'name': {
+        'type': 'string',
+        "description": data.name,
+      },
+      "description": {
+        "type": "string",
+        "description": data.description,
+      },
+      "image": {
+        "type": "string",
+        "description": data.image,
+      }
+    }
+  };
+  resp.status(200).json(metadata);
 });
