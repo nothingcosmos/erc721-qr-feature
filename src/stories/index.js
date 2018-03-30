@@ -1,13 +1,29 @@
+// @flow
 import React from 'react';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import { MemoryRouter } from 'react-router-dom';
 
-import { storiesOf } from '@storybook/react';
+import { storiesOf, addDecorator } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { linkTo } from '@storybook/addon-links';
 
-import { Button, Welcome } from '@storybook/react/demo';
+import RegisterItem from '../components/RegisterItem';
+import FloatingButton from '../components/FloatingButton';
 
-storiesOf('Welcome', module).add('to Storybook', () => <Welcome showApp={linkTo('Button')} />);
+import 'bootstrap/dist/css/bootstrap.css';
 
-storiesOf('Button', module)
-  .add('with text', () => <Button onClick={action('clicked')}>Hello Button</Button>)
-  .add('with some emoji', () => <Button onClick={action('clicked')}>😀 😎 👍 💯</Button>);
+const Decorator = storyFn => (
+  <MemoryRouter>
+    <MuiThemeProvider>{storyFn()}</MuiThemeProvider>
+  </MemoryRouter>
+);
+
+addDecorator(Decorator);
+
+storiesOf('RegisterItem', module).add('default', () => (
+  <RegisterItem onSubmit={action('submit')} />
+));
+
+storiesOf('FloatingButton', module).add('default', () => (
+  <FloatingButton onClick={action('onClick')} />
+));

@@ -1,0 +1,13 @@
+[ignore]
+.*/bower.json
+
+[include]
+
+[libs]
+
+[lints]
+
+[options]
+esproposal.decorators=ignore
+
+[strict]

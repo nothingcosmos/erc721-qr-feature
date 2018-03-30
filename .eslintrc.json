@@ -1,21 +1,3 @@
 {
-  "parser": "babel-eslint",
-  "extends": [
-    "airbnb",
-    "plugin:flowtype/recommended",
-    "plugin:prettier/recommended"
-  ],
-  "plugins": [
-    "flowtype"
-  ],
-  "env": {
-    "browser": true
-  },
-  "rules": {
-    "class-methods-use-this": "off",
-    "jsx-a11y/anchor-is-valid": "off",
-    "jsx-a11y/click-events-have-key-events": "off",
-    "react/jsx-filename-extension": "off",
-    "react/no-multi-comp": "off"
-  }
+  "extends": "react-app"
 }
