@@ -1,7 +1,6 @@
 {
   "firestore": {
-    "rules": "firestore.rules",
-    "indexes": "firestore.indexes.json"
+    "rules": "firestore.rules"
   },
   "functions": {
     "predeploy": [
@@ -17,10 +16,9 @@
       "**/node_modules/**"
     ],
     "rewrites": [
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
+      { "source": "/api/add_item",    "function": "add_item" },
+      { "source": "/api/add_request", "function": "add_request" },
+      { "source": "**", "destination": "/index.html" }
     ]
   },
   "storage": {
