@@ -1,19 +1,40 @@
 // @flow
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { autorun } from 'mobx';
 import { Provider } from 'mobx-react';
+import { Router } from 'director';
 
 import App from './containers/App';
-import createStores from './stores';
+import createStore from './stores';
 import 'bootstrap/dist/css/bootstrap.css';
 
-const stores = createStores();
+const store = createStore();
+
+new Router({
+  '/': () => store.router.openHomePage(),
+  '/item/:itemId': itemId => store.router.openItemPageById(itemId),
+  '/user/:userId': userId => store.router.openUserPageById(userId),
+  '/register': () => store.router.openRegisterPage(),
+})
+  .configure({
+    html5history: true,
+  })
+  .init();
+
+autorun(() => {
+  const path = store.router.currentUrl;
+  // setRouteでもいいのかも？
+  // https://github.com/flatiron/director#setrouteroute
+  if (window.location.pathname !== path)
+    window.history.pushState(null, null, path);
+});
 
 document.addEventListener('DOMContentLoaded', () => {
   const elem = document.getElementById('react-root');
   if (elem) {
     ReactDOM.render(
-      <Provider {...stores}>
+      <Provider store={store}>
         <App />
       </Provider>,
       elem

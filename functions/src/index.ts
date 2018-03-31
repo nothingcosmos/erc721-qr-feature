@@ -46,6 +46,7 @@ exports.add_requests = functions.https.onRequest(async (req, resp) => {
   const owner: string = req.body.owner;
   const client: string = req.body.client;
   const itemId: string = req.body.itemId;
+  const message: string = req.body.message;
 
   if (!util.isValidAddress(owner)) {
     console.log(`'${owner}' is not valid address.`)
@@ -65,7 +66,14 @@ exports.add_requests = functions.https.onRequest(async (req, resp) => {
     return;
   }
 
-  const requestId = await logic.addRequest(owner, client, itemId);
+  // TINYTEXT at MySQL
+  if (message.length > 255) {
+    console.log('message is too long.');
+    resp.sendStatus(400); // Bad Request
+    return;
+  }
+
+  const requestId = await logic.addRequest(owner, client, itemId, message);
   resp.status(200).json({ requestId });
 });
 
@@ -139,3 +147,5 @@ app.get('/erc721/:id', async (req, resp) => {
   };
   resp.status(200).json(metadata);
 });
+
+exports.erc721 = functions.https.onRequest(app);

@@ -8,9 +8,9 @@ export async function addItem(owner: string, name: string, description: string):
   return await infrastructure.addItem(owner, name, description);
 }
 
-export async function addRequest(owner: string, client: string, itemId: string): Promise<string> {
-  console.log(`addRequest(owner = ${owner}, client = ${client}, itemId = ${itemId})`);
-  return await infrastructure.addRequest(owner, client, itemId);
+export async function addRequest(owner: string, client: string, itemId: string, message: string): Promise<string> {
+  console.log(`addRequest(owner = ${owner}, client = ${client}, itemId = ${itemId}, message = ${message})`);
+  return await infrastructure.addRequest(owner, client, itemId, message);
 }
 
 export async function generateThumbnail(itemId: string, imagePath: string) {

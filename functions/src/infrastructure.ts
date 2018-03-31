@@ -101,13 +101,14 @@ export async function addItem(owner: string, name: string, description: string):
   return ref.id;
 }
 
-export async function addRequest(owner: string, client: string, itemId: string): Promise<string> {
+export async function addRequest(owner: string, client: string, itemId: string, message: string): Promise<string> {
   const db = admin.firestore();
   const { FieldValue } = admin.firestore;
   const ref = await db.collection('requests').add({
     owner,
     client,
     itemId,
+    message,
     createdAt: FieldValue.serverTimestamp(),
   });
   return ref.id;

@@ -18,6 +18,7 @@
     "rewrites": [
       { "source": "/api/add_item",    "function": "add_item" },
       { "source": "/api/add_request", "function": "add_request" },
+      { "source": "/erc721/*", "function": "erc721" },
       { "source": "**", "destination": "/index.html" }
     ]
   },
