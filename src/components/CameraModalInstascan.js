@@ -48,7 +48,7 @@ export default class CameraModal extends React.Component<Props, State> {
       if (cameras.length > 0) {
         this.scanner.start(cameras[0]);
       } else {
-        console.error('No cameras found.');
+        throw new Error('No cameras found.');
       }
     });
   }

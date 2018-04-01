@@ -107,17 +107,21 @@ export class GlobalStore {
     const ownerOfPromise = this.ethereum.ownerOf(tokenId);
     const accountPromise = this.ethereum.getAccount();
     const metadata = await metadataPromise;
-    this.tokenDetail.name = metadata.name;
-    this.tokenDetail.description = metadata.description;
-    this.tokenDetail.image = metadata.image;
-    this.tokenDetail.createdAt = metadata.createdAt;
-    this.tokenDetail.owner = await ownerOfPromise;
-    this.account = await accountPromise;
+    const ownerOf = await ownerOfPromise;
+    const account = await accountPromise;
+    runInAction(() => {
+      this.tokenDetail.name = metadata.name;
+      this.tokenDetail.description = metadata.description;
+      this.tokenDetail.image = metadata.image;
+      this.tokenDetail.createdAt = metadata.createdAt;
+      this.tokenDetail.owner = ownerOf;
+      this.account = account;
+    });
   }
 
-  isAddress(hexString: string): boolean {
+  isAddress = (hexString: string): boolean => {
     return this.ethereum.isAddress(hexString);
-  }
+  };
 
   sendRequest(from: string, tokenId: string, message: string) {
     this.firebase.addRequest(from, tokenId, message);

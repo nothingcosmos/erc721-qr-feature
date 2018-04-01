@@ -23,7 +23,6 @@ export default class {
   }
 
   async postJson(url: string, value: any) {
-    await this.initializerPromise;
     const method = 'POST';
     const headers = {
       'Content-Type': 'application/json',
@@ -35,6 +34,14 @@ export default class {
       body,
     };
     const response = await fetch(url, init);
+    if (response.ok) {
+      return response.json();
+    }
+    throw new Error(response);
+  }
+
+  async getJson(url: string) {
+    const response = await fetch(url);
     if (response.ok) {
       return response.json();
     }
@@ -64,15 +71,19 @@ export default class {
   }
 
   async fetchMetadata(tokenId: string) {
-    return await this.postJson(`/api/erc721/${tokenId}`);
+    return await this.getJson(`/erc721/${tokenId}`);
   }
 
-  async addRequest(from: string, tokenId: string, message: string): Promise<void> {
+  async addRequest(
+    from: string,
+    tokenId: string,
+    message: string
+  ): Promise<void> {
     await this.initializerPromise;
     await this.postJson('/api/add_request', {
       from,
       tokenId,
       message,
-    })
+    });
   }
 }
