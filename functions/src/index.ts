@@ -5,7 +5,7 @@ import * as express from 'express';
 import * as logic from './logic';
 import * as infrastructure from './infrastructure';
 
-exports.add_item = functions.https.onRequest(async (req, resp) => {
+exports.add_token = functions.https.onRequest(async (req, resp) => {
   // 本当は署名もつけたい
   const owner: string = req.body.owner;
   const name: string = req.body.name;
@@ -37,15 +37,15 @@ exports.add_item = functions.https.onRequest(async (req, resp) => {
     return;
   }
 
-  const itemId = await logic.addItem(owner, name, description);
-  resp.status(200).json({ itemId });
+  const tokenId = await logic.addToken(owner, name, description);
+  resp.status(200).json({ tokenId });
 });
 
 exports.add_requests = functions.https.onRequest(async (req, resp) => {
   // 本当は署名もつけたい
   const owner: string = req.body.owner;
   const client: string = req.body.client;
-  const itemId: string = req.body.itemId;
+  const tokenId: string = req.body.tokenId;
   const message: string = req.body.message;
 
   if (!util.isValidAddress(owner)) {
@@ -60,8 +60,8 @@ exports.add_requests = functions.https.onRequest(async (req, resp) => {
     return;
   }
 
-  if (!(await infrastructure.isValidItem(itemId))) {
-    console.log(`'${itemId}' is not valid item id.`)
+  if (!(await infrastructure.isValidToken(tokenId))) {
+    console.log(`'${tokenId}' is not valid token id.`)
     resp.sendStatus(400); // Bad Request
     return;
   }
@@ -73,7 +73,7 @@ exports.add_requests = functions.https.onRequest(async (req, resp) => {
     return;
   }
 
-  const requestId = await logic.addRequest(owner, client, itemId, message);
+  const requestId = await logic.addRequest(owner, client, tokenId, message);
   resp.status(200).json({ requestId });
 });
 
@@ -93,10 +93,10 @@ exports.generateThumbnail = functions.storage.object().onChange(async (event) =>
   // strict : does not ignore the trailing slash (default: false)
   // end : add '$' to end of RegExp
   const matchOptions = { sensitive: true, strict: true, end: true };
-  const match = pathMatch(matchOptions)('pending/:itemId/:basename');
+  const match = pathMatch(matchOptions)('submit/:tokenId/:basename');
   const imagePath = object.name;
   const params = match(imagePath);
-  // pending/:itemId/:basename しか書き込みを許可してないから，ここで引っかかるのは
+  // pending/:tokenId/:basename しか書き込みを許可してないから，ここで引っかかるのは
   // 生成されたサムネイルだけのはず…？
   if (params === false) {
     console.log(`path does not match: object.name = ${imagePath}`);
@@ -108,25 +108,25 @@ exports.generateThumbnail = functions.storage.object().onChange(async (event) =>
     await infrastructure.removeFile(imagePath);
     return;
   }
-  const { itemId } = params;
+  const { tokenId } = params;
   // サムネイルを生成してよいかチェック
-  if (await infrastructure.isImageRequired(itemId)) {
-    console.log(`an image is not required: itemId = ${itemId}`);
+  if (await infrastructure.isImageRequired(tokenId)) {
+    console.log(`an image is not required: tokenId = ${tokenId}`);
     return;
   }
   // サムネイルを生成
-  await logic.generateThumbnail(itemId, imagePath);
+  await logic.generateThumbnail(tokenId, imagePath);
 });
 
 const app = express();
 app.get('/erc721/:id', async (req, resp) => {
-  const itemId = req.body.id;
-  if (!(await infrastructure.isValidItem(itemId))) {
-    console.log(`'${itemId}' is not valid item id.`)
+  const tokenId = req.body.id;
+  if (!(await infrastructure.isValidToken(tokenId))) {
+    console.log(`'${tokenId}' is not valid token id.`)
     resp.sendStatus(400); // Bad Request
     return;
   }
-  const data = await infrastructure.getMetadata(itemId);
+  const data = await infrastructure.getMetadata(tokenId);
   const metadata = {
     title: 'Asset Metadata',
     type: 'object',

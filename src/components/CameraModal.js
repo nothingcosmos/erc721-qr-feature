@@ -1,16 +1,23 @@
 // @flow
 import React from 'react';
-import { FormGroup, Label, Input, Button, Modal, ModalBody } from 'reactstrap';
+import {
+  FormGroup,
+  Label,
+  Input,
+  Modal,
+  ModalHeader,
+  ModalBody,
+} from 'reactstrap';
 import jsQR from 'jsqr';
 import 'webrtc-adapter';
 
 type Props = {
   modal: boolean,
   toggle: () => void,
+  onScan: string => void,
 };
 
 type State = {
-  result: string,
   cameras: any[],
 };
 
@@ -18,7 +25,6 @@ export default class CameraModal extends React.Component<Props, State> {
   stream: ?MediaStream;
   video: ?HTMLVideoElement;
   state = {
-    result: '',
     cameras: [],
   };
   async componentDidMount() {
@@ -84,9 +90,7 @@ export default class CameraModal extends React.Component<Props, State> {
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const code = jsQR(imageData.data, imageData.width, imageData.height);
         if (code) {
-          this.setState({
-            result: code.data,
-          });
+          this.props.onScan(code.data);
         }
       }
       setTimeout(this.tick, 200);
@@ -94,7 +98,8 @@ export default class CameraModal extends React.Component<Props, State> {
   };
   render() {
     return (
-      <Modal isOpen={this.props.modal} toggle={this.props.toggle}>
+      <Modal isOpen={this.props.modal}>
+        <ModalHeader toggle={this.props.toggle}>Scan QR code</ModalHeader>
         <ModalBody>
           <FormGroup>
             <Label for="cameraSelect">Camera</Label>
@@ -119,12 +124,6 @@ export default class CameraModal extends React.Component<Props, State> {
             }}
             className="border rounded"
           />
-          <p>{this.state.result}</p>
-          <div class="float-right">
-            <Button onClick={this.props.toggle} outline color="secondary">
-              Close
-            </Button>
-          </div>
         </ModalBody>
       </Modal>
     );

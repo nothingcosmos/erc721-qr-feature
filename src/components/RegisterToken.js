@@ -19,7 +19,8 @@ export default class extends React.Component<Props, State> {
     image: null,
   };
   imageInput: ?HTMLInputElement;
-  handleClick = () => {
+  handleClick = (e: any) => {
+    e.preventDefault();
     if (!this.state.image) {
       return;
     }
@@ -70,7 +71,7 @@ export default class extends React.Component<Props, State> {
           <Button
             color="primary"
             outline
-            onClick={this.handleClick}
+            onClick={e => this.handleClick(e)}
             disabled={!this.validateForm()}
           >
             Register

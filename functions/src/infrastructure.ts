@@ -9,29 +9,29 @@ export async function removeFile(path: string): Promise<void> {
   await bucket.file(path).delete();
 }
 
-export async function isImageRequired(itemId: string): Promise<boolean> {
+export async function isImageRequired(tokenId: string): Promise<boolean> {
   const db = admin.firestore();
-  const snapshot = await db.collection('items').doc(itemId).get();
+  const snapshot = await db.collection('tokens').doc(tokenId).get();
   if (!snapshot.exists) {
-    console.log(`item does not exist: itemId = ${itemId}`);
+    console.log(`token does not exist: tokenId = ${tokenId}`);
     return false;
   }
   if (snapshot.get('presence')) {
-    console.log(`thumbnail already exists: itemId = ${itemId}`);
+    console.log(`thumbnail already exists: tokenId = ${tokenId}`);
     return false;
   }
   return true;
 }
 
-export async function isValidItem(itemId: string): Promise<boolean> {
+export async function isValidToken(tokenId: string): Promise<boolean> {
   const db = admin.firestore();
-  const snapshot = await db.collection('items').doc(itemId).get();
+  const snapshot = await db.collection('tokens').doc(tokenId).get();
   if (!snapshot.exists) {
-    console.log(`item does not exist: itemId = ${itemId}`);
+    console.log(`token does not exist: tokenId = ${tokenId}`);
     return false;
   }
   if (!snapshot.get('presence')) {
-    console.log(`thumbnail does not exist yet: itemId = ${itemId}`);
+    console.log(`thumbnail does not exist yet: tokenId = ${tokenId}`);
     return false;
   }
   return true;
@@ -80,19 +80,19 @@ export function makePublicUrl(bucketPath: string) {
 }
 
 // 無くても調べられるけど，それはクライアントの責務じゃない
-export async function appendUrl(itemId: string, url: string) {
+export async function appendUrl(tokenId: string, url: string) {
   const db = admin.firestore();
   const { FieldValue } = admin.firestore;
-  await db.collection('items').doc(itemId).update({
+  await db.collection('tokens').doc(tokenId).update({
     imageURL: url,
     createdAt: FieldValue.serverTimestamp(),
     presence: true,
   })
 }
 
-export async function addItem(owner: string, name: string, description: string): Promise<string> {
+export async function addToken(owner: string, name: string, description: string): Promise<string> {
   const db = admin.firestore();
-  const ref = await db.collection('items').add({
+  const ref = await db.collection('tokens').add({
     owner,
     name,
     description,
@@ -101,22 +101,22 @@ export async function addItem(owner: string, name: string, description: string):
   return ref.id;
 }
 
-export async function addRequest(owner: string, client: string, itemId: string, message: string): Promise<string> {
+export async function addRequest(owner: string, client: string, tokenId: string, message: string): Promise<string> {
   const db = admin.firestore();
   const { FieldValue } = admin.firestore;
   const ref = await db.collection('requests').add({
     owner,
     client,
-    itemId,
+    tokenId,
     message,
     createdAt: FieldValue.serverTimestamp(),
   });
   return ref.id;
 }
 
-export async function getMetadata(itemId: string) {
+export async function getMetadata(tokenId: string) {
   const db = admin.firestore();
-  const ref = await db.collection('items').doc(itemId).get();
+  const ref = await db.collection('tokens').doc(tokenId).get();
   const data = ref.data();
   return {
     name: data.name,

@@ -13,8 +13,8 @@ const store = createStore();
 
 new Router({
   '/': () => store.router.openHomePage(),
-  '/item/:itemId': itemId => store.router.openItemPageById(itemId),
-  '/user/:userId': userId => store.router.openUserPageById(userId),
+  '/token/:tokenId': tokenId => store.router.openTokenPageById(tokenId),
+  '/user/:userId': account => store.router.openAccountPageById(account),
   '/register': () => store.router.openRegisterPage(),
 })
   .configure({

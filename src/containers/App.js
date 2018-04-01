@@ -7,10 +7,10 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { Container } from 'reactstrap';
 
 import Home from './Home';
-import ItemDetail from './ItemDetail';
-import UserDetail from './UserDetail';
-import RegisterItem from './RegisterItem';
-import AddItemButton from './AddItemButton';
+import TokenDetail from './TokenDetail';
+import AccountDetail from './AccountDetail';
+import RegisterToken from './RegisterToken';
+import FloatingButtons from './FloatingButtons';
 
 import type { Store, RouterStore } from '../stores';
 
@@ -18,7 +18,7 @@ const App = () => (
   <MuiThemeProvider>
     <React.Fragment>
       <Container>{renderPage}</Container>
-      <AddItemButton />
+      <FloatingButtons />
     </React.Fragment>
   </MuiThemeProvider>
 );
@@ -31,12 +31,12 @@ function renderPage(routerStore: RouterStore) {
   switch (routerStore.name) {
     case 'home':
       return <Home />;
-    case 'item':
-      return <ItemDetail />;
-    case 'user':
-      return <UserDetail />;
+    case 'token':
+      return <TokenDetail />;
+    case 'account':
+      return <AccountDetail />;
     case 'register':
-      return <RegisterItem />;
+      return <RegisterToken />;
     default:
       return null;
   }

@@ -6,13 +6,15 @@ import { storiesOf, addDecorator } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { linkTo } from '@storybook/addon-links';
 
-import ItemCard from '../components/ItemCard';
+import TokenCard from '../components/TokenCard';
 import RequestCard from '../components/RequestCard';
-import ItemDetail from '../components/ItemDetail';
+import TokenDetail from '../components/TokenDetail';
 import Home from '../components/Home';
-import RegisterItem from '../components/RegisterItem';
-import AddItemButton from '../components/AddItemButton';
+import RegisterToken from '../components/RegisterToken';
+import FloatingButtons from '../components/FloatingButtons';
 import CameraModal from '../components/CameraModal';
+import RequestModal from '../components/RequestModal';
+import TransferModal from '../components/TransferModal';
 
 import 'bootstrap/dist/css/bootstrap.css';
 
@@ -22,7 +24,7 @@ addDecorator(Decorator);
 
 const address = '0xe78a0f7e598cc8b0bb87894b0f60dd2a88d6a8ab';
 
-const item = {
+const token = {
   name: 'Card Title',
   address: address,
   description:
@@ -33,49 +35,49 @@ const item = {
   onClick: action('onClick'),
 };
 
-const itemCard = (
-  <ItemCard
-    name={item.name}
-    address={item.address}
-    description={item.description}
-    createdAt={item.createdAt}
-    image={item.image}
-    onClick={item.onClick}
+const tokenCard = (
+  <TokenCard
+    name={token.name}
+    address={token.address}
+    description={token.description}
+    createdAt={token.createdAt}
+    image={token.image}
+    onClick={token.onClick}
   />
 );
 
 storiesOf('Home', module).add('default', () => (
   <Home>
-    {itemCard}
-    {itemCard}
-    {itemCard}
-    {itemCard}
-    {itemCard}
+    {tokenCard}
+    {tokenCard}
+    {tokenCard}
+    {tokenCard}
+    {tokenCard}
   </Home>
 ));
 
-storiesOf('ItemCard', module).add('default', () => itemCard);
+storiesOf('TokenCard', module).add('default', () => tokenCard);
 
-storiesOf('ItemDetail', module)
+storiesOf('TokenDetail', module)
   .add('isOwner', () => (
-    <ItemDetail
-      name={item.name}
-      owner={item.address}
-      description={item.description}
-      image={item.image}
-      createdAt={item.createdAt}
+    <TokenDetail
+      name={token.name}
+      owner={token.address}
+      description={token.description}
+      image={token.image}
+      createdAt={token.createdAt}
       isOwner
       handleTransfer={action('Transfer')}
       handleSendRequest={action('SendRequest')}
     />
   ))
   .add('is not Owner', () => (
-    <ItemDetail
-      name={item.name}
-      owner={item.address}
-      description={item.description}
-      image={item.image}
-      createdAt={item.createdAt}
+    <TokenDetail
+      name={token.name}
+      owner={token.address}
+      description={token.description}
+      image={token.image}
+      createdAt={token.createdAt}
       handleTransfer={action('Transfer')}
       handleSendRequest={action('SendRequest')}
     />
@@ -86,7 +88,7 @@ storiesOf('RequestCard', module)
     <RequestCard
       client={address}
       message="よろしくお願いします"
-      createdAt={item.createdAt}
+      createdAt={token.createdAt}
       isOwner
     />
   ))
@@ -94,22 +96,46 @@ storiesOf('RequestCard', module)
     <RequestCard
       client={address}
       message="よろしくお願いします"
-      createdAt={item.createdAt}
+      createdAt={token.createdAt}
       isClient
     />
   ));
 
-storiesOf('RegisterItem', module).add('default', () => (
-  <RegisterItem onSubmit={action('submit')} />
+storiesOf('RegisterToken', module).add('default', () => (
+  <RegisterToken onSubmit={action('submit')} />
 ));
 
 storiesOf('FloatingButton', module).add('default', () => (
-  <AddItemButton
-    handleRegister={action('register')}
-    handleCamera={action('camera')}
+  <FloatingButtons
+    moveToRegister={action('register')}
+    moveToAccount={action('account')}
+    moveToToken={action('token')}
   />
 ));
 
 storiesOf('CameraModal', module).add('default', () => (
-  <CameraModal modal={true} toggle={action('toggle')} />
+  <CameraModal
+    modal={true}
+    toggle={action('toggle')}
+    onScan={action('onScan')}
+  />
+));
+
+storiesOf('RequestModal', module).add('default', () => (
+  <RequestModal
+    modal={true}
+    toggle={action('toggle')}
+    onSubmit={action('onSubmit')}
+  />
+));
+
+storiesOf('TransferModal', module).add('default', () => (
+  <TransferModal
+    modal={true}
+    toggle={action('toggle')}
+    from={address}
+    tokenId="0xabcdef"
+    onSubmit={action('onSubmit')}
+    isAddress={s => s.length > 0}
+  />
 ));

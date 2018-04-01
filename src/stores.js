@@ -12,17 +12,17 @@ configure({ enforceActions: true });
 
 export class RouterStore {
   @observable name = 'home';
-  @observable itemId = '';
-  @observable userId = '';
+  @observable tokenId = '';
+  @observable account = '';
   @computed
   get currentUrl(): string {
     switch (this.name) {
       case 'home':
         return '/';
-      case 'user':
-        return `/user/${this.userId}`;
-      case 'item':
-        return `/item/${this.itemId}`;
+      case 'account':
+        return `/account/${this.account}`;
+      case 'token':
+        return `/token/${this.tokenId}`;
       case 'register':
         return '/register';
       default:
@@ -34,14 +34,14 @@ export class RouterStore {
     this.name = 'home';
   }
   @action.bound
-  openItemPageById(itemId: string) {
-    this.name = 'item';
-    this.itemId = itemId;
+  openTokenPageById(tokenId: string) {
+    this.name = 'token';
+    this.tokenId = tokenId;
   }
   @action.bound
-  openUserPageById(userId: string) {
-    this.name = 'user';
-    this.userId = userId;
+  openAccountPageById(account: string) {
+    this.name = 'account';
+    this.account = account;
   }
   @action.bound
   openRegisterPage() {

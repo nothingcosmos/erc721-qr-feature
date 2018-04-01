@@ -1,15 +1,6 @@
 // @flow
 import React from 'react';
-import {
-  FormGroup,
-  Label,
-  Input,
-  Button,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-} from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import QrReader from 'react-qr-reader';
 
 type Props = {
