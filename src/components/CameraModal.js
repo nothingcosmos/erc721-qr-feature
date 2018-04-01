@@ -1,13 +1,6 @@
 // @flow
 import React from 'react';
-import {
-  FormGroup,
-  Label,
-  Input,
-  Button,
-  Modal,
-  ModalBody,
-} from 'reactstrap';
+import { FormGroup, Label, Input, Button, Modal, ModalBody } from 'reactstrap';
 import jsQR from 'jsqr';
 import 'webrtc-adapter';
 
@@ -22,8 +15,8 @@ type State = {
 };
 
 export default class CameraModal extends React.Component<Props, State> {
-  cameraStream: ?MediaStream;
-  videoElement: ?HTMLVideoElement;
+  stream: ?MediaStream;
+  video: ?HTMLVideoElement;
   state = {
     result: '',
     cameras: [],
@@ -32,6 +25,8 @@ export default class CameraModal extends React.Component<Props, State> {
     if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
       throw new Error('Cannot use navigator.mediaDevices.enumerateDevices.');
     }
+    // https://developer.mozilla.org/ja/docs/Web/API/MediaDevices/enumerateDevices
+    // https://qiita.com/massie_g/items/b9863e4366cfed339528
     const devices = await navigator.mediaDevices.enumerateDevices();
     const videoInputs = devices.filter(device => device.kind === 'videoinput');
     if (videoInputs.length > 0) {
@@ -45,60 +40,48 @@ export default class CameraModal extends React.Component<Props, State> {
     this.stopCamera();
   }
   async startCamera(deviceId: string) {
+    this.stopCamera();
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      throw new Error('Cannot use navigator.mediaDevices.getUserMedia.');
+    }
     const constraints = {
       video: {
         deviceId,
       },
     };
-    this.stopCamera();
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      throw new Error('Cannot use navigator.mediaDevices.getUserMedia.');
-    }
-    this.cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
-    if (!this.videoElement) {
+    this.stream = await navigator.mediaDevices.getUserMedia(constraints);
+    if (!this.video) {
       throw new Error('video element is null.');
     }
-    this.videoElement.srcObject = this.cameraStream;
+    // Firefox では video.play() が必要という情報もあったけどなくても動いた
+    // https://qiita.com/geek_duck/items/dc89bdc7123356302483
+    this.video.srcObject = this.stream;
     setTimeout(this.tick, 200);
   }
   stopCamera() {
-    if (this.cameraStream) {
-      this.cameraStream.getVideoTracks().forEach(function(devise) {
+    if (this.stream) {
+      this.stream.getVideoTracks().forEach(function(devise) {
         devise.stop();
       });
-      this.cameraStream = null;
+      this.stream = null;
     }
-    if (this.videoElement) {
-      this.videoElement.srcObject = null;
+    if (this.video) {
+      this.video.srcObject = null;
     }
   }
   tick = () => {
-    if (this.videoElement && this.videoElement.srcObject) {
-      if (this.videoElement.readyState === this.videoElement.HAVE_ENOUGH_DATA) {
-        const canvasElement = document.createElement('canvas');
-        const canvas = canvasElement.getContext('2d');
-        if (
-          !this.videoElement ||
-          !this.videoElement.videoWidth ||
-          !this.videoElement.videoHeight
-        ) {
+    // stopCamera中でないかどうかの判定
+    if (this.video && this.video.srcObject) {
+      if (this.video.readyState === this.video.HAVE_ENOUGH_DATA) {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        if (!this.video || !this.video.videoWidth || !this.video.videoHeight) {
           throw new Error('videoWidth or videoHeight is null');
         }
-        canvasElement.width = this.videoElement.videoWidth;
-        canvasElement.height = this.videoElement.videoHeight;
-        canvas.drawImage(
-          this.videoElement,
-          0,
-          0,
-          canvasElement.width,
-          canvasElement.height
-        );
-        const imageData = canvas.getImageData(
-          0,
-          0,
-          canvasElement.width,
-          canvasElement.height
-        );
+        canvas.width = this.video.videoWidth;
+        canvas.height = this.video.videoHeight;
+        ctx.drawImage(this.video, 0, 0);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const code = jsQR(imageData.data, imageData.width, imageData.height);
         if (code) {
           this.setState({
@@ -129,10 +112,10 @@ export default class CameraModal extends React.Component<Props, State> {
           </FormGroup>
           <video
             width="100%"
-            autoPlay
-            playsInline
+            autoPlay /* これを指定しないと連続的に読み込まれない (Chrome) */
+            playsInline /* これを指定しないとiOSでフルスクリーンになってしまう */
             ref={e => {
-              this.videoElement = e;
+              this.video = e;
             }}
             className="border rounded"
           />
