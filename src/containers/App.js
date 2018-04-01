@@ -1,6 +1,6 @@
 // @flow
 import * as React from 'react';
-import { inject } from 'mobx-react';
+import { inject, observer } from 'mobx-react';
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
@@ -11,33 +11,36 @@ import TokenDetail from './TokenDetail';
 import AccountDetail from './AccountDetail';
 import RegisterToken from './RegisterToken';
 import FloatingButtons from './FloatingButtons';
+import Notification from './Notification';
 
-import type { Store, RouterStore } from '../stores';
+import type { Store } from '../stores';
 
-const App = () => (
+export default () => (
   <MuiThemeProvider>
     <React.Fragment>
-      <Container>{renderPage}</Container>
+      <Container>
+        <h1>ERC721 QR</h1>
+        <Page />
+      </Container>
       <FloatingButtons />
+      <Notification />
     </React.Fragment>
   </MuiThemeProvider>
 );
 
-export default inject(({ store }: Store) => ({
-  routerStore: store.router,
-}))(App);
-
-function renderPage(routerStore: RouterStore) {
-  switch (routerStore.name) {
-    case 'home':
-      return <Home />;
-    case 'token':
-      return <TokenDetail />;
-    case 'account':
-      return <AccountDetail />;
-    case 'register':
-      return <RegisterToken />;
-    default:
-      return null;
-  }
-}
+const Page = inject('store')(
+  observer(({ store }: Store) => {
+    switch (store.router.name) {
+      case 'home':
+        return <Home />;
+      case 'token':
+        return <TokenDetail />;
+      case 'account':
+        return <AccountDetail />;
+      case 'register':
+        return <RegisterToken />;
+      default:
+        return null;
+    }
+  })
+);

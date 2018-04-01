@@ -17,7 +17,8 @@
     "react-qr-reader": "^2.1.0",
     "react-router": "^4.2.0",
     "reactstrap": "^5.0.0",
-    "webrtc-adapter": "^6.1.4"
+    "webrtc-adapter": "^6.1.4",
+    "web3": "<1.0.0"
   },
   "devDependencies": {
     "@firebase/app-types": "^0.1.2",
@@ -37,6 +38,19 @@
     "build": "react-app-rewired build",
     "format": "prettier --write \"src/**/*.js\"",
     "storybook": "start-storybook -p 9009",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "deploy": "firebase deploy",
+    "serve": "firebase serve"
+  },
+  "proxy": {
+    "/__": {
+      "target": "http://localhost:5000"
+    },
+    "/api": {
+      "target": "http://localhost:5000"
+    },
+    "/erc721": {
+      "target": "http://localhost:5000"
+    }
   }
 }

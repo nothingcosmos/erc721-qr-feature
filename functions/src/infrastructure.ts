@@ -23,7 +23,8 @@ export async function isImageRequired(tokenId: string): Promise<boolean> {
   return true;
 }
 
-export async function isValidToken(tokenId: string): Promise<boolean> {
+export async function isTokenExisting(tokenId: string): Promise<boolean> {
+  console.log(`isValidToken(tokenId = ${tokenId})`);
   const db = admin.firestore();
   const snapshot = await db.collection('tokens').doc(tokenId).get();
   if (!snapshot.exists) {
@@ -90,10 +91,9 @@ export async function appendUrl(tokenId: string, url: string) {
   })
 }
 
-export async function addToken(owner: string, name: string, description: string): Promise<string> {
+export async function addToken(name: string, description: string): Promise<string> {
   const db = admin.firestore();
   const ref = await db.collection('tokens').add({
-    owner,
     name,
     description,
     presence: false,
@@ -101,11 +101,10 @@ export async function addToken(owner: string, name: string, description: string)
   return ref.id;
 }
 
-export async function addRequest(owner: string, client: string, tokenId: string, message: string): Promise<string> {
+export async function addRequest(client: string, tokenId: string, message: string): Promise<string> {
   const db = admin.firestore();
   const { FieldValue } = admin.firestore;
   const ref = await db.collection('requests').add({
-    owner,
     client,
     tokenId,
     message,
@@ -115,6 +114,7 @@ export async function addRequest(owner: string, client: string, tokenId: string,
 }
 
 export async function getMetadata(tokenId: string) {
+  console.log(`getMetadata(tokenId = ${tokenId})`);
   const db = admin.firestore();
   const ref = await db.collection('tokens').doc(tokenId).get();
   const data = ref.data();
@@ -122,5 +122,6 @@ export async function getMetadata(tokenId: string) {
     name: data.name,
     description: data.description,
     image: data.imageURL,
+    createdAt: data.createdAt,
   };
 }

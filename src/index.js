@@ -3,7 +3,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { autorun } from 'mobx';
 import { Provider } from 'mobx-react';
-import { Router } from 'director';
+// https://github.com/flatiron/director/issues/332
+// https://github.com/flatiron/director/issues/349
+import { Router } from 'director/build/director';
 
 import App from './containers/App';
 import createStore from './stores';
@@ -26,6 +28,7 @@ autorun(() => {
   const path = store.router.currentUrl;
   // setRouteでもいいのかも？
   // https://github.com/flatiron/director#setrouteroute
+  // setRouteしないとRouterが発火しないという意味？
   if (window.location.pathname !== path)
     window.history.pushState(null, null, path);
 });
