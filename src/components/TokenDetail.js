@@ -9,8 +9,10 @@ import {
   CardText,
   CardImg,
 } from 'reactstrap';
+import * as QRCode from 'qrcode.react';
 
 type Props = {
+  tokenId: string,
   name: string,
   owner: string,
   description: string,
@@ -31,7 +33,7 @@ export default (props: Props) => (
       <CardText>
         <small className="text-muted">{props.createdAt}</small>
       </CardText>
-      <div className="float-right">
+      <div className="d-flex justify-content-end">
         {props.isOwner ? (
           <Button
             color="success"
@@ -50,6 +52,11 @@ export default (props: Props) => (
           </Button>
         )}
       </div>
+      <QRCode
+        value={'token' + props.tokenId}
+        style={{ width: '100%', height: '100%' }}
+        className="mt-3 img-thumbnail"
+      />
     </CardBody>
   </Card>
 );

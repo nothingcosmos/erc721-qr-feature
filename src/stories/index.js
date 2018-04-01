@@ -61,6 +61,7 @@ storiesOf('TokenCard', module).add('default', () => tokenCard);
 storiesOf('TokenDetail', module)
   .add('isOwner', () => (
     <TokenDetail
+      tokenId="114514"
       name={token.name}
       owner={token.address}
       description={token.description}
@@ -73,6 +74,7 @@ storiesOf('TokenDetail', module)
   ))
   .add('is not Owner', () => (
     <TokenDetail
+      tokenId="hello, world"
       name={token.name}
       owner={token.address}
       description={token.description}
