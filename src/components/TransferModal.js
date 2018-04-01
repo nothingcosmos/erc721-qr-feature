@@ -19,7 +19,7 @@ type Props = {
   toggle: () => void,
   from: string,
   tokenId: string,
-  onSubmit: (to: string) => void,
+  onSubmit: (to: string) => void | Promise<void>,
   isAddress: (address: string) => boolean,
 };
 

@@ -15,17 +15,24 @@ import Notification from './Notification';
 
 import type { Store } from '../stores';
 
-export default () => (
-  <MuiThemeProvider>
-    <React.Fragment>
-      <Container>
-        <h1>ERC721 QR</h1>
-        <Page />
-      </Container>
-      <FloatingButtons />
-      <Notification />
-    </React.Fragment>
-  </MuiThemeProvider>
+export default inject('store')(
+  observer(({ store }: Store) => (
+    <MuiThemeProvider>
+      <React.Fragment>
+        <Container>
+          <h1
+            style={{ cursor: 'pointer' }}
+            onClick={() => store.router.openHomePage()}
+          >
+            ERC721 QR
+          </h1>
+          <Page />
+        </Container>
+        <FloatingButtons />
+        <Notification />
+      </React.Fragment>
+    </MuiThemeProvider>
+  ))
 );
 
 const Page = inject('store')(

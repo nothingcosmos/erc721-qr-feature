@@ -21,6 +21,9 @@ export class RouterStore {
       if (this.name === 'token') {
         globalStore.updateTokenDetail(this.tokenId);
       }
+      if (this.name === 'home') {
+        globalStore.updateHome();
+      }
     });
   }
   @computed
@@ -76,11 +79,19 @@ export class TokenDetailStore {
   @observable createdAt = '';
 }
 
+type TokenCard = {
+  tokenId: string,
+  name: string,
+  image: string,
+  createdAt: string,
+};
+
 export class GlobalStore {
   @observable router = new RouterStore(this);
   @observable notification = new NotificationStore();
   @observable tokenDetail = new TokenDetailStore();
   @observable account = '';
+  @observable tokenCards: TokenCard[] = [];
   ethereum = new Ethereum();
   firebase = new Firebase();
   @action.bound
@@ -100,6 +111,7 @@ export class GlobalStore {
     this.notification.send('ブロックチェーンに書き込んでいます');
     await this.ethereum.mint(this.account, tokenId);
     this.notification.send('ブロックチェーンに書き込みました');
+    this.router.openTokenPageById(tokenId);
   }
   @action.bound
   async updateTokenDetail(tokenId: string) {
@@ -119,6 +131,22 @@ export class GlobalStore {
     });
   }
 
+  @action.bound
+  async updateHome() {
+    const tokenIds = await this.ethereum.fetchAllTokenIds();
+    const metadataPromise = [];
+    for (let i = 0; i < tokenIds.length; i++) {
+      metadataPromise.push(this.firebase.fetchMetadata(tokenIds[i]));
+    }
+    const metadata = await Promise.all(metadataPromise);
+    for (let i = 0; i < tokenIds.length; i++) {
+      metadata[i].tokenId = tokenIds[i];
+    }
+    runInAction(() => {
+      this.tokenCards = metadata;
+    });
+  }
+
   isAddress = (hexString: string): boolean => {
     return this.ethereum.isAddress(hexString);
   };
@@ -127,8 +155,10 @@ export class GlobalStore {
     this.firebase.addRequest(from, tokenId, message);
   }
 
-  transfer(from: string, to: string, tokenId: string) {
+  async transfer(from: string, to: string, tokenId: string) {
+    this.notification.send('ブロックチェーンに書き込んでいます');
     this.ethereum.transfer(from, to, tokenId);
+    this.notification.send('ブロックチェーンに書き込みました');
   }
 }
 

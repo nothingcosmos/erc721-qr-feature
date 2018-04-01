@@ -68,6 +68,58 @@ export default class {
     });
   }
 
+  async totalSupply(): Promise<number> {
+    return new Promise((resolve, reject) => {
+      this.contractInstance.totalSupply((err, totalSupply) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(totalSupply);
+      });
+    });
+  }
+
+  async tokenByIndex(index: number): Promise<string> {
+    return new Promise((resolve, reject) => {
+      this.contractInstance.tokenByIndex(index, (err, tokenId) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(tokenId);
+      });
+    });
+  }
+
+  async tokenURI(tokenId: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      this.contractInstance.tokenURI(tokenId, (err, tokenURI) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(tokenURI);
+      });
+    });
+  }
+
+  async tokenIdByIndex(index: number): Promise<string> {
+    const tokenId = await this.tokenByIndex(index);
+    const tokenURI = await this.tokenURI(tokenId);
+    const prefix = 'https://erc721-qr.firebaseapp.com/erc721/';
+    return tokenURI.substr(prefix.length);
+  }
+
+  async fetchAllTokenIds(): Promise<string[]> {
+    const totalSupply = await this.totalSupply();
+    const tokenIdsPromise = [];
+    for (let i = totalSupply - 1; i >= 0; i--) {
+      tokenIdsPromise.push(this.tokenIdByIndex(i));
+    }
+    return Promise.all(tokenIdsPromise);
+  }
+
   async transfer(from: string, to: string, tokenId: string): Promise<void> {
     const tokenIdHash = window.web3.sha3(tokenId);
     const tokenIdHashBigNumber = window.web3.toBigNumber(tokenIdHash);

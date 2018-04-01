@@ -19,8 +19,8 @@ type Props = {
   image: string,
   createdAt: string,
   isOwner?: boolean,
-  handleSendRequest: () => void,
-  handleTransfer: () => void,
+  handleSendRequest: () => void | Promise<void>,
+  handleTransfer: () => void | Promise<void>,
 };
 
 export default (props: Props) => (

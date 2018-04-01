@@ -12,8 +12,6 @@ import {
 
 type Props = {
   name: string,
-  address: string,
-  description: string,
   createdAt: string,
   image: string,
   onClick: () => void,
@@ -25,8 +23,6 @@ export default (props: Props) => (
       <CardImg top src={props.image} />
       <CardBody>
         <CardTitle>{props.name}</CardTitle>
-        <CardSubtitle>{props.address}</CardSubtitle>
-        <CardText>{props.description}</CardText>
         <CardText>
           <small className="text-muted">{props.createdAt}</small>
         </CardText>
