@@ -2,7 +2,7 @@
 import * as Web3 from 'web3';
 import contractABI from './ERC721QR-abi.json';
 
-const contractAddress = '0xe78a0f7e598cc8b0bb87894b0f60dd2a88d6a8ab';
+const contractAddress = '0x4ae7d4415d41fd60c36ef7dbd8f98a6f388faeec';
 
 export default class {
   contractInstance: any;

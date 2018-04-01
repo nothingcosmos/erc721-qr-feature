@@ -157,7 +157,7 @@ export class GlobalStore {
 
   async transfer(from: string, to: string, tokenId: string) {
     this.notification.send('ブロックチェーンに書き込んでいます');
-    this.ethereum.transfer(from, to, tokenId);
+    await this.ethereum.transfer(from, to, tokenId);
     this.notification.send('ブロックチェーンに書き込みました');
   }
 }

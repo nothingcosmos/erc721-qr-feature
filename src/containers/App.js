@@ -24,7 +24,7 @@ export default inject('store')(
             style={{ cursor: 'pointer' }}
             onClick={() => store.router.openHomePage()}
           >
-            ERC721 QR
+            ERC721 QR (for Ropsten)
           </h1>
           <Page />
         </Container>

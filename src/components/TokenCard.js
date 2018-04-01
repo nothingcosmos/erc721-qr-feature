@@ -20,7 +20,12 @@ type Props = {
 export default (props: Props) => (
   <Col lg={{ size: 4 }} md={{ size: 6 }} className="pb-3">
     <Card>
-      <CardImg top src={props.image} />
+      <CardImg
+        top
+        src={props.image}
+        onClick={() => props.onClick()}
+        style={{ cursor: 'pointer' }}
+      />
       <CardBody>
         <CardTitle>{props.name}</CardTitle>
         <CardText>
