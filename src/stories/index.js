@@ -12,6 +12,7 @@ import ItemDetail from '../components/ItemDetail';
 import Home from '../components/Home';
 import RegisterItem from '../components/RegisterItem';
 import AddItemButton from '../components/AddItemButton';
+import CameraModal from '../components/CameraModal';
 
 import 'bootstrap/dist/css/bootstrap.css';
 
@@ -103,5 +104,12 @@ storiesOf('RegisterItem', module).add('default', () => (
 ));
 
 storiesOf('FloatingButton', module).add('default', () => (
-  <AddItemButton onClick={action('onClick')} />
+  <AddItemButton
+    handleRegister={action('register')}
+    handleCamera={action('camera')}
+  />
+));
+
+storiesOf('CameraModal', module).add('default', () => (
+  <CameraModal modal={true} toggle={action('toggle')} />
 ));

@@ -31,15 +31,25 @@ export default (props: Props) => (
       <CardText>
         <small className="text-muted">{props.createdAt}</small>
       </CardText>
-      {props.isOwner ? (
-        <Button color="success" onClick={() => props.handleTransfer()}>
-          Transfer
-        </Button>
-      ) : (
-        <Button color="primary" onClick={() => props.handleSendRequest()}>
-          Send Request
-        </Button>
-      )}
+      <div className="float-right">
+        {props.isOwner ? (
+          <Button
+            color="success"
+            outline
+            onClick={() => props.handleTransfer()}
+          >
+            Transfer
+          </Button>
+        ) : (
+          <Button
+            color="primary"
+            outline
+            onClick={() => props.handleSendRequest()}
+          >
+            Send Request
+          </Button>
+        )}
+      </div>
     </CardBody>
   </Card>
 );

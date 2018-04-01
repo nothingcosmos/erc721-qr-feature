@@ -21,20 +21,28 @@ export default (props: Props) => (
       <CardText>
         <small className="text-muted">{props.createdAt}</small>
       </CardText>
-      {props.isOwner && (
-        <Button color="success" onClick={() => props.handleTransfer()}>
-          Transfer
-        </Button>
-      )}
-      {(props.isOwner || props.isClient) && (
-        <Button
-          color="danger"
-          onClick={() => props.handleDelete()}
-          className={classnames({ 'ml-2': props.isOwner })}
-        >
-          Delete
-        </Button>
-      )}
+      <div className="float-right">
+        {props.isOwner && (
+          <React.Fragment>
+            <Button color="danger" outline onClick={() => props.handleDelete()}>
+              Reject
+            </Button>
+            <Button
+              color="success"
+              outline
+              onClick={() => props.handleTransfer()}
+              className="ml-2"
+            >
+              Accept
+            </Button>
+          </React.Fragment>
+        )}
+        {props.isClient && (
+          <Button color="warning" outline onClick={() => props.handleDelete()}>
+            Cancel
+          </Button>
+        )}
+      </div>
     </CardBody>
   </Card>
 );
