@@ -111,7 +111,7 @@ app.get('/erc721/:id', async (req, resp) => {
     return;
   }
   const metadata = await infrastructure.getMetadata(tokenId);
-  resp.set('Cache-Control', 'public, max-age=300');
+  resp.set('Cache-Control', 'public, max-age=900');
   resp.status(200).json(metadata);
 });
 

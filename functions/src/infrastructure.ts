@@ -24,7 +24,6 @@ export async function isImageRequired(tokenId: string): Promise<boolean> {
 }
 
 export async function isTokenExisting(tokenId: string): Promise<boolean> {
-  console.log(`isValidToken(tokenId = ${tokenId})`);
   const db = admin.firestore();
   const snapshot = await db.collection('tokens').doc(tokenId).get();
   if (!snapshot.exists) {
