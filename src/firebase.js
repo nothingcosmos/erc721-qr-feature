@@ -71,7 +71,7 @@ export default class {
   }
 
   async fetchMetadata(tokenId: string) {
-    return await this.getJson(`/erc721/${tokenId}`);
+    return this.getJson(`/erc721/${tokenId}`);
   }
 
   async addRequest(

@@ -24,7 +24,7 @@ export default class {
           return;
         }
         if (accounts.length === 0) {
-          reject('There are no accounts.');
+          reject(new Error('There are no accounts.'));
           return;
         }
         const account = accounts[0];

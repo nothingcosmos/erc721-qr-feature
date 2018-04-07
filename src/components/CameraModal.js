@@ -66,7 +66,7 @@ export default class CameraModal extends React.Component<Props, State> {
   }
   stopCamera() {
     if (this.stream) {
-      this.stream.getVideoTracks().forEach(function(devise) {
+      this.stream.getVideoTracks().forEach(devise => {
         devise.stop();
       });
       this.stream = null;

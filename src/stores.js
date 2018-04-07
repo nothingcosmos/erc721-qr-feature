@@ -147,9 +147,8 @@ export class GlobalStore {
     });
   }
 
-  isAddress = (hexString: string): boolean => {
-    return this.ethereum.isAddress(hexString);
-  };
+  isAddress = (hexString: string): boolean =>
+    this.ethereum.isAddress(hexString);
 
   sendRequest(from: string, tokenId: string, message: string) {
     this.firebase.addRequest(from, tokenId, message);

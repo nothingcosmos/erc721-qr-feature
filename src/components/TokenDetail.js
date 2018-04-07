@@ -54,7 +54,7 @@ export default (props: Props) => (
           )}
         </div>
         <QRCode
-          value={'token' + props.tokenId}
+          value={`token:${props.tokenId}`}
           style={{ width: '100%', height: '100%' }}
           className="mt-3 img-thumbnail"
         />

@@ -19,7 +19,7 @@ export default class CameraModal extends React.Component<Props, State> {
   handleScan = (result: string) => {
     if (result) {
       this.setState({
-        result: result,
+        result,
       });
     }
   };

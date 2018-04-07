@@ -26,7 +26,7 @@ const address = '0xe78a0f7e598cc8b0bb87894b0f60dd2a88d6a8ab';
 
 const token = {
   name: 'Card Title',
-  address: address,
+  address,
   description:
     'This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.',
   createdAt: 'Mar. 31, 2018',
@@ -116,24 +116,16 @@ storiesOf('FloatingButton', module).add('default', () => (
 ));
 
 storiesOf('CameraModal', module).add('default', () => (
-  <CameraModal
-    modal={true}
-    toggle={action('toggle')}
-    onScan={action('onScan')}
-  />
+  <CameraModal modal toggle={action('toggle')} onScan={action('onScan')} />
 ));
 
 storiesOf('RequestModal', module).add('default', () => (
-  <RequestModal
-    modal={true}
-    toggle={action('toggle')}
-    onSubmit={action('onSubmit')}
-  />
+  <RequestModal modal toggle={action('toggle')} onSubmit={action('onSubmit')} />
 ));
 
 storiesOf('TransferModal', module).add('default', () => (
   <TransferModal
-    modal={true}
+    modal
     toggle={action('toggle')}
     from={address}
     tokenId="0xabcdef"

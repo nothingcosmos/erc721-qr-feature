@@ -30,9 +30,7 @@ export default class extends React.Component<Props, State> {
       this.state.image
     );
   };
-  validateForm = () => {
-    return this.state.name && this.state.image;
-  };
+  validateForm = () => this.state.name && this.state.image;
   render = () => (
     <Row>
       <Col

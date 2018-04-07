@@ -37,13 +37,10 @@ export default class extends React.Component<Props, State> {
     this.setState({
       isCameraOpened: false,
     });
-    if (data.startsWith('ethereum')) {
-      this.props.moveToAccount(data.substr('ethereum'.length));
-      return;
-    }
-    if (data.startsWith('token')) {
-      this.props.moveToToken(data.substr('token'.length));
-      return;
+    if (data.startsWith('ethereum:')) {
+      this.props.moveToAccount(data.substr('ethereum:'.length));
+    } else if (data.startsWith('token:')) {
+      this.props.moveToToken(data.substr('token:'.length));
     }
   };
   render = () => (
