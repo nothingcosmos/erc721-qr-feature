@@ -22,29 +22,32 @@ type State = {
 };
 
 export default class CameraModal extends React.Component<Props, State> {
-  stream: ?MediaStream;
-  video: ?HTMLVideoElement;
   state = {
     cameras: [],
   };
-  async componentDidMount() {
+  componentDidMount() {
     if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
       throw new Error('Cannot use navigator.mediaDevices.enumerateDevices.');
     }
     // https://developer.mozilla.org/ja/docs/Web/API/MediaDevices/enumerateDevices
     // https://qiita.com/massie_g/items/b9863e4366cfed339528
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    const videoInputs = devices.filter(device => device.kind === 'videoinput');
-    if (videoInputs.length > 0) {
-      this.startCamera(videoInputs[0].deviceId);
-    }
-    this.setState({
-      cameras: videoInputs,
+    navigator.mediaDevices.enumerateDevices().then(devices => {
+      const videoInputs = devices.filter(
+        device => device.kind === 'videoinput'
+      );
+      if (videoInputs.length > 0) {
+        this.startCamera(videoInputs[0].deviceId);
+      }
+      this.setState({
+        cameras: videoInputs,
+      });
     });
   }
   componentWillUnmount() {
     this.stopCamera();
   }
+  stream: ?MediaStream;
+  video: ?HTMLVideoElement;
   async startCamera(deviceId: string) {
     this.stopCamera();
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {

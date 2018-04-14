@@ -6,6 +6,8 @@ import { storiesOf, addDecorator } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { linkTo } from '@storybook/addon-links';
 
+import 'bootstrap/dist/css/bootstrap.css';
+
 import TokenCard from '../components/TokenCard';
 import RequestCard from '../components/RequestCard';
 import TokenDetail from '../components/TokenDetail';
@@ -15,8 +17,6 @@ import FloatingButtons from '../components/FloatingButtons';
 import CameraModal from '../components/CameraModal';
 import RequestModal from '../components/RequestModal';
 import TransferModal from '../components/TransferModal';
-
-import 'bootstrap/dist/css/bootstrap.css';
 
 const Decorator = storyFn => <MuiThemeProvider>{storyFn()}</MuiThemeProvider>;
 

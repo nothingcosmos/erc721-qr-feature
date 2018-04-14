@@ -7,9 +7,10 @@ import { Provider } from 'mobx-react';
 // https://github.com/flatiron/director/issues/349
 import { Router } from 'director/build/director';
 
+import 'bootstrap/dist/css/bootstrap.css';
+
 import App from './containers/App';
 import createStore from './stores';
-import 'bootstrap/dist/css/bootstrap.css';
 
 const store = createStore();
 
