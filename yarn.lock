@@ -5469,7 +5469,7 @@ jsprim@^1.2.2:
     json-schema "0.2.3"
     verror "1.10.0"
 
-jsqr@^1.0.1, jsqr@^1.0.4:
+jsqr@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/jsqr/-/jsqr-1.0.4.tgz#e2ea353fa81007708efab7d95b2652a7254c10dd"
 
@@ -7306,14 +7306,6 @@ react-popper@^0.8.3:
     popper.js "^1.12.9"
     prop-types "^15.6.0"
 
-react-qr-reader@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/react-qr-reader/-/react-qr-reader-2.1.0.tgz#f429c196675a710926da1cc9057223b79358da75"
-  dependencies:
-    jsqr "^1.0.1"
-    prop-types "^15.5.8"
-    webrtc-adapter "^6.1.1"
-
 react-router@^4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/react-router/-/react-router-4.2.0.tgz#61f7b3e3770daeb24062dae3eedef1b054155986"
@@ -9146,7 +9138,7 @@ webpack@^3.11.0:
     webpack-sources "^1.0.1"
     yargs "^8.0.2"
 
-webrtc-adapter@^6.1.1, webrtc-adapter@^6.1.5:
+webrtc-adapter@^6.1.5:
   version "6.1.5"
   resolved "https://registry.yarnpkg.com/webrtc-adapter/-/webrtc-adapter-6.1.5.tgz#df72e4af5cb6675656c896db0d1187695359220b"
   dependencies:
