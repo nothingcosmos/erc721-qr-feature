@@ -33,7 +33,7 @@ exports.add_token = functions.https.onRequest(async (req, resp) => {
   resp.status(200).json({ tokenId });
 });
 
-exports.add_requests = functions.https.onRequest(async (req, resp) => {
+exports.add_request = functions.https.onRequest(async (req, resp) => {
   const from: string = req.body.from;
   const tokenId: string = req.body.tokenId;
   const message: string = req.body.message;

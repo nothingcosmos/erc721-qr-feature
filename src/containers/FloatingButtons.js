@@ -11,6 +11,7 @@ export default inject('store')(
       moveToRegister={() => store.router.openRegisterPage()}
       moveToToken={tokenId => store.router.openTokenPageById(tokenId)}
       moveToAccount={account => store.router.openAccountPageById(account)}
+      isAddress={address => store.isAddress(address)}
     />
   ))
 );

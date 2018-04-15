@@ -3,7 +3,8 @@ import * as React from 'react';
 import { inject, observer } from 'mobx-react';
 import { Row, Col } from 'reactstrap';
 import type { GlobalStore } from '../stores';
-import Component from '../components/TokenDetail';
+import TokenDetail from '../components/TokenDetail';
+import RequestCard from '../components/RequestCard';
 import RequestModal from '../components/RequestModal';
 import TransferModal from '../components/TransferModal';
 
@@ -51,22 +52,48 @@ export default inject('store')(
               md={{ size: 8, offset: 2 }}
               sm={{ size: 10, offset: 1 }}
             >
-              <Component
-                tokenId={this.props.store.router.tokenId}
-                name={this.props.store.tokenDetail.name}
-                owner={this.props.store.tokenDetail.owner}
-                description={this.props.store.tokenDetail.description}
-                image={this.props.store.tokenDetail.image}
-                createdAt={this.props.store.tokenDetail.createdAt}
-                isOwner={
-                  this.props.store.isAccountAvailable &&
-                  this.props.store.account ===
+              <div className="pb-3">
+                <TokenDetail
+                  tokenId={this.props.store.router.tokenId}
+                  name={this.props.store.tokenDetail.name}
+                  owner={this.props.store.tokenDetail.owner}
+                  description={this.props.store.tokenDetail.description}
+                  image={this.props.store.tokenDetail.image}
+                  createdAt={this.props.store.tokenDetail.createdAt}
+                  isOwner={
+                    this.props.store.isAccountAvailable &&
+                    this.props.store.accountAddress ===
+                      this.props.store.tokenDetail.owner
+                  }
+                  isAccountAvailable={this.props.store.isAccountAvailable}
+                  handleSendRequest={() => this.handleSendRequest()}
+                  handleTransfer={() => this.handleTransfer()}
+                />
+              </div>
+              {this.props.store.tokenDetail.requests && <h2>Requests</h2>}
+              {this.props.store.tokenDetail.requests.map(request => (
+                <RequestCard
+                  key={request.createdAt}
+                  client={request.client}
+                  message={request.message}
+                  createdAt={request.createdAt}
+                  isOwner={
+                    this.props.store.accountAddress ===
                     this.props.store.tokenDetail.owner
-                }
-                isAccountAvailable={this.props.store.isAccountAvailable}
-                handleSendRequest={() => this.handleSendRequest()}
-                handleTransfer={() => this.handleTransfer()}
-              />
+                  }
+                  isClient={request.client === this.props.store.accountAddress}
+                  handleTransfer={() => {
+                    this.props.store.transfer(
+                      this.props.store.accountAddress,
+                      request.client,
+                      this.props.store.router.tokenId
+                    );
+                  }}
+                  handleDelete={() => {
+                    throw new Error('Not implemented yet');
+                  }}
+                />
+              ))}
             </Col>
           </Row>
           <RequestModal
@@ -74,7 +101,6 @@ export default inject('store')(
             toggle={this.toggleRequestModal}
             onSubmit={message =>
               this.props.store.sendRequest(
-                this.props.store.account,
                 this.props.store.router.tokenId,
                 message
               )
@@ -83,11 +109,11 @@ export default inject('store')(
           <TransferModal
             modal={this.state.transferModal}
             toggle={this.toggleTransferModal}
-            from={this.props.store.account}
+            from={this.props.store.accountAddress}
             tokenId={this.props.store.router.tokenId}
             onSubmit={to =>
               this.props.store.transfer(
-                this.props.store.account,
+                this.props.store.accountAddress,
                 to,
                 this.props.store.router.tokenId
               )

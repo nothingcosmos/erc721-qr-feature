@@ -2,18 +2,19 @@
 import * as Web3 from 'web3';
 import contractABI from './ERC721QR-abi.json';
 
-const contractAddress = '0x4ae7d4415d41fd60c36ef7dbd8f98a6f388faeec';
-
 export default class {
   contractInstance: any;
-  constructor() {
+
+  constructor(address: string) {
     if (!window.web3) {
       throw new Error(`Cannot find Web3.`);
     }
     window.web3 = new Web3(window.web3.currentProvider);
-    this.contractInstance = window.web3.eth
-      .contract(contractABI)
-      .at(contractAddress);
+    this.setContractAddress(address);
+  }
+
+  setContractAddress(address: string) {
+    this.contractInstance = window.web3.eth.contract(contractABI).at(address);
   }
 
   async getAccount(): Promise<?string> {
@@ -29,6 +30,37 @@ export default class {
         }
         const account = accounts[0];
         resolve(account);
+      });
+    });
+  }
+
+  async getNetwork(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      window.web3.version.getNetwork((err, netId) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        switch (netId) {
+          case '1':
+            resolve('Mainnet');
+            break;
+          case '2':
+            resolve('Morden');
+            break;
+          case '3':
+            resolve('Ropsten');
+            break;
+          case '4':
+            resolve('Rinkeby');
+            break;
+          case '42':
+            resolve('Kovan');
+            break;
+          default:
+            resolve('Unknown');
+            break;
+        }
       });
     });
   }

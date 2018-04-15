@@ -121,6 +121,6 @@ export async function getMetadata(tokenId: string) {
     name: data.name,
     description: data.description,
     image: data.imageURL,
-    createdAt: data.createdAt,
+    createdAt: data.createdAt.toUTCString(),
   };
 }

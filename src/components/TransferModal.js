@@ -55,10 +55,19 @@ export default class extends React.Component<Props, State> {
     this.props.toggle();
   };
 
-  openQRScanner = () => {
-    this.setState({
-      isCameraOpened: true,
-    });
+  openQRScanner = async () => {
+    if (
+      window.web3 &&
+      window.web3.currentProvider &&
+      window.web3.currentProvider.scanQRCode
+    ) {
+      const data = await window.web3.currentProvider.scanQRCode(/.*/);
+      this.onScan(data);
+    } else {
+      this.setState({
+        isCameraOpened: true,
+      });
+    }
   };
 
   render() {

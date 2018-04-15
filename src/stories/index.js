@@ -7,6 +7,8 @@ import { action } from '@storybook/addon-actions';
 // eslint-disable-next-line no-unused-vars
 import { linkTo } from '@storybook/addon-links';
 
+import * as Web3 from 'web3';
+
 import 'bootstrap/dist/css/bootstrap.css';
 
 import TokenCard from '../components/TokenCard';
@@ -18,8 +20,10 @@ import FloatingButtons from '../components/FloatingButtons';
 import CameraModal from '../components/CameraModal';
 import RequestModal from '../components/RequestModal';
 import TransferModal from '../components/TransferModal';
+import Web3Status from '../components/Web3Status';
 
 const Decorator = storyFn => <MuiThemeProvider>{storyFn()}</MuiThemeProvider>;
+const web3 = new Web3();
 
 addDecorator(Decorator);
 
@@ -141,6 +145,19 @@ storiesOf('TransferModal', module).add('default', () => (
     from={address}
     tokenId="0xabcdef"
     onSubmit={action('onSubmit')}
-    isAddress={s => s.length > 0}
+    isAddress={web3.isAddress}
+  />
+));
+
+storiesOf('Web3Status', module).add('default', () => (
+  <Web3Status
+    isConnected
+    networkName="Ropsten"
+    accountAddress={address}
+    contractAddress={address}
+    refreshNetworkName={action('refreshNetworkName')}
+    refreshAccountAddress={action('refreshAccountAddress')}
+    updateContractAddress={action('updateContractAddress')}
+    isAddress={web3.isAddress}
   />
 ));

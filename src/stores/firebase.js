@@ -71,7 +71,13 @@ export default class {
   }
 
   async fetchMetadata(tokenId: string) {
-    return this.getJson(`/erc721/${tokenId}`);
+    const data = await this.getJson(`/erc721/${tokenId}`);
+    return {
+      name: data.name,
+      description: data.description,
+      image: data.image,
+      createdAt: data.createdAt,
+    };
   }
 
   async addRequest(
@@ -84,6 +90,24 @@ export default class {
       from,
       tokenId,
       message,
+    });
+  }
+
+  async getRequests(tokenId: string) {
+    await this.initializerPromise;
+    const snapshot = await this.db
+      .collection('requests')
+      .where('tokenId', '==', tokenId)
+      .orderBy('createdAt', 'desc')
+      .get();
+    return snapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        client: data.client,
+        tokenId: data.tokenId,
+        message: data.message,
+        createdAt: data.createdAt.toUTCString(),
+      };
     });
   }
 }

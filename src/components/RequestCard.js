@@ -37,11 +37,11 @@ export default (props: Props) => (
             </Button>
           </React.Fragment>
         )}
-        {props.isClient && (
+        {/* props.isClient && (
           <Button color="warning" outline onClick={() => props.handleDelete()}>
             Cancel
           </Button>
-        )}
+        ) */}
       </div>
     </CardBody>
   </Card>

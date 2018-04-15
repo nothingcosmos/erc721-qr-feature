@@ -18,6 +18,7 @@ type Props = {
   moveToRegister: () => void,
   moveToAccount: (address: string) => void,
   moveToToken: (tokenId: string) => void,
+  isAddress: (address: string) => boolean,
 };
 
 type State = {
@@ -32,18 +33,31 @@ export default class extends React.Component<Props, State> {
     this.setState({
       isCameraOpened: false,
     });
-    if (data.startsWith('ethereum:')) {
-      this.props.moveToAccount(data.substr('ethereum:'.length));
-    } else if (data.startsWith('token:')) {
+    if (data.startsWith('token:')) {
       this.props.moveToToken(data.substr('token:'.length));
+    } else if (data.startsWith('ethereum:')) {
+      this.props.moveToAccount(data.substr('ethereum:'.length));
+    } else if (this.props.isAddress(data)) {
+      this.props.moveToAccount(data);
     }
   };
   toggleModal = () => {
     this.setState({ isCameraOpened: !this.state.isCameraOpened });
   };
-  openCamera = () => {
-    this.setState({ isCameraOpened: true });
+  openCamera = async () => {
+    if (
+      window.web3 &&
+      window.web3.currentProvider &&
+      window.web3.currentProvider.scanQRCode
+    ) {
+      const data = await window.web3.currentProvider.scanQRCode(/.*/);
+      this.onScan(data);
+    } else {
+      this.setState({ isCameraOpened: true });
+    }
   };
+  // FABにTooltipを使うにはv1が必要
+  // https://material-ui-next.com/demos/tooltips/
   render = () => (
     <React.Fragment>
       <div style={styles.floatingButton}>
@@ -59,13 +73,7 @@ export default class extends React.Component<Props, State> {
           backgroundColor="#007bff"
           className="ml-2"
         >
-          <IconAdd
-            tooltip={
-              this.props.isAccountAvailable
-                ? 'Register item'
-                : 'Please unlock your account'
-            }
-          />
+          <IconAdd />
         </FloatingActionButton>
       </div>
       {this.state.isCameraOpened && (

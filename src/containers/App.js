@@ -12,6 +12,7 @@ import AccountDetail from './AccountDetail';
 import RegisterToken from './RegisterToken';
 import FloatingButtons from './FloatingButtons';
 import Snackbar from './Snackbar';
+import Web3Status from './Web3Status';
 
 import type { Store } from '../stores';
 
@@ -33,6 +34,8 @@ export default inject('store')(
             </a>
           </h1>
           <Page />
+          <hr />
+          <Web3Status />
         </Container>
         <FloatingButtons />
         <Snackbar />
