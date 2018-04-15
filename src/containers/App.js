@@ -11,7 +11,7 @@ import TokenDetail from './TokenDetail';
 import AccountDetail from './AccountDetail';
 import RegisterToken from './RegisterToken';
 import FloatingButtons from './FloatingButtons';
-import Notification from './Notification';
+import Snackbar from './Snackbar';
 
 import type { Store } from '../stores';
 
@@ -20,16 +20,22 @@ export default inject('store')(
     <MuiThemeProvider>
       <React.Fragment>
         <Container>
-          <h1
-            style={{ cursor: 'pointer' }}
-            onClick={() => store.router.openHomePage()}
-          >
-            ERC721 QR (for Ropsten)
+          <h1>
+            <a
+              style={{ cursor: 'pointer' }}
+              href="/"
+              onClick={e => {
+                e.preventDefault();
+                store.router.openHomePage();
+              }}
+            >
+              ERC721 QR (for Ropsten)
+            </a>
           </h1>
           <Page />
         </Container>
         <FloatingButtons />
-        <Notification />
+        <Snackbar />
       </React.Fragment>
     </MuiThemeProvider>
   ))

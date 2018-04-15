@@ -14,6 +14,7 @@ const styles = {
 };
 
 type Props = {
+  isAccountAvailable: boolean,
   moveToRegister: () => void,
   moveToAccount: (address: string) => void,
   moveToToken: (tokenId: string) => void,
@@ -27,12 +28,6 @@ export default class extends React.Component<Props, State> {
   state = {
     isCameraOpened: false,
   };
-  openCamera = () => {
-    this.setState({ isCameraOpened: true });
-  };
-  toggleModal = () => {
-    this.setState({ isCameraOpened: !this.state.isCameraOpened });
-  };
   onScan = (data: string) => {
     this.setState({
       isCameraOpened: false,
@@ -42,6 +37,12 @@ export default class extends React.Component<Props, State> {
     } else if (data.startsWith('token:')) {
       this.props.moveToToken(data.substr('token:'.length));
     }
+  };
+  toggleModal = () => {
+    this.setState({ isCameraOpened: !this.state.isCameraOpened });
+  };
+  openCamera = () => {
+    this.setState({ isCameraOpened: true });
   };
   render = () => (
     <React.Fragment>
@@ -53,11 +54,18 @@ export default class extends React.Component<Props, State> {
           <IconAddPhoto />
         </FloatingActionButton>
         <FloatingActionButton
+          disabled={!this.props.isAccountAvailable}
           onClick={() => this.props.moveToRegister()}
           backgroundColor="#007bff"
           className="ml-2"
         >
-          <IconAdd />
+          <IconAdd
+            tooltip={
+              this.props.isAccountAvailable
+                ? 'Register item'
+                : 'Please unlock your account'
+            }
+          />
         </FloatingActionButton>
       </div>
       {this.state.isCameraOpened && (

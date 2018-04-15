@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Row, Col, Form, Label, Input, FormGroup, Button } from 'reactstrap';
 
 type Props = {
-  onSubmit: (name: string, description: string, image: File) => void,
+  onSubmit: (name: string, description: string, image: File) => any,
 };
 
 type State = {

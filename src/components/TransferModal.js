@@ -34,15 +34,12 @@ export default class extends React.Component<Props, State> {
     isCameraOpened: false,
   };
 
-  handleSubmit = (e: any) => {
-    e.preventDefault();
-    this.props.onSubmit(this.state.to);
-    this.props.toggle();
-  };
-
-  openQRScanner = () => {
+  onScan = (data: string) => {
+    const prefix = 'ethereum:';
+    const address = data.startsWith(prefix) ? data.substr(prefix.length) : data;
     this.setState({
-      isCameraOpened: true,
+      to: address,
+      isCameraOpened: false,
     });
   };
 
@@ -52,14 +49,15 @@ export default class extends React.Component<Props, State> {
     });
   };
 
-  onScan = (data: string) => {
-    const prefix = 'ethereum:';
-    if (data.startsWith(prefix)) {
-      data = data.substr(prefix.length);
-    }
+  handleSubmit = (e: any) => {
+    e.preventDefault();
+    this.props.onSubmit(this.state.to);
+    this.props.toggle();
+  };
+
+  openQRScanner = () => {
     this.setState({
-      to: data,
-      isCameraOpened: false,
+      isCameraOpened: true,
     });
   };
 
@@ -85,7 +83,9 @@ export default class extends React.Component<Props, State> {
                     onChange={e => this.setState({ to: e.target.value })}
                   />
                   <InputGroupAddon addonType="append">
-                    <Button onClick={e => this.openQRScanner()}>Scan QR</Button>
+                    <Button onClick={() => this.openQRScanner()}>
+                      Scan QR
+                    </Button>
                   </InputGroupAddon>
                 </InputGroup>
               </FormGroup>

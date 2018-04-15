@@ -59,9 +59,11 @@ export default inject('store')(
                 image={this.props.store.tokenDetail.image}
                 createdAt={this.props.store.tokenDetail.createdAt}
                 isOwner={
+                  this.props.store.isAccountAvailable &&
                   this.props.store.account ===
-                  this.props.store.tokenDetail.owner
+                    this.props.store.tokenDetail.owner
                 }
+                isAccountAvailable={this.props.store.isAccountAvailable}
                 handleSendRequest={() => this.handleSendRequest()}
                 handleTransfer={() => this.handleTransfer()}
               />

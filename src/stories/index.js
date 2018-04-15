@@ -4,6 +4,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import { storiesOf, addDecorator } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
+// eslint-disable-next-line no-unused-vars
 import { linkTo } from '@storybook/addon-links';
 
 import 'bootstrap/dist/css/bootstrap.css';
@@ -67,6 +68,7 @@ storiesOf('TokenDetail', module)
       description={token.description}
       image={token.image}
       createdAt={token.createdAt}
+      isAccountAvailable
       isOwner
       handleTransfer={action('Transfer')}
       handleSendRequest={action('SendRequest')}
@@ -80,8 +82,10 @@ storiesOf('TokenDetail', module)
       description={token.description}
       image={token.image}
       createdAt={token.createdAt}
-      handleTransfer={action('Transfer')}
-      handleSendRequest={action('SendRequest')}
+      isAccountAvailable
+      isOwner={false}
+      handleTransfer={action('transfer')}
+      handleSendRequest={action('add request')}
     />
   ));
 
@@ -92,6 +96,9 @@ storiesOf('RequestCard', module)
       message="よろしくお願いします"
       createdAt={token.createdAt}
       isOwner
+      isClient={false}
+      handleTransfer={action('transfer')}
+      handleDelete={action('delete')}
     />
   ))
   .add('isClient', () => (
@@ -99,7 +106,10 @@ storiesOf('RequestCard', module)
       client={address}
       message="よろしくお願いします"
       createdAt={token.createdAt}
+      isOwner={false}
       isClient
+      handleTransfer={action('transfer')}
+      handleDelete={action('delete')}
     />
   ));
 
@@ -109,6 +119,7 @@ storiesOf('RegisterToken', module).add('default', () => (
 
 storiesOf('FloatingButton', module).add('default', () => (
   <FloatingButtons
+    isAccountAvailable
     moveToRegister={action('register')}
     moveToAccount={action('account')}
     moveToToken={action('token')}

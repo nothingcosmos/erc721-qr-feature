@@ -16,7 +16,7 @@ export default class {
       .at(contractAddress);
   }
 
-  async getAccount(): Promise<string> {
+  async getAccount(): Promise<?string> {
     return new Promise((resolve, reject) => {
       window.web3.eth.getAccounts((err, accounts) => {
         if (err) {
@@ -24,7 +24,7 @@ export default class {
           return;
         }
         if (accounts.length === 0) {
-          reject(new Error('There are no accounts.'));
+          resolve(null);
           return;
         }
         const account = accounts[0];

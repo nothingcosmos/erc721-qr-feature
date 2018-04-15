@@ -1,3 +1,4 @@
+// @flow
 import * as React from 'react';
 
 import { Card, CardText, CardBody, CardSubtitle, Button } from 'reactstrap';

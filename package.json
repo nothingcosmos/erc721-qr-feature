@@ -49,7 +49,8 @@
     "build-storybook": "build-storybook",
     "deploy": "firebase deploy",
     "serve": "firebase serve",
-    "lint": "eslint --fix src"
+    "lint": "eslint --fix src",
+    "flow": "flow"
   },
   "proxy": {
     "/__": {

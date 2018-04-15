@@ -14,6 +14,8 @@ import createStore from './stores';
 
 const store = createStore();
 
+// ここで定義したopenXXXが呼び出されるのはブラウザで開いた直後だけで，
+// openXXXでcurrentUrlを変更したときに起こるpushStateの後にはopenXXXは呼び出されない
 new Router({
   '/': () => store.router.openHomePage(),
   '/token/:tokenId': tokenId => store.router.openTokenPageById(tokenId),

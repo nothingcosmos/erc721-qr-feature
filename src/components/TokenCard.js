@@ -1,10 +1,10 @@
+// @flow
 import React from 'react';
 import {
   Col,
   Card,
   CardBody,
   CardTitle,
-  CardSubtitle,
   CardText,
   CardLink,
   CardImg,

@@ -16,10 +16,22 @@
       "**/node_modules/**"
     ],
     "rewrites": [
-      { "source": "/api/add_token",    "function": "add_token" },
-      { "source": "/api/add_request", "function": "add_request" },
-      { "source": "/erc721/*", "function": "erc721" },
-      { "source": "**", "destination": "/index.html" }
+      {
+        "source": "/api/add_token",
+        "function": "add_token"
+      },
+      {
+        "source": "/api/add_request",
+        "function": "add_request"
+      },
+      {
+        "source": "/erc721/*",
+        "function": "erc721"
+      },
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
     ]
   },
   "storage": {

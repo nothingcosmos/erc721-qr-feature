@@ -61,13 +61,19 @@ export class RouterStore {
   }
 }
 
-export class NotificationStore {
-  @observable timestamp = 0;
+export class SnackbarStore {
+  @observable open = false;
   @observable message = '';
+
   @action.bound
   send(message: string) {
-    this.timestamp++;
     this.message = message;
+    this.open = true;
+  }
+
+  @action.bound
+  close() {
+    this.open = false;
   }
 }
 
@@ -88,9 +94,9 @@ type TokenCard = {
 
 export class GlobalStore {
   @observable router = new RouterStore(this);
-  @observable notification = new NotificationStore();
+  @observable snackbar = new SnackbarStore();
   @observable tokenDetail = new TokenDetailStore();
-  @observable account = '';
+  @observable account: ?string = null;
   @observable tokenCards: TokenCard[] = [];
   ethereum = new Ethereum();
   firebase = new Firebase();
@@ -99,18 +105,24 @@ export class GlobalStore {
     // Web3からアドレスを取ってくる
     this.account = await this.ethereum.getAccount();
     // Firebaseに書き込む
-    this.notification.send('メタデータを書き込んでいます');
+    this.snackbar.send('メタデータを書き込んでいます');
+    if (!this.account) {
+      throw new Error('Cannot get account');
+    }
     const tokenId = await this.firebase.registerToken(
       this.account,
       name,
       description
     );
-    this.notification.send('画像をアップロードしています');
+    this.snackbar.send('画像をアップロードしています');
     await this.firebase.uploadImage(tokenId, image);
     // ブロックチェーンに書き込む
-    this.notification.send('ブロックチェーンに書き込んでいます');
+    this.snackbar.send('ブロックチェーンに書き込んでいます');
+    if (!this.account) {
+      throw new Error('Cannot get account');
+    }
     await this.ethereum.mint(this.account, tokenId);
-    this.notification.send('ブロックチェーンに書き込みました');
+    this.snackbar.send('ブロックチェーンに書き込みました');
     this.router.openTokenPageById(tokenId);
   }
   @action.bound
@@ -150,14 +162,19 @@ export class GlobalStore {
   isAddress = (hexString: string): boolean =>
     this.ethereum.isAddress(hexString);
 
+  @computed
+  get isAccountAvailable(): boolean {
+    return !!this.account && this.isAddress(this.account);
+  }
+
   sendRequest(from: string, tokenId: string, message: string) {
     this.firebase.addRequest(from, tokenId, message);
   }
 
   async transfer(from: string, to: string, tokenId: string) {
-    this.notification.send('ブロックチェーンに書き込んでいます');
+    this.snackbar.send('ブロックチェーンに書き込んでいます');
     await this.ethereum.transfer(from, to, tokenId);
-    this.notification.send('ブロックチェーンに書き込みました');
+    this.snackbar.send('ブロックチェーンに書き込みました');
   }
 }
 
