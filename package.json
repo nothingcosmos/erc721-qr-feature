@@ -43,13 +43,13 @@
   },
   "scripts": {
     "start": "react-app-rewired start",
-    "build": "react-app-rewired build",
-    "format": "prettier --write \"src/**/*.js\"",
+    "predeploy": "react-app-rewired build",
+    "deploy": " firebase deploy",
+    "serve": "firebase serve",
     "storybook": "start-storybook -p 9009",
     "build-storybook": "build-storybook",
-    "deploy": "firebase deploy",
-    "serve": "firebase serve",
     "lint": "eslint --fix src",
+    "format": "prettier --write \"src/**/*.js\"",
     "flow": "flow"
   },
   "proxy": {
