@@ -58,6 +58,9 @@ export default class extends React.Component<Props, State> {
   };
   // FABにTooltipを使うにはv1が必要
   // https://material-ui-next.com/demos/tooltips/
+  //
+  // Speed Dialも使いたい
+  // https://material-ui-next.com/lab/speed-dial/
   render = () => (
     <React.Fragment>
       <div style={styles.floatingButton}>

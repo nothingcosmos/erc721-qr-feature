@@ -19,6 +19,7 @@ export default class {
     const config = await resp.json();
     firebase.initializeApp(config);
     this.db = firebase.firestore();
+    this.db.settings({timestampsInSnapshots: true});
     this.storage = firebase.storage();
   }
 
@@ -106,7 +107,7 @@ export default class {
         client: data.client,
         tokenId: data.tokenId,
         message: data.message,
-        createdAt: data.createdAt.toUTCString(),
+        createdAt: data.createdAt.toDate().toUTCString(),
       };
     });
   }
