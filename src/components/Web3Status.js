@@ -40,7 +40,7 @@ export default class extends React.Component<Props, State> {
   };
   render = () => (
     <React.Fragment>
-      <dl className="dl-horizontal">
+      <dl>
         <dt>Web3</dt>
         <dd>{this.props.isConnected ? 'Available' : 'Not Available'}</dd>
         <dt>
@@ -53,7 +53,9 @@ export default class extends React.Component<Props, State> {
             Sync
           </Button>
         </dt>
-        <dd>{maybeNull(this.props.accountAddress)}</dd>
+        <dd className="text-truncate">
+          {maybeNull(this.props.accountAddress)}
+        </dd>
         <dt>
           Network{' '}
           <Button
@@ -75,7 +77,9 @@ export default class extends React.Component<Props, State> {
             Change
           </Button>
         </dt>
-        <dd>{maybeNull(this.props.contractAddress)}</dd>
+        <dd className="text-truncate">
+          {maybeNull(this.props.contractAddress)}
+        </dd>
       </dl>
       <ContractModal
         open={this.state.openContractAddressDialog}

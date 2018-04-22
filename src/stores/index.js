@@ -5,7 +5,7 @@ import SnackbarStore from './SnackbarStore';
 import Ethereum from './ethereum';
 import Firebase from './firebase';
 
-configure({ enforceActions: true });
+configure({ enforceActions: 'strict' });
 
 type RequestItem = {
   client: string,
