@@ -30,7 +30,7 @@ export default inject('store')(
                 store.router.openHomePage();
               }}
             >
-              ERC721 QR (for Ropsten)
+              ERC721 QR
             </a>
           </h1>
           <Page />
