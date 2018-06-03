@@ -27,5 +27,6 @@ export async function generateThumbnail(tokenId: string, imagePath: string) {
   await infrastructure.uploadToBucket(thumbLocalPath, thumbPath, 'image/jpeg');
   // 元ファイルを削除
   await infrastructure.removeFile(imagePath);
+  // Firestoreに画像のURLを書き込み
   await infrastructure.appendUrl(tokenId, infrastructure.makePublicUrl(thumbPath));
 }

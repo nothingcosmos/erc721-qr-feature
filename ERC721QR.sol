@@ -1,16 +1,19 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.23;
 
 import "https://github.com/OpenZeppelin/zeppelin-solidity/contracts/token/ERC721/ERC721Token.sol";
 
 contract ERC721QR is ERC721Token {
-    function ERC721QR(string _name, string _symbol) public ERC721Token(_name, _symbol) {}
+    function ERC721QR() public ERC721Token("ERC721QR", "QR") {}
     
-    function mint(address _to, uint256 _tokenId, string _uri) external {
-        super._mint(_to, _tokenId);
-        super._setTokenURI(_tokenId, _uri);
+    function mint(string _uri) external {
+        // keccak256 is the cheapest.
+        // https://ethereum.stackexchange.com/q/3184
+        uint256 tokenId = keccak256(_uri);
+        super._mint(msg.sender, tokenId);
+        super._setTokenURI(tokenId, _uri);
     }
     
-    function burn(address _owner, uint256 _tokenId) external {
-        super._burn(_owner, _tokenId);
+    function burn(uint256 _tokenId) external onlyOwnerOf(_tokenId) {
+        super._burn(msg.sender, _tokenId);
     }
 }
