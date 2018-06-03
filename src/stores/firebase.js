@@ -19,7 +19,7 @@ export default class {
     const config = await resp.json();
     firebase.initializeApp(config);
     this.db = firebase.firestore();
-    this.db.settings({timestampsInSnapshots: true});
+    this.db.settings({ timestampsInSnapshots: true });
     this.storage = firebase.storage();
   }
 
@@ -66,7 +66,7 @@ export default class {
   async uploadImage(tokenId: string, image: File) {
     await this.initializerPromise;
     const basename = path.basename(image.name);
-    const ref = this.storage.ref(`submit/${tokenId}/${basename}`);
+    const ref = this.storage.ref(`postImage/${tokenId}/${basename}`);
     await ref.put(image);
     return tokenId;
   }

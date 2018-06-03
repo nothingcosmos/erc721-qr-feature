@@ -1,5 +1,5 @@
 // @flow
-import React from 'react';
+import React, { StrictMode } from 'react';
 import ReactDOM from 'react-dom';
 import { autorun } from 'mobx';
 import { Provider } from 'mobx-react';
@@ -41,7 +41,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (elem) {
     ReactDOM.render(
       <Provider store={store}>
-        <App />
+        <StrictMode>
+          <App />
+        </StrictMode>
       </Provider>,
       elem
     );

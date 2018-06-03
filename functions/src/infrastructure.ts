@@ -1,8 +1,7 @@
-import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { spawn } from 'child-process-promise';
 
-admin.initializeApp(functions.config().firebase);
+admin.initializeApp();
 
 export async function removeFile(path: string): Promise<void> {
   const bucket = admin.storage().bucket();
