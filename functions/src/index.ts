@@ -61,43 +61,37 @@ exports.add_request = functions.https.onRequest(async (req, resp) => {
   resp.status(200).json({ requestId });
 });
 
-exports.generateThumbnail = functions.storage.object().onChange(async (event) => {
-  const object = event.data;
-  // move or delete
-  if (object.resourceState === 'not_exists') {
-    console.log(`Move or Delete: resourceState = ${object.resourceState}`);
-    return;
-  }
-  // metadata change
-  if (object.resourceState === 'exists' && object.metageneration > 1) {
-    console.log(`change of metadata: resourceState = ${object.resourceState} and metageneration = ${object.metageneration}`);
-    return;
-  }
+exports.generateThumbnail = functions.storage.object().onFinalize(async (object, context) => {
+  // アップロードされたパスのチェック
   // sensitive : case sensitive (default: false)
-  // strict : does not ignore the trailing slash (default: false)
+  // strict : does NOT ignore the trailing slash (default: false)
   // end : add '$' to end of RegExp
   const matchOptions = { sensitive: true, strict: true, end: true };
-  const match = pathMatch(matchOptions)('submit/:tokenId/:basename');
+  const match = pathMatch(matchOptions)('postImage/:tokenId/:basename');
   const imagePath = object.name;
   const params = match(imagePath);
-  // pending/:tokenId/:basename しか書き込みを許可してないから，ここで引っかかるのは
+  // postImage/:tokenId/:basename しか書き込みを許可してないから，ここで引っかかるのは
   // 生成されたサムネイルだけのはず…？
   if (params === false) {
     console.log(`path does not match: object.name = ${imagePath}`);
     return;
   }
+
+  // アップロードされたファイルのチェック
   if (!object.contentType.startsWith('image/')) {
     console.log(`contentType does not match: contentType = ${object.contentType}`);
     // ファイルを削除
     await infrastructure.removeFile(imagePath);
     return;
   }
-  const { tokenId } = params;
+
   // サムネイルを生成してよいかチェック
+  const { tokenId } = params;
   if (!(await infrastructure.isImageRequired(tokenId))) {
     console.log(`an image is not required: tokenId = ${tokenId}`);
     return;
   }
+  
   // サムネイルを生成
   await logic.generateThumbnail(tokenId, imagePath);
 });

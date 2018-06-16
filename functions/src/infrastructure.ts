@@ -1,8 +1,8 @@
-import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { spawn } from 'child-process-promise';
 
-admin.initializeApp(functions.config().firebase);
+admin.initializeApp();
+const db = admin.firestore();
 
 export async function removeFile(path: string): Promise<void> {
   const bucket = admin.storage().bucket();
@@ -10,7 +10,6 @@ export async function removeFile(path: string): Promise<void> {
 }
 
 export async function isImageRequired(tokenId: string): Promise<boolean> {
-  const db = admin.firestore();
   const snapshot = await db.collection('tokens').doc(tokenId).get();
   if (!snapshot.exists) {
     console.log(`token does not exist: tokenId = ${tokenId}`);
@@ -24,7 +23,6 @@ export async function isImageRequired(tokenId: string): Promise<boolean> {
 }
 
 export async function isTokenExisting(tokenId: string): Promise<boolean> {
-  const db = admin.firestore();
   const snapshot = await db.collection('tokens').doc(tokenId).get();
   if (!snapshot.exists) {
     console.log(`token does not exist: tokenId = ${tokenId}`);
@@ -81,7 +79,6 @@ export function makePublicUrl(bucketPath: string) {
 
 // 無くても調べられるけど，それはクライアントの責務じゃない
 export async function appendUrl(tokenId: string, url: string) {
-  const db = admin.firestore();
   const { FieldValue } = admin.firestore;
   await db.collection('tokens').doc(tokenId).update({
     imageURL: url,
@@ -91,7 +88,6 @@ export async function appendUrl(tokenId: string, url: string) {
 }
 
 export async function addToken(name: string, description: string): Promise<string> {
-  const db = admin.firestore();
   const ref = await db.collection('tokens').add({
     name,
     description,
@@ -101,7 +97,6 @@ export async function addToken(name: string, description: string): Promise<strin
 }
 
 export async function addRequest(client: string, tokenId: string, message: string): Promise<string> {
-  const db = admin.firestore();
   const { FieldValue } = admin.firestore;
   const ref = await db.collection('requests').add({
     client,
@@ -114,7 +109,6 @@ export async function addRequest(client: string, tokenId: string, message: strin
 
 export async function getMetadata(tokenId: string) {
   console.log(`getMetadata(tokenId = ${tokenId})`);
-  const db = admin.firestore();
   const ref = await db.collection('tokens').doc(tokenId).get();
   const data = ref.data();
   return {
