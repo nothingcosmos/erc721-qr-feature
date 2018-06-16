@@ -1,3 +1,5 @@
 ```
-$ npm i -g remix-ide
+$ npm i -g truffle ganache-cli
+$ ganache-cli -d
+$ ./start.sh
 ```

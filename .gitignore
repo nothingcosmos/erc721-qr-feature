@@ -23,3 +23,6 @@ yarn-debug.log*
 yarn-error.log*
 cloud-functions-emulator.log
 firebase-debug.log
+
+src/contracts/abi.json
+src/contracts/address.txt
