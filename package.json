@@ -42,7 +42,7 @@
   },
   "scripts": {
     "start": "react-app-rewired start",
-    "postinstall" : "pushd functions && npm install && popd && pushd truffle && npm install && popd",
+    "postinstall": "cd functions && npm install && cd ../truffle && npm install",
     "predeploy": "react-app-rewired build",
     "deploy": " firebase deploy",
     "serve": "firebase serve",
