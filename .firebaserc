@@ -1,6 +1,7 @@
 {
   "projects": {
     "default": "erc721-qr",
-    "devel": "erc721-qr-devel"
+    "devel": "erc721-qr-devel",
+    "feature": "erc721-qr-feature"
   }
 }

@@ -71,6 +71,7 @@ export default class {
     return tokenId;
   }
 
+  //erc721のリクエストが爆発している
   async fetchMetadata(tokenId: string) {
     const data = await this.getJson(`/erc721/${tokenId}`);
     return {
