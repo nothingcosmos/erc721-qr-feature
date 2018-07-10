@@ -68,7 +68,7 @@ export default class {
   async mint(owner: string, tokenId: string): Promise<void> {
     const tokenIdHash = window.web3.sha3(tokenId);
     const tokenIdHashBigNumber = window.web3.toBigNumber(tokenIdHash);
-    const uri = `https://erc721-qr.firebaseapp.com/erc721/${tokenId}`;
+    const uri = `https://erc721-qr-feature.firebaseapp.com/erc721/${tokenId}`;
     return new Promise((resolve, reject) => {
       this.contractInstance.mint(
         owner,
@@ -139,7 +139,7 @@ export default class {
   async tokenIdByIndex(index: number): Promise<string> {
     const tokenId = await this.tokenByIndex(index);
     const tokenURI = await this.tokenURI(tokenId);
-    const prefix = 'https://erc721-qr.firebaseapp.com/erc721/';
+    const prefix = 'https://erc721-qr-feature.firebaseapp.com/erc721/';
     return tokenURI.substr(prefix.length);
   }
 
