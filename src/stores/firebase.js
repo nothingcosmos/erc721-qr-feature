@@ -3,6 +3,7 @@ import * as firebase from 'firebase/app';
 import 'firebase/firestore';
 import 'firebase/storage';
 import * as path from 'path';
+import type TokenItem from 'index';
 
 export default class {
   db: firebase.firestore.Firestore;
@@ -63,6 +64,7 @@ export default class {
     return tokenId;
   }
 
+  //upload先はpostImageであり,thumbnail化された後imagesへ
   async uploadImage(tokenId: string, image: File) {
     await this.initializerPromise;
     const basename = path.basename(image.name);
@@ -80,6 +82,24 @@ export default class {
       image: data.image,
       createdAt: data.createdAt,
     };
+  }
+
+  async retrieveTokenList() : TokenItem[] {
+    await this.initializerPromise;
+    const snapshot = await this.db
+      .collection('tokens')
+      .orderBy('createdAt', 'desc')
+      .get();
+    return snapshot.docs.map(doc => {
+      const tokenId = doc.id;
+      const data = doc.data();
+      return {
+        tokenId: tokenId,
+        name:data.name,
+        image:data.imageURL,
+        createdAt: data.createdAt.toDate().toUTCString(),
+      };
+    });
   }
 
   async addRequest(

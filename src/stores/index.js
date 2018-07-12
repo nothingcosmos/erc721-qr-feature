@@ -4,6 +4,7 @@ import RouterStore from './RouterStore';
 import SnackbarStore from './SnackbarStore';
 import Ethereum from './ethereum';
 import Firebase from './firebase';
+import { isNullOrUndefined } from 'util';
 
 configure({ enforceActions: 'strict' });
 
@@ -23,7 +24,7 @@ class TokenDetailStore {
   @observable requests: RequestItem[] = [];
 }
 
-type TokenItem = {
+export type TokenItem = {
   tokenId: string,
   name: string,
   image: string,
@@ -81,24 +82,28 @@ export class GlobalStore {
     if (!this.accountAddress) {
       throw new Error('Cannot get account');
     }
-    const tokenId = await this.firebase.registerToken(
-      this.accountAddress,
-      name,
-      description
-    );
-    this.snackbar.send('画像をアップロードしています');
-    await this.firebase.uploadImage(tokenId, image);
-    // トランザクションを送信する
-    this.snackbar.send(
-      `${this.networkName || '(null)'} にトランザクションを送信しています`
-    );
-    if (!this.accountAddress) {
-      throw new Error('Cannot get account');
-    }
-    await this.ethereum.mint(this.accountAddress, tokenId);
-    this.snackbar.send(
-      `${this.networkName || '(null)'} にトランザクションを送信しました`
-    );
+    try {
+      const tokenId = await this.firebase.registerToken(
+        this.accountAddress,
+        name,
+        description
+      );
+      this.snackbar.send('画像をアップロードしています');
+      await this.firebase.uploadImage(tokenId, image);
+      // トランザクションを送信する
+      this.snackbar.send(
+        `${this.networkName || '(null)'} にトランザクションを送信しています`
+      );
+      if (!this.accountAddress) {
+        throw new Error('Cannot get account');
+      }
+      await this.ethereum.mint(this.accountAddress, tokenId);
+      this.snackbar.send(
+        `${this.networkName || '(null)'} にトランザクションを送信しました`
+      );
+    } catch(err) {
+      this.snackbar.send(`Errorが発生し、登録に失敗しました。detail=${err}`);
+    };
     this.router.openHomePage();
   }
 
@@ -113,38 +118,47 @@ export class GlobalStore {
   }
 
   async reloadTokenDetail(tokenId: string) {
-    const metadataPromise = this.firebase.fetchMetadata(tokenId);
-    const ownerOfPromise = this.ethereum.ownerOf(tokenId);
-    const requestPromise = this.firebase.getRequests(tokenId);
-    const metadata = await metadataPromise;
-    const ownerOf = await ownerOfPromise;
-    const requests = await requestPromise;
-    runInAction(() => {
-      this.tokenDetail.name = metadata.name;
-      this.tokenDetail.description = metadata.description;
-      this.tokenDetail.image = metadata.image;
-      this.tokenDetail.createdAt = metadata.createdAt;
-      this.tokenDetail.owner = ownerOf;
-      this.tokenDetail.requests = requests;
-    });
+    try {
+      if (isNullOrUndefined(tokenId)) {
+        throw new Error('Invalid tokenId');
+      }
+      const metadataPromise = this.firebase.fetchMetadata(tokenId);
+      const ownerOfPromise = this.ethereum.ownerOf(tokenId);
+      const requestPromise = this.firebase.getRequests(tokenId);
+      const metadata = await metadataPromise;
+      const ownerOf = await ownerOfPromise;
+      const requests = await requestPromise;
+
+      runInAction(() => {
+        this.tokenDetail.name = metadata.name;
+        this.tokenDetail.description = metadata.description;
+        this.tokenDetail.image = metadata.image;
+        this.tokenDetail.createdAt = metadata.createdAt;
+        this.tokenDetail.owner = ownerOf;
+        this.tokenDetail.requests = requests;
+      });
+    } catch(err) {
+      this.snackbar.send(`Errorが発生し、詳細の取得に失敗しました。detail=${err}`);
+    }
   }
 
   async reloadHome() {
-    const tokenIds = await this.ethereum.fetchAllTokenIds();
-    const metadataPromise = [];
-    for (let i = 0; i < tokenIds.length; i++) {
-      metadataPromise.push(this.firebase.fetchMetadata(tokenIds[i]));
-    }
-    const metadata = await Promise.all(metadataPromise);
-    const tokenCards = [];
-    for (let i = 0; i < tokenIds.length; i++) {
-      tokenCards.push({
-        tokenId: tokenIds[i],
-        name: metadata[i].name,
-        image: metadata[i].image,
-        createdAt: metadata[i].createdAt,
-      });
-    }
+    // const tokenIds = await this.ethereum.fetchAllTokenIds();
+    // const metadataPromise = [];
+    // for (let i = 0; i < tokenIds.length; i++) {
+    //   metadataPromise.push(this.firebase.fetchMetadata(tokenIds[i]));
+    // }
+    // const metadata = await Promise.all(metadataPromise);
+    // const tokenCards = [];
+    // for (let i = 0; i < tokenIds.length; i++) {
+    //   tokenCards.push({
+    //     tokenId: tokenIds[i],
+    //     name: metadata[i].name,
+    //     image: metadata[i].image,
+    //     createdAt: metadata[i].createdAt,
+    //   });
+    // }
+    const tokenCards = await this.firebase.retrieveTokenList();
     runInAction(() => {
       this.tokenCards = tokenCards;
     });

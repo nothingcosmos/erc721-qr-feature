@@ -7,6 +7,7 @@ export default class {
 
   constructor(address: string) {
     if (!window.web3) {
+      alert('Please install https://metamask.io/');
       throw new Error(`Cannot find Web3.`);
     }
     window.web3 = new Web3(window.web3.currentProvider);
@@ -143,6 +144,7 @@ export default class {
     return tokenURI.substr(prefix.length);
   }
 
+  //deprecated
   async fetchAllTokenIds(): Promise<string[]> {
     const totalSupply = await this.totalSupply();
     const tokenIdsPromise = [];
