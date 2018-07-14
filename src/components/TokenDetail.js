@@ -22,6 +22,7 @@ type Props = {
   isOwner: boolean,
   handleSendRequest: () => any,
   handleTransfer: () => any,
+  handleRemove: () => any,
 };
 
 export default (props: Props) => (
@@ -37,6 +38,7 @@ export default (props: Props) => (
       {props.isAccountAvailable && (
         <div className="d-flex justify-content-end">
           {props.isOwner ? (
+            <React.Fragment>
             <Button
               color="success"
               outline
@@ -44,6 +46,10 @@ export default (props: Props) => (
             >
               Transfer
             </Button>
+            <Button color="danger" outline className="ml-2" onClick={() => props.handleRemove()}>
+              Remove
+            </Button>
+          </React.Fragment>
           ) : (
             <Button
               color="primary"

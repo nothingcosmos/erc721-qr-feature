@@ -84,7 +84,8 @@ export default class {
     };
   }
 
-  async retrieveTokenList() : TokenItem[] {
+  //startAtとendAtの同時使用は動かなかった
+  async retrieveTokenList(offset:number = 0, limit:number = 25) : TokenItem[] {
     await this.initializerPromise;
     const snapshot = await this.db
       .collection('tokens')
@@ -100,6 +101,21 @@ export default class {
         createdAt: data.createdAt.toDate().toUTCString(),
       };
     });
+  }
+
+  //owenerAddressは現状参照されない
+  async removeToken(ownerAddress: string, tokenId: string) : Promise<boolean> {
+    await this.initializerPromise;
+    const snapshot = await this.db
+      .collection('tokens')
+      .doc(tokenId)
+      .delete();
+    return snapshot.then(f => {
+      return true;
+    }, err => {
+      console.error(err);
+      return false;
+    })
   }
 
   async addRequest(

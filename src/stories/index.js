@@ -20,6 +20,8 @@ import FloatingButtons from '../components/FloatingButtons';
 import CameraModal from '../components/CameraModal';
 import RequestModal from '../components/RequestModal';
 import TransferModal from '../components/TransferModal';
+import AccountDetailModal from '../components/AccountDetailModal';
+import RemoveCardModal from '../components/RemoveCardModal';
 import Web3Status from '../components/Web3Status';
 
 const Decorator = storyFn => <MuiThemeProvider>{storyFn()}</MuiThemeProvider>;
@@ -76,6 +78,7 @@ storiesOf('TokenDetail', module)
       isOwner
       handleTransfer={action('Transfer')}
       handleSendRequest={action('SendRequest')}
+      handleRemove={action('Remove')}
     />
   ))
   .add('is not Owner', () => (
@@ -90,6 +93,7 @@ storiesOf('TokenDetail', module)
       isOwner={false}
       handleTransfer={action('transfer')}
       handleSendRequest={action('add request')}
+      handleRemove={action('dummy')}
     />
   ));
 
@@ -146,6 +150,24 @@ storiesOf('TransferModal', module).add('default', () => (
     tokenId="0xabcdef"
     onSubmit={action('onSubmit')}
     isAddress={web3.isAddress}
+  />
+));
+
+storiesOf('RemoveCardModal', module).add('default', () => (
+  <RemoveCardModal
+    modal
+    toggle={action('toggle')}
+    from={address}
+    tokenId="0xabcdef"
+    onSubmit={action('Remove')}
+  />
+));
+
+storiesOf('AccountDetailModal', module).add('default', () => (
+  <AccountDetailModal
+    modal
+    toggle={action('toggle')}
+    from={address}
   />
 ));
 

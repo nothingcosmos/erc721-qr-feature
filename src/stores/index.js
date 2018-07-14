@@ -117,6 +117,17 @@ export class GlobalStore {
     );
   }
 
+  async removeToken(from:string, tokenId:string) {
+    try {
+      await this.firebase.removeToken(from, tokenId);
+      this.router.openHomePage();
+    } catch(err) {
+      this.snackbar.send(
+        `${tokenId}の削除に失敗しました。detail=${err || '(null)'}`
+      );
+    }
+  }
+
   async reloadTokenDetail(tokenId: string) {
     try {
       if (isNullOrUndefined(tokenId)) {

@@ -4,7 +4,7 @@ import { GlobalStore } from '.';
 
 export default class {
   @observable name = 'home';
-  @observable tokenId = '';
+  @observable tokenId = ''; //globalStateに1つだけ詰まっているため、他の方法に置き換えること
   @observable account = '';
 
   constructor(globalStore: GlobalStore) {

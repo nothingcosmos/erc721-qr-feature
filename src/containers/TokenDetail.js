@@ -7,6 +7,7 @@ import TokenDetail from '../components/TokenDetail';
 import RequestCard from '../components/RequestCard';
 import RequestModal from '../components/RequestModal';
 import TransferModal from '../components/TransferModal';
+import RemoveCardModal from '../components/RemoveCardModal';
 
 type Props = {
   store: GlobalStore,
@@ -15,6 +16,7 @@ type Props = {
 type State = {
   requestModal: boolean,
   transferModal: boolean,
+  removeCardModal:boolean,
 };
 
 export default inject('store')(
@@ -23,6 +25,7 @@ export default inject('store')(
       state = {
         requestModal: false,
         transferModal: false,
+        removeCardModal: false,
       };
       handleSendRequest = () => {
         this.setState({
@@ -39,9 +42,19 @@ export default inject('store')(
           transferModal: true,
         });
       };
+      handleRemove = () => {
+        this.setState({
+          removeCardModal: true,
+        });
+      };
       toggleTransferModal = () => {
         this.setState({
           transferModal: !this.state.transferModal,
+        });
+      };
+      toggleRemoveCardModal = () => {
+        this.setState({
+          removeCardModal: !this.state.removeCardModal,
         });
       };
       render = () => (
@@ -68,6 +81,7 @@ export default inject('store')(
                   isAccountAvailable={this.props.store.isAccountAvailable}
                   handleSendRequest={() => this.handleSendRequest()}
                   handleTransfer={() => this.handleTransfer()}
+                  handleRemove={() => this.handleRemove()}
                 />
               </div>
               {this.props.store.tokenDetail.requests && <h2>Requests</h2>}
@@ -119,6 +133,18 @@ export default inject('store')(
               )
             }
             isAddress={this.props.store.isAddress}
+          />
+          <RemoveCardModal
+            modal={this.state.removeCardModal}
+            toggle={this.toggleRemoveCardModal}
+            from={this.props.store.accountAddress}
+            tokenId={this.props.store.router.tokenId}
+            onSubmit={id => {
+              this.props.store.removeToken(
+                this.props.store.accountAddress,
+                id
+              );
+            }}
           />
         </React.Fragment>
       );
