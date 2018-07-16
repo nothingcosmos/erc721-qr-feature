@@ -43,6 +43,9 @@ export class GlobalStore {
   @observable tokenCards: TokenItem[] = [];
   @observable tokenDetail = new TokenDetailStore();
 
+  //auth
+  @observable auth_user:?firebase.User;
+
   firebase = new Firebase();
 
   constructor(contractAddress: string) {
@@ -60,6 +63,17 @@ export class GlobalStore {
       this.contractAddress = address;
     });
     this.ethereum.setContractAddress(address);
+  }
+
+  async login(provider:string) {
+    try {
+      this.auth_user = await this.firebase.openOAuth2(provider);
+      //todo user情報をdbに保存すべし
+    } catch(err) {
+      this.snackbar.send(
+        `${err}`
+      );
+    }
   }
 
   async syncAccountAddress() {
