@@ -16,11 +16,13 @@ import Web3Status from './Web3Status';
 
 import type { Store } from '../stores';
 
+//for react-fontawesome
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGoogle, faTwitterSquare, faGithubSquare, faFacebookSquare } from '@fortawesome/free-brands-svg-icons';
+import {fab} from '@fortawesome/free-brands-svg-icons';
+import { faSignInAlt } from '@fortawesome/free-solid-svg-icons';
 
-library.add(faGoogle, faTwitterSquare, faGithubSquare, faFacebookSquare);
+library.add(fab, faSignInAlt);
 
 //login用のmodalを用意してそっちに追い出すべき、アイコンで文字列を置き換え
 const styles = {
@@ -49,9 +51,10 @@ export default inject('store')(
               </a>          
             </h1>
             </div>
-            <div><FontAwesomeIcon icon="fa-twitter-square" onClick={e => { e.preventDefault(); store.login("twitter"); }}/></div>
-            <div><FontAwesomeIcon icon="fa-github-square" onClick={e => { e.preventDefault(); store.login("github"); }}/></div>
-            <div><FontAwesomeIcon icon="fa-google" onClick={e => { e.preventDefault(); store.login("google"); }}/></div>
+            <div><FontAwesomeIcon icon="sign-in-alt" className="ml-2" onClick={e => { e.preventDefault(); store.login("twitter"); }} /></div>
+            <div><FontAwesomeIcon icon="fa-twitter-square" onClick={e => { e.preventDefault(); store.login("twitter"); }} /></div>
+            <div><FontAwesomeIcon icon="github-square" onClick={e => { e.preventDefault(); store.login("github"); }}/></div>
+            <div><FontAwesomeIcon icon="google" onClick={e => { e.preventDefault(); store.login("google"); }}/></div>
           </div>
           <Page />
           <hr />
