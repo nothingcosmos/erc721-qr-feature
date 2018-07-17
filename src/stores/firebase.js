@@ -5,6 +5,7 @@ import 'firebase/storage';
 import 'firebase/auth';
 import * as path from 'path';
 import type TokenItem from 'index';
+import type AuthUser from 'index';
 
 export default class {
   db: firebase.firestore.Firestore;
@@ -52,7 +53,7 @@ export default class {
     throw new Error(response);
   }
 
-  async openOAuth2(provider_name:string) {
+  async openOAuth2(provider_name:string) : AuthUser {
     const provier = (() => {
       switch(provider_name) {
         case "google":
@@ -77,16 +78,13 @@ export default class {
       // The signed-in user info.
       var user = result.user;
       if (user) {
-        // User is signed in.
-        var displayName = user.displayName;
-        var email = user.email;
-        var emailVerified = user.emailVerified;
-        var photoURL = user.photoURL;
-        var isAnonymous = user.isAnonymous;
-        var uid = user.uid;
-        var providerData = user.providerData;
-        console.info(user);
-        return user;
+        return {
+          uid:user.uid,
+          displayName:user.displayName,
+          email:user.email,
+          photoURL:user.photoURL,
+          provider:provider_name,
+        }
       }
     }).catch(function(error) {
       // Handle Errors here.

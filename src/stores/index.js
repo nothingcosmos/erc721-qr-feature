@@ -31,6 +31,14 @@ export type TokenItem = {
   createdAt: string,
 };
 
+export type AuthUser = {
+  uid:string, //firebase uid
+  displayName:string,
+  email:string,
+  photoURL:string,
+  providerId:string,
+};
+
 export class GlobalStore {
   @observable router = new RouterStore(this);
   @observable snackbar = new SnackbarStore();
@@ -69,6 +77,7 @@ export class GlobalStore {
     try {
       this.auth_user = await this.firebase.openOAuth2(provider);
       //todo user情報をdbに保存すべし
+      console.info(this.auth_user);
     } catch(err) {
       this.snackbar.send(
         `${err}`
