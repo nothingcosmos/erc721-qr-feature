@@ -1,7 +1,7 @@
 // @flow
 import * as React from 'react';
 import { Row, Col, Form, Label, Input, FormGroup, Button } from 'reactstrap';
-import {AuthUser} from '../stores/index';
+import type {AuthUser} from '../stores';
 function maybeNull(s: ?string) {
   return s || 'Not Available';
 }
