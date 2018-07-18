@@ -36,7 +36,9 @@ export type AuthUser = {
   displayName:string,
   email:string,
   photoURL:string,
-  providerId:string,
+  provider_id:string,
+  provider:string,
+  eth_address : string,
 };
 
 export class GlobalStore {
@@ -52,7 +54,7 @@ export class GlobalStore {
   @observable tokenDetail = new TokenDetailStore();
 
   //auth
-  @observable auth_user:?firebase.User;
+  auth_user:?AuthUser = null;
 
   firebase = new Firebase();
 
@@ -76,12 +78,16 @@ export class GlobalStore {
   async login(provider:string) {
     try {
       this.auth_user = await this.firebase.openOAuth2(provider);
-      //todo user情報をdbに保存すべし
+      if (!isNullOrUndefined(this.auth_user)) {
+          this.firebase.addUser(this.auth_user);
+          //localstorageにも保存すべきなのか？
+      }
       console.info(this.auth_user);
     } catch(err) {
       this.snackbar.send(
-        `${err}`
+        `Failed to login,${err}`
       );
+      console.error(err);
     }
   }
 

@@ -11,7 +11,6 @@ export default class {
   db: firebase.firestore.Firestore;
   storage: firebase.storage.Storage;
   initializerPromise: Promise<void>;
-
   constructor() {
     this.initializerPromise = this.initializeApp();
   }
@@ -24,7 +23,6 @@ export default class {
     this.db = firebase.firestore();
     this.db.settings({ timestampsInSnapshots: true });
     this.storage = firebase.storage();
-
   }
 
   async postJson(url: string, value: any) {
@@ -53,7 +51,7 @@ export default class {
     throw new Error(response);
   }
 
-  async openOAuth2(provider_name:string) : AuthUser {
+  async openOAuth2(provider_name:string) : Promise<?AuthUser> {
     const provier = (() => {
       switch(provider_name) {
         case "google":
@@ -70,30 +68,28 @@ export default class {
           return new firebase.auth.TwitterAuthProvider();
       }
     })();
-    firebase.auth().signInWithPopup(provier).then(function(result) {
+    return firebase.auth().signInWithPopup(provier).then(function(result) {
       // This gives you a the Twitter OAuth 1.0 Access Token and Secret.
       // You can use these server side with your app's credentials to access the Twitter API.
-      var token = result.credential.accessToken;
-      var secret = result.credential.secret;
+      //var token = result.credential.accessToken;
+      //var secret = result.credential.secret;
       // The signed-in user info.
-      var user = result.user;
-      if (user) {
-        return {
+      const user = result.user;
+      return {
           uid:user.uid,
           displayName:user.displayName,
           email:user.email,
           photoURL:user.photoURL,
           provider:provider_name,
-        }
-      }
+      };
     }).catch(function(error) {
       // Handle Errors here.
       var errorCode = error.code;
       var errorMessage = error.message;
       // The email of the user's account used.
-      var email = error.email;
+      //var email = error.email;
       // The firebase.auth.AuthCredential type that was used.
-      var credential = error.credential;
+      //var credential = error.credential;
       // ...
       console.error(errorCode + ":" + errorMessage);
       return null;
@@ -153,6 +149,25 @@ export default class {
     });
   }
 
+  async retrieveTokenListByOwner(ownerAddress: string) : TokenItem[] {
+      await this.initializerPromise;
+      const snapshot = await this.db
+        .collection('tokens')
+        .where('ownerAddress', '==', ownerAddress)
+        .orderBy('createdAt', 'desc')
+        .get();
+      return snapshot.docs.map(doc => {
+        const tokenId = doc.id;
+        const data = doc.data();
+        return {
+          tokenId: tokenId,
+          name:data.name,
+          image:data.imageURL,
+          createdAt: data.createdAt.toDate().toUTCString(),
+        };
+      });
+  }
+
   //owenerAddressは現状参照されない
   async removeToken(ownerAddress: string, tokenId: string) {
     await this.initializerPromise;
@@ -191,5 +206,16 @@ export default class {
         createdAt: data.createdAt.toDate().toUTCString(),
       };
     });
+  }
+
+  async addUser(user): Promise<void> {
+    await this.initializerPromise;
+    await this.db.collection('users').doc(user.uid).set(user);
+    return;
+  }
+
+  async retrieveUser(uid:string) : Promise<AuthUser> {
+    await this.initializerPromise;
+    return await this.db.collection('users').doc(uid).get();
   }
 }
