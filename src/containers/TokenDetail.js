@@ -2,7 +2,7 @@
 import * as React from 'react';
 import { inject, observer } from 'mobx-react';
 import { Row, Col } from 'reactstrap';
-import type { GlobalStore } from '../stores';
+import type { Store } from '../stores';
 import TokenDetail from '../components/TokenDetail';
 import RequestCard from '../components/RequestCard';
 import RequestModal from '../components/RequestModal';
@@ -10,7 +10,7 @@ import TransferModal from '../components/TransferModal';
 import RemoveCardModal from '../components/RemoveCardModal';
 
 type Props = {
-  store: GlobalStore,
+  store: Store,
 };
 
 type State = {

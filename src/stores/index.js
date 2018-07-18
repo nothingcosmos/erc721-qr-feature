@@ -32,13 +32,14 @@ export type TokenItem = {
 };
 
 export type AuthUser = {
-  uid:string, //firebase uid
+  uid:string, //firebase User uid
   displayName:string,
   email:string,
   photoURL:string,
-  provider_id:string,
   provider:string,
-  eth_address : string,
+  //以下はoption
+  provider_id:string,
+  accountAddress : string,
 };
 
 export class GlobalStore {
@@ -51,10 +52,9 @@ export class GlobalStore {
   @observable networkName: ?string = null;
   @observable contractAddress: ?string = null;
   @observable tokenCards: TokenItem[] = [];
-  @observable tokenDetail = new TokenDetailStore();
+  @observable tokenDetail = new TokenDetailStore(); //ここの更新が問題 伝搬しない？
 
-  //auth
-  auth_user:?AuthUser = null;
+  @observable authUser:?AuthUser = null;
 
   firebase = new Firebase();
 
@@ -77,12 +77,14 @@ export class GlobalStore {
 
   async login(provider:string) {
     try {
-      this.auth_user = await this.firebase.openOAuth2(provider);
-      if (!isNullOrUndefined(this.auth_user)) {
-          this.firebase.addUser(this.auth_user);
-          //localstorageにも保存すべきなのか？
+      const user = await this.firebase.openOAuth2(provider);
+      if (!isNullOrUndefined(user)) {
+        runInAction(() => {
+          this.authUser = user;
+        });
+        this.firebase.addUser(user);
+        //localstorageにも保存すべきなのか？         
       }
-      console.info(this.auth_user);
     } catch(err) {
       this.snackbar.send(
         `Failed to login,${err}`
@@ -146,9 +148,9 @@ export class GlobalStore {
     );
   }
 
-  async removeToken(from:string, tokenId:string) {
+  async removeToken(ownerAddress:string, tokenId:string) {
     try {
-      await this.firebase.removeToken(from, tokenId);
+      await this.firebase.removeToken(ownerAddress, tokenId);
       this.router.openHomePage();
     } catch(err) {
       this.snackbar.send(
@@ -157,7 +159,9 @@ export class GlobalStore {
     }
   }
 
+  //URLをparseして開く際に呼ばれる,他にdetailをクリックした際にも呼ばれる。
   async reloadTokenDetail(tokenId: string) {
+    //console.info("callee reloadToken");
     try {
       if (isNullOrUndefined(tokenId)) {
         throw new Error('Invalid tokenId');
@@ -170,6 +174,7 @@ export class GlobalStore {
       const requests = await requestPromise;
 
       runInAction(() => {
+        //console.info("callee reloadTokenDetail::runOnAction")
         this.tokenDetail.name = metadata.name;
         this.tokenDetail.description = metadata.description;
         this.tokenDetail.image = metadata.image;
@@ -226,5 +231,4 @@ export type Store = {
   store: GlobalStore,
 };
 
-export default () =>
-  new GlobalStore('0x4Ae7D4415D41Fd60c36Ef7DBD8F98a6F388FaeEc');
+export default () => new GlobalStore('0x4Ae7D4415D41Fd60c36Ef7DBD8F98a6F388FaeEc');

@@ -3,11 +3,12 @@ import { observable, action, computed, autorun } from 'mobx';
 import { GlobalStore } from '.';
 
 export default class {
-  @observable name = 'home';
-  @observable tokenId = ''; //globalStateに1つだけ詰まっているため、他の方法に置き換えること
+  @observable name = 'home'; //Homeで表示を切り替えている
+  @observable tokenId = ''; //tokenIdの更新タイミングに注意、nameと同時に更新すると子の更新が遅れる。
   @observable account = '';
 
   constructor(globalStore: GlobalStore) {
+    //observableの値更新のたびに呼ばれる
     autorun(() => {
       if (this.name === 'token') {
         globalStore.reloadTokenDetail(this.tokenId);

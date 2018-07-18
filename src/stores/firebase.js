@@ -119,7 +119,7 @@ export default class {
     return tokenId;
   }
 
-  //erc721のリクエストが爆発している
+  //erc721のリクエストが爆発しやすい
   async fetchMetadata(tokenId: string) {
     const data = await this.getJson(`/erc721/${tokenId}`);
     return {
@@ -210,7 +210,7 @@ export default class {
 
   async addUser(user): Promise<void> {
     await this.initializerPromise;
-    await this.db.collection('users').doc(user.uid).set(user);
+    await this.db.collection('users').doc(user.uid).set(user, { merge: true });
     return;
   }
 

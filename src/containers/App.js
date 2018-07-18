@@ -25,6 +25,7 @@ import { faSignInAlt } from '@fortawesome/free-solid-svg-icons';
 library.add(fab, faSignInAlt);
 
 //login用のmodalを用意してそっちに追い出すべき、アイコンで文字列を置き換え
+//todo brandsアイコンが描画されない
 const styles = {
   flex: {
     display: "flex",
@@ -52,7 +53,7 @@ export default inject('store')(
             </h1>
             </div>
             <div><FontAwesomeIcon icon="sign-in-alt" className="ml-2" onClick={e => { e.preventDefault(); store.login("twitter"); }} /></div>
-            <div><FontAwesomeIcon icon="fa-twitter-square" onClick={e => { e.preventDefault(); store.login("twitter"); }} /></div>
+            <div><FontAwesomeIcon icon="twitter-square" onClick={e => { e.preventDefault(); store.login("twitter"); }} /></div>
             <div><FontAwesomeIcon icon="github-square" onClick={e => { e.preventDefault(); store.login("github"); }}/></div>
             <div><FontAwesomeIcon icon="google" onClick={e => { e.preventDefault(); store.login("google"); }}/></div>
           </div>

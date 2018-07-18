@@ -10,6 +10,7 @@ import {
   CardImg,
 } from 'reactstrap';
 import * as QRCode from 'qrcode.react';
+import { observer } from 'mobx-react';
 
 type Props = {
   tokenId: string,
@@ -25,7 +26,8 @@ type Props = {
   handleRemove: () => any,
 };
 
-export default (props: Props) => (
+//observerつけても描画は変わらんなー
+export default ((props:Props) => (
   <Card>
     <CardImg top src={props.image} />
     <CardBody>
@@ -68,4 +70,5 @@ export default (props: Props) => (
       />
     </CardBody>
   </Card>
+)
 );
