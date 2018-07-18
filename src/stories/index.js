@@ -23,6 +23,7 @@ import TransferModal from '../components/TransferModal';
 import AccountDetailModal from '../components/AccountDetailModal';
 import RemoveCardModal from '../components/RemoveCardModal';
 import Web3Status from '../components/Web3Status';
+import AccountDetail from '../components/AccountDetail';
 
 const Decorator = storyFn => <MuiThemeProvider>{storyFn()}</MuiThemeProvider>;
 const web3 = new Web3();
@@ -30,6 +31,14 @@ const web3 = new Web3();
 addDecorator(Decorator);
 
 const address = '0xe78a0f7e598cc8b0bb87894b0f60dd2a88d6a8ab';
+
+const authUser = {
+  uid:"abcdedf",
+  displayName: "sakacho",
+  email: "sakacho@gmail.com",
+  photoURL:"",
+  provider:"twitter",
+};
 
 const token = {
   name: 'Card Title',
@@ -160,6 +169,13 @@ storiesOf('RemoveCardModal', module).add('default', () => (
     from={address}
     tokenId="0xabcdef"
     onSubmit={action('Remove')}
+  />
+));
+
+storiesOf('AccountDetail', module).add('default', () => (
+  <AccountDetail
+    accountAddress={address}
+    authUser={authUser}
   />
 ));
 
