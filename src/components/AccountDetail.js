@@ -31,7 +31,7 @@ export default class extends React.Component<Props, State> {
     >
       <Form>
         <FormGroup>
-          <Label for="name">accountAddress</Label>
+          <Label for="name">AccountAddress</Label>
           <Input type="text" id="name" disabled
             value={this.props.accountAddress}
           />
@@ -41,6 +41,12 @@ export default class extends React.Component<Props, State> {
           if (isSignIn(p.authUser)) {
             return (
               <div>
+              <Form><FormGroup>
+                  <Label for="uid">Uid</Label>
+                  <Input type="text" id="uid" disabled
+                    value={p.authUser.uid}
+                  />
+              </FormGroup></Form>
               <Form><FormGroup>
                   <Label for="provider">Provider</Label>
                   <Input type="text" id="provider" disabled

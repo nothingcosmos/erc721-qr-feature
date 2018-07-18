@@ -75,11 +75,11 @@ export class GlobalStore {
     this.ethereum.setContractAddress(address);
   }
 
-  async login(provider:string) {
+  async signin(provider:string) {
     try {
       const user = await this.firebase.openOAuth2(provider);
       if (!isNullOrUndefined(user)) {
-        console.info(user);
+        //console.info(user);
         runInAction(() => {
           this.authUser = user;
         });
@@ -88,7 +88,7 @@ export class GlobalStore {
       }
     } catch(err) {
       this.snackbar.send(
-        `Failed to login,${err}`
+        `Failed to signin,${err}`
       );
       console.error(err);
     }

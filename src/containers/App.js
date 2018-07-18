@@ -14,13 +14,14 @@ import FloatingButtons from './FloatingButtons';
 import Snackbar from './Snackbar';
 import Web3Status from './Web3Status';
 
-import type { Store } from '../stores';
+import type { Store, AuthUser } from '../stores';
 
 //for react-fontawesome
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { fab } from '@fortawesome/free-brands-svg-icons';
 import { faSignInAlt } from '@fortawesome/free-solid-svg-icons';
+import { isNullOrUndefined } from 'util';
 
 library.add(fab, faSignInAlt);
 
@@ -52,10 +53,40 @@ export default inject('store')(
               </a>          
             </h1>
             </div>
-            <div><FontAwesomeIcon icon="sign-in-alt" className="ml-2" onClick={e => { e.preventDefault(); store.login("twitter"); }} /></div>
-            <div><FontAwesomeIcon icon="twitter-square" onClick={e => { e.preventDefault(); store.login("twitter"); }} /></div>
-            <div><FontAwesomeIcon icon="github-square" onClick={e => { e.preventDefault(); store.login("github"); }}/></div>
-            <div><FontAwesomeIcon icon="google" onClick={e => { e.preventDefault(); store.login("google"); }}/></div>
+            <div><FontAwesomeIcon icon="sign-in-alt" className="ml-2" onClick={e => { e.preventDefault(); store.signin("twitter"); }} /></div>
+            <div><FontAwesomeIcon icon="twitter-square" onClick={e => { e.preventDefault(); store.signin("twitter"); }} /></div>
+            <div><FontAwesomeIcon icon="github-square" onClick={e => { e.preventDefault(); store.signin("github"); }}/></div>
+            <div><FontAwesomeIcon icon="google" onClick={e => { e.preventDefault(); store.signin("google"); }}/></div>
+
+            {((authUser:?AuthUser) => {
+              if (isNullOrUndefined(authUser)) {
+                return (
+                  <div><a
+                  style={{ cursor: 'pointer' }}
+                  href="/"
+                  onClick={e => {
+                    e.preventDefault();
+                    //todo sigin modal
+                  }}
+                    >SignIn
+                  </a></div>
+                )
+              } else {
+                return (
+                  <div>
+                  <a
+                  style={{ cursor: 'pointer' }}
+                  href="/"
+                  onClick={e => {
+                    e.preventDefault();
+                    store.router.openAccountPageById(authUser.uid);
+                  }}
+                    >{authUser.displayName}
+                  </a>
+                  </div>
+                )
+              }
+            })(store.authUser)}
           </div>
           <Page />
           <hr />
