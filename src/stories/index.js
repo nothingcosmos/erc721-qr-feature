@@ -36,7 +36,7 @@ const authUser = {
   uid:"abcdedf",
   displayName: "sakacho",
   email: "sakacho@gmail.com",
-  photoURL:"",
+  photoURL:"https://pbs.twimg.com/profile_images/967955933/2003121103_normal.jpg",
   provider:"twitter",
 };
 

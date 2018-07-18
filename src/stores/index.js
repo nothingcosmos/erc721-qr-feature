@@ -79,6 +79,7 @@ export class GlobalStore {
     try {
       const user = await this.firebase.openOAuth2(provider);
       if (!isNullOrUndefined(user)) {
+        console.info(user);
         runInAction(() => {
           this.authUser = user;
         });
