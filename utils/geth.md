@@ -39,7 +39,17 @@ $ truffle compile
 
 create account and unlock
 `
+> personal.newAccount()
+> personal.unlockAccount(eth.coinbase)
+phassphase:
 `
+
+rinkebyのfauctは
+`
+Requesting faucet funds into 0x777c60d07d552715993cf1cd5be612722fd12113 on the #Rinkeby #Ethereum test network.
+`
+をtweetしてそのURLを貼り付ける
+https://faucet.rinkeby.io/
 
 deploy contract
 `

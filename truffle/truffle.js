@@ -21,6 +21,13 @@ module.exports = {
       port: 8545,
       network_id: '*', // match any network
     },
+    rinkeby: {
+      host: '127.0.0.1',
+      port: 8545,
+      network_id: '4', // match any network
+      from: "0x777c60d07d552715993cf1cd5be612722fd12113",
+      gas: 4700000,
+    },
   },
   solc: {
     optimizer: {

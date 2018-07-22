@@ -29,6 +29,10 @@ function maybeNull(s: ?string) {
   return s || 'Not Available';
 }
 
+function etherscanlink(network :?string, contractAddress:?string) : string {
+  return `https://${network}.etherscan.io/address/${contractAddress}`;
+}
+
 export default class extends React.Component<Props, State> {
   state = {
     openContractAddressDialog: false,
@@ -80,6 +84,15 @@ export default class extends React.Component<Props, State> {
         <dd className="text-truncate">
           {maybeNull(this.props.contractAddress)}
         </dd>
+        <dt> Etherscan
+          <Button
+            color="link"
+            href={etherscanlink(this.props.networkName, this.props.contractAddress)}
+            style={styles.button}
+          >
+            Link
+          </Button>
+        </dt>
       </dl>
       <ContractModal
         open={this.state.openContractAddressDialog}
