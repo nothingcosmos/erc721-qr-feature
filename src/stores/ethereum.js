@@ -1,8 +1,10 @@
 // @flow
 import * as Web3 from 'web3';
-import contractABI from './ERC721QR-abi.json';
+//import contractABI from './ERC721QR-abi.json';
+import contractABI from '../contracts/abi.json'; //truffle deploy時に生成
 
 export default class {
+  domain : string = "https://erc721-qr-feature.firebaseapp";
   contractInstance: any;
 
   constructor(address: string) {
@@ -69,10 +71,9 @@ export default class {
   async mint(owner: string, tokenId: string): Promise<void> {
     const tokenIdHash = window.web3.sha3(tokenId);
     const tokenIdHashBigNumber = window.web3.toBigNumber(tokenIdHash);
-    const uri = `https://erc721-qr-feature.firebaseapp.com/erc721/${tokenId}`;
+    const uri = `${this.domain}/erc721/${tokenId}`;
     return new Promise((resolve, reject) => {
       this.contractInstance.mint(
-        owner,
         tokenIdHashBigNumber,
         uri,
         { from: owner },
@@ -140,7 +141,7 @@ export default class {
   async tokenIdByIndex(index: number): Promise<string> {
     const tokenId = await this.tokenByIndex(index);
     const tokenURI = await this.tokenURI(tokenId);
-    const prefix = 'https://erc721-qr-feature.firebaseapp.com/erc721/';
+    const prefix = `${this.domain}/erc721/`;
     return tokenURI.substr(prefix.length);
   }
 

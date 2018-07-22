@@ -6,12 +6,12 @@ contract ERC721QR is ERC721Token {
     constructor(string _name, string _symbol) public
       ERC721Token(_name, _symbol) {}
     
-    function mint(string _uri) external {
+    //Reverts if the given tokenId already exists in supermethod.
+    function mint(uint256 _tokenId, string _metadata) external {
         // keccak256 is the cheapest.
         // https://ethereum.stackexchange.com/q/3184
-        uint256 tokenId = uint256(keccak256(_uri));
-        super._mint(msg.sender, tokenId);
-        super._setTokenURI(tokenId, _uri);
+        super._mint(msg.sender, _tokenId);
+        super._setTokenURI(_tokenId, _metadata);
     }
     
     function burn(uint256 _tokenId) external onlyOwnerOf(_tokenId) {

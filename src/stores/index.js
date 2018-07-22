@@ -5,6 +5,7 @@ import SnackbarStore from './SnackbarStore';
 import Ethereum from './ethereum';
 import Firebase from './firebase';
 import { isNullOrUndefined } from 'util';
+import ContractAddress from '../contracts/address.json';
 
 configure({ enforceActions: 'strict' });
 
@@ -59,6 +60,7 @@ export class GlobalStore {
   firebase = new Firebase();
 
   constructor(contractAddress: string) {
+    console.info("contractAddress="+contractAddress);
     this.ethereum = new Ethereum(contractAddress);
     runInAction(() => {
       this.contractAddress = contractAddress;
@@ -232,4 +234,5 @@ export type Store = {
   store: GlobalStore,
 };
 
-export default () => new GlobalStore('0x4Ae7D4415D41Fd60c36Ef7DBD8F98a6F388FaeEc');
+//export default () => new GlobalStore('0x4Ae7D4415D41Fd60c36Ef7DBD8F98a6F388FaeEc');
+export default() => new GlobalStore(ContractAddress.contractAddress);
