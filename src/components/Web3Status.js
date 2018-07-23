@@ -84,7 +84,7 @@ export default class extends React.Component<Props, State> {
         <dd className="text-truncate">
           {maybeNull(this.props.contractAddress)}
         </dd>
-        <dt> Etherscan
+        <dt> Etherscan{' '}
           <Button
             color="link"
             href={etherscanlink(this.props.networkName, this.props.contractAddress)}

@@ -3,6 +3,9 @@ service cloud.firestore {
     function ownerOf() {
       return request.auth.uid == resource.data.owner_id;
     }
+    function userOf(uid) {
+      return request.auth.uid == uid;
+    }
     function signedIn() {
       return request.auth.uid != null;
     }
@@ -15,6 +18,7 @@ service cloud.firestore {
     }
     match /users/{user} {
       allow read: if signedIn();
+      allow update: if signedIn() && userOf(user);
       allow create: if signedIn();
     }
   }

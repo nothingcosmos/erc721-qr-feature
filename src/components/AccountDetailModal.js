@@ -16,7 +16,7 @@ import {
 type Props = {
   modal: boolean,
   toggle: () => void,
-  from: string,
+  accountAddress: string,
 };
 
 type State = {
@@ -35,8 +35,8 @@ export default class extends React.Component<Props, State> {
           <ModalBody>
             <Form>
               <FormGroup>
-                <Label for="from">Address</Label>
-                <Input type="text" id="from" disabled value={this.props.from} />
+                <Label for="accountAddress">Address</Label>
+                <Input type="text" id="accountAddress" disabled value={this.props.accountAddress} />
               </FormGroup>
             </Form>
           </ModalBody>

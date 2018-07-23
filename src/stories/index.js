@@ -24,6 +24,7 @@ import AccountDetailModal from '../components/AccountDetailModal';
 import RemoveCardModal from '../components/RemoveCardModal';
 import Web3Status from '../components/Web3Status';
 import AccountDetail from '../components/AccountDetail';
+import SignInModal from '../components/SignInModal';
 
 const Decorator = storyFn => <MuiThemeProvider>{storyFn()}</MuiThemeProvider>;
 const web3 = new Web3();
@@ -183,7 +184,15 @@ storiesOf('AccountDetailModal', module).add('default', () => (
   <AccountDetailModal
     modal
     toggle={action('toggle')}
-    from={address}
+    accountAddress={address}
+  />
+));
+
+storiesOf('SignInModal', module).add('default', () => (
+  <SignInModal
+    modal
+    toggle={action('toggle')}
+    accountAddress={address}
   />
 ));
 
