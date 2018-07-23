@@ -60,7 +60,7 @@ export class GlobalStore {
   firebase = new Firebase();
 
   constructor(contractAddress: string) {
-    console.info("contractAddress="+contractAddress);
+    //console.info("contractAddress="+contractAddress);
     this.ethereum = new Ethereum(contractAddress);
     runInAction(() => {
       this.contractAddress = contractAddress;

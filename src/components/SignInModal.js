@@ -18,6 +18,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { fab } from '@fortawesome/free-brands-svg-icons';
 library.add(fab);
+//todo brandsアイコンが描画されない, brandsでないものは描画される。
 
 type Props = {
   modal: boolean,
@@ -31,7 +32,6 @@ type State = {
 
 export default class extends React.Component<Props, State> {
   state = {
-
   };
 
   render() {
@@ -42,23 +42,29 @@ export default class extends React.Component<Props, State> {
           <ModalBody>
             <Form>
               <FormGroup>
-                <Label for="from">Address</Label>
-                <Input type="text" id="from" disabled value={this.props.from} />
+                <Label for="accountAddress">Address</Label>
+                <Input type="text" id="accountAddress" disabled value={this.props.accountAddress} />
               </FormGroup>
 
               <FormGroup>
                 <FontAwesomeIcon icon="twitter-square" />
-                <Button outline onClick={ e => {this.props.handleSignIn("twitter")}}>Sign in with Twitter</Button>
+                <Button outline onClick={ e => {
+                  e.preventDefault();
+                  this.props.handleSignIn("twitter")}}>Sign in with Twitter</Button>
               </FormGroup>
 
               <FormGroup>
                 <FontAwesomeIcon icon="github-square" />
-                <Button outline onClick={ e => {this.props.handleSignIn("github")}}>Sign in with GitHub</Button>
+                <Button outline onClick={ e => {                
+                  e.preventDefault();
+                  this.props.handleSignIn("github")}}>Sign in with GitHub</Button>
               </FormGroup>
 
               <FormGroup>
                 <FontAwesomeIcon icon="google" />
-                <Button outline onClick={ e => {this.props.handleSignIn("google")}}>Sign in with Google</Button>
+                <Button outline onClick={ e => {               
+                  e.preventDefault();
+                  this.props.handleSignIn("google")}}>Sign in with Google</Button>
               </FormGroup>
             </Form>
           </ModalBody>
