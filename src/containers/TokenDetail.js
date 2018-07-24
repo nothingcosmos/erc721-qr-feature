@@ -1,13 +1,14 @@
 // @flow
 import * as React from 'react';
 import { inject, observer } from 'mobx-react';
-import { Row, Col } from 'reactstrap';
+import { Row, Col, Button } from 'reactstrap';
 import type { Store, GlobalStore } from '../stores';
-import TokenDetail from '../components/TokenDetail';
+import {TokenDetail, Timer} from '../components/TokenDetail';
 import RequestCard from '../components/RequestCard';
 import RequestModal from '../components/RequestModal';
 import TransferModal from '../components/TransferModal';
 import RemoveCardModal from '../components/RemoveCardModal';
+import { trace, observable } from "mobx"
 
 type Props = {
   store: GlobalStore,
@@ -57,7 +58,33 @@ export default inject('store')(
           removeCardModal: !this.state.removeCardModal,
         });
       };
-      render = () => (
+      refresh = () => {
+        this.setState({
+          transferModal:false,
+          removeCardModal:false,
+          transferModal:false,
+        });
+      };
+
+      render = () => {
+        //console.info("callee render");
+        //console.info(this.props.store.tokenDetail.image);
+        //flag制御でもだめっぽい, containersのレイヤで更新が伝搬しない
+
+        //苦肉の策で手動refreshしかない
+        if (this.props.store.isLoadingDetail) {
+          return (
+            <React.Fragment>
+            <div><Timer/>
+              <Button color="success" outline
+                onClick={() => this.refresh()}>Refresh
+              </Button>
+            </div>
+            </React.Fragment>
+          );
+        }
+        //trace(true);//mobx
+        return(
         <React.Fragment>
           <Row>
             <Col
@@ -147,7 +174,8 @@ export default inject('store')(
             }}
           />
         </React.Fragment>
-      );
+        )
+      };
     }
   )
 );

@@ -10,7 +10,8 @@ import {
   CardImg,
 } from 'reactstrap';
 import * as QRCode from 'qrcode.react';
-import { observer } from 'mobx-react';
+import {observable, action } from 'mobx';
+import {  observer } from 'mobx-react';
 
 type Props = {
   tokenId: string,
@@ -27,28 +28,44 @@ type Props = {
 };
 
 //observerつけても描画は変わらんなー
-export default ((props:Props) => (
+export class TokenDetail extends React.Component<Props, State> {
+  @observable secondsPassed = 0
+  componentWillMount() {
+    setInterval(() => {
+       this.update();
+       //old これはinvaliant failed
+       //this.setState(()=> {})
+    }, 1000)
+  }
+  @action
+  update() {
+    this.secondsPassed++;
+  }
+
+//export default ((props:Props) => (
+  render = () => (
   <Card>
-    <CardImg top src={props.image} />
+  <span>Seconds: { this.secondsPassed } </span>
+    <CardImg top src={this.props.image} />
     <CardBody>
-      <CardTitle>{props.name}</CardTitle>
-      <CardSubtitle>{props.owner}</CardSubtitle>
-      <CardText>{props.description}</CardText>
+      <CardTitle>{this.props.name}</CardTitle>
+      <CardSubtitle>{this.props.owner}</CardSubtitle>
+      <CardText>{this.props.description}</CardText>
       <CardText>
-        <small className="text-muted">{props.createdAt}</small>
+        <small className="text-muted">{this.props.createdAt}</small>
       </CardText>
-      {props.isAccountAvailable && (
+      {this.props.isAccountAvailable && (
         <div className="d-flex justify-content-end">
-          {props.isOwner ? (
+          {this.props.isOwner ? (
             <React.Fragment>
             <Button
               color="success"
               outline
-              onClick={() => props.handleTransfer()}
+              onClick={() => this.props.handleTransfer()}
             >
               Transfer
             </Button>
-            <Button color="danger" outline className="ml-2" onClick={() => props.handleRemove()}>
+            <Button color="danger" outline className="ml-2" onClick={() => this.props.handleRemove()}>
               Remove
             </Button>
           </React.Fragment>
@@ -56,7 +73,7 @@ export default ((props:Props) => (
             <Button
               color="primary"
               outline
-              onClick={() => props.handleSendRequest()}
+              onClick={() => this.props.handleSendRequest()}
             >
               Send Request
             </Button>
@@ -64,11 +81,32 @@ export default ((props:Props) => (
         </div>
       )}
       <QRCode
-        value={`token:${props.tokenId}`}
+        value={`token:${this.props.tokenId}`}
         style={{ width: '100%', height: '100%' }}
         className="mt-3 img-thumbnail"
       />
     </CardBody>
   </Card>
 )
-);
+};
+//);
+
+//描画の確認用クラス　これは動作する
+@observer export class Timer extends React.Component {
+  @observable secondsPassed = 0
+  componentWillMount() {
+    setInterval(() => {
+       this.update();
+       //old これはinvaliant failed
+       //this.setState(()=> {})
+    }, 1000)
+  }
+  @action
+  update() {
+    this.secondsPassed++;
+  }
+
+  render() {
+      return (<span>waiting { this.secondsPassed } seconds.</span> )
+  }
+}

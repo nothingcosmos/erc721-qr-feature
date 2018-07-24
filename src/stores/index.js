@@ -1,5 +1,5 @@
 // @flow
-import { observable, computed, configure, runInAction } from 'mobx';
+import { observable, computed, configure, runInAction, action } from 'mobx';
 import RouterStore from './RouterStore';
 import SnackbarStore from './SnackbarStore';
 import Ethereum from './ethereum';
@@ -16,7 +16,7 @@ type RequestItem = {
   createdAt: string,
 };
 
-class TokenDetailStore {
+export class TokenDetailStore {
   @observable name = '';
   @observable description = '';
   @observable image = '';
@@ -53,7 +53,8 @@ export class GlobalStore {
   @observable networkName: ?string = null;
   @observable contractAddress: ?string = null;
   @observable tokenCards: TokenItem[] = [];
-  @observable tokenDetail = new TokenDetailStore(); //ここの更新が問題 伝搬しない？
+  @observable tokenDetail: TokenDetailStore = new TokenDetailStore(); //ここの更新が問題 伝搬しない？
+  @observable isLoadingDetail: boolean = false;
 
   @observable authUser:?AuthUser = null;
 
@@ -177,13 +178,14 @@ export class GlobalStore {
       const requests = await requestPromise;
 
       runInAction(() => {
-        //console.info("callee reloadTokenDetail::runOnAction")
+        // console.info("callee reloadTokenDetail::runOnAction");
         this.tokenDetail.name = metadata.name;
         this.tokenDetail.description = metadata.description;
         this.tokenDetail.image = metadata.image;
         this.tokenDetail.createdAt = metadata.createdAt;
         this.tokenDetail.owner = ownerOf;
         this.tokenDetail.requests = requests;
+        this.isLoadingDetail = false; //trueにするのはindex
       });
     } catch(err) {
       this.snackbar.send(`Errorが発生し、詳細の取得に失敗しました。detail=${err}`);

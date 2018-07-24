@@ -11,6 +11,7 @@ export default class {
     //observableの値更新のたびに呼ばれる
     autorun(() => {
       if (this.name === 'token') {
+        this.setLoadingDetail(globalStore,true);
         globalStore.reloadTokenDetail(this.tokenId);
       }
       if (this.name === 'home') {
@@ -37,6 +38,11 @@ export default class {
   @action.bound
   openHomePage() {
     this.name = 'home';
+  }
+
+  @action.bound
+  setLoadingDetail(store:GlobalStore, isLoading:boolean) {
+    store.isLoadingDetail = isLoading;
   }
 
   @action.bound
