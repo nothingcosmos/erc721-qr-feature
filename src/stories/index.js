@@ -13,7 +13,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 
 import TokenCard from '../components/TokenCard';
 import RequestCard from '../components/RequestCard';
-import TokenDetail from '../components/TokenDetail';
+import {TokenDetail} from '../components/TokenDetail';
 import Home from '../components/Home';
 import RegisterToken from '../components/RegisterToken';
 import FloatingButtons from '../components/FloatingButtons';
@@ -44,6 +44,7 @@ const authUser = {
 const token = {
   name: 'Card Title',
   address,
+  identity: 'identity id=0123456789',
   description:
     'This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.',
   createdAt: 'Mar. 31, 2018',
@@ -81,6 +82,7 @@ storiesOf('TokenDetail', module)
       tokenId="114514"
       name={token.name}
       owner={token.address}
+      identity={token.identity}
       description={token.description}
       image={token.image}
       createdAt={token.createdAt}
@@ -96,6 +98,7 @@ storiesOf('TokenDetail', module)
       tokenId="hello, world"
       name={token.name}
       owner={token.address}
+      identity={token.identity}
       description={token.description}
       image={token.image}
       createdAt={token.createdAt}

@@ -99,13 +99,15 @@ export default class {
   async registerToken(
     owner: string,
     name: string,
-    description: string
+    description: string,
+    identity: string
   ): Promise<string> {
     await this.initializerPromise;
     const { tokenId } = await this.postJson('/api/add_token', {
       owner,
       name,
       description,
+      identity,
     });
     return tokenId;
   }

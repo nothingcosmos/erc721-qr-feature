@@ -88,6 +88,32 @@ export default class {
     });
   }
 
+  // metadata = {name, description, identity, image_url, home_url, tags:[], }
+  async mintWithMetadata(owner: string, tokenId: string, metadata: string): Promise<void> {
+    const tokenIdHash = window.web3.sha3(tokenId);
+    const tokenIdHashBigNumber = window.web3.toBigNumber(tokenIdHash);
+    return new Promise((resolve, reject) => {
+      this.contractInstance.mint(
+        tokenIdHashBigNumber,
+        metadata,
+        { from: owner },
+        err => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve();
+        }
+      );
+    });
+  }
+
+  createMetadata(tokenId:string, name:string, identify:string, description: string) {
+    return {
+        //todo
+    };
+  }
+
   async ownerOf(tokenId: string): Promise<string> {
     const tokenIdHash = window.web3.sha3(tokenId);
     const tokenIdHashBigNumber = window.web3.toBigNumber(tokenIdHash);

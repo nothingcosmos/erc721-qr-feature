@@ -3,11 +3,12 @@ import * as React from 'react';
 import { Row, Col, Form, Label, Input, FormGroup, Button } from 'reactstrap';
 
 type Props = {
-  onSubmit: (name: string, description: string, image: File) => any,
+  onSubmit: (name: string, identity:string, description: string, image: File) => any,
 };
 
 type State = {
   name: string,
+  identity: string,
   description: string,
   image: ?File,
 };
@@ -17,6 +18,7 @@ export default class extends React.Component<Props, State> {
     name: '',
     description: '',
     image: null,
+    identity: '',
   };
   imageInput: ?HTMLInputElement;
   handleClick = (e: any) => {
@@ -26,8 +28,9 @@ export default class extends React.Component<Props, State> {
     }
     this.props.onSubmit(
       this.state.name,
+      this.state.identity,
       this.state.description,
-      this.state.image
+      this.state.image,
     );
   };
   validateForm = () => this.state.name && this.state.image;
@@ -46,6 +49,15 @@ export default class extends React.Component<Props, State> {
               id="name"
               value={this.state.name}
               onChange={e => this.setState({ name: e.target.value })}
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label for="identity">Identity (optional)</Label>
+            <Input
+              type="text"
+              id="identity"
+              value={this.state.identity}
+              onChange={e => this.setState({ identity: e.target.value })}
             />
           </FormGroup>
           <FormGroup>

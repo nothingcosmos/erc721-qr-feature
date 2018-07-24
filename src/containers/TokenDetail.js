@@ -97,6 +97,7 @@ export default inject('store')(
                   tokenId={this.props.store.router.tokenId}
                   name={this.props.store.tokenDetail.name}
                   owner={this.props.store.tokenDetail.owner}
+                  identity={this.props.store.tokenDetail.identity}
                   description={this.props.store.tokenDetail.description}
                   image={this.props.store.tokenDetail.image}
                   createdAt={this.props.store.tokenDetail.createdAt}

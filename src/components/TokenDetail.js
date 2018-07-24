@@ -17,6 +17,7 @@ type Props = {
   tokenId: string,
   name: string,
   owner: string,
+  identity:string,
   description: string,
   image: string,
   createdAt: string,
@@ -29,27 +30,27 @@ type Props = {
 
 //observerつけても描画は変わらんなー
 export class TokenDetail extends React.Component<Props, State> {
-  @observable secondsPassed = 0
-  componentWillMount() {
-    setInterval(() => {
-       this.update();
-       //old これはinvaliant failed
-       //this.setState(()=> {})
-    }, 1000)
-  }
-  @action
-  update() {
-    this.secondsPassed++;
-  }
+  // @observable secondsPassed = 0
+  // componentWillMount() {
+  //   setInterval(() => {
+  //      this.update();
+  //      //old これはinvaliant failed
+  //      //this.setState(()=> {})
+  //   }, 1000)
+  // }
+  // @action
+  // update() {
+  //   this.secondsPassed++;
+  // }
 
 //export default ((props:Props) => (
   render = () => (
   <Card>
-  <span>Seconds: { this.secondsPassed } </span>
     <CardImg top src={this.props.image} />
     <CardBody>
       <CardTitle>{this.props.name}</CardTitle>
       <CardSubtitle>{this.props.owner}</CardSubtitle>
+      <CardText>{this.props.identity}</CardText>
       <CardText>{this.props.description}</CardText>
       <CardText>
         <small className="text-muted">{this.props.createdAt}</small>

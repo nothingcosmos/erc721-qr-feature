@@ -16,13 +16,16 @@ type RequestItem = {
   createdAt: string,
 };
 
+//metadata standard formatと連動
 export class TokenDetailStore {
   @observable name = '';
   @observable description = '';
-  @observable image = '';
+  @observable imageUrl = '';
+  @observable homeUrl = '';
   @observable owner = '';
   @observable createdAt = '';
   @observable requests: RequestItem[] = [];
+  @observable tags: string[] = [];
 }
 
 export type TokenItem = {
@@ -111,7 +114,7 @@ export class GlobalStore {
     });
   }
 
-  async registerToken(name: string, description: string, image: File) {
+  async registerToken(name: string, identity:string, description: string, image: File) {
     // Firebaseに書き込む
     this.snackbar.send('メタデータを書き込んでいます');
     if (!this.accountAddress) {
@@ -121,7 +124,8 @@ export class GlobalStore {
       const tokenId = await this.firebase.registerToken(
         this.accountAddress,
         name,
-        description
+        description,
+        identity
       );
       this.snackbar.send('画像をアップロードしています');
       await this.firebase.uploadImage(tokenId, image);
@@ -132,7 +136,9 @@ export class GlobalStore {
       if (!this.accountAddress) {
         throw new Error('Cannot get account');
       }
-      await this.ethereum.mint(this.accountAddress, tokenId);
+      //await this.ethereum.mint(this.accountAddress, tokenId);
+      const metadata = this.ethereum.createMetadata(tokenId, name, identity, description);
+      await this.ethereum.mintWithMetadata(this.accountAddress, tokenId, metadata);
       this.snackbar.send(
         `${this.networkName || '(null)'} にトランザクションを送信しました`
       );
@@ -181,7 +187,7 @@ export class GlobalStore {
         // console.info("callee reloadTokenDetail::runOnAction");
         this.tokenDetail.name = metadata.name;
         this.tokenDetail.description = metadata.description;
-        this.tokenDetail.image = metadata.image;
+        this.tokenDetail.imageUrl = metadata.image;
         this.tokenDetail.createdAt = metadata.createdAt;
         this.tokenDetail.owner = ownerOf;
         this.tokenDetail.requests = requests;
