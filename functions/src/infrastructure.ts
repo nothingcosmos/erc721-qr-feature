@@ -87,9 +87,10 @@ export async function appendUrl(tokenId: string, url: string) {
   })
 }
 
-export async function addToken(name: string, description: string): Promise<string> {
+export async function addToken(name: string, identity:string, description: string): Promise<string> {
   const ref = await db.collection('tokens').add({
     name,
+    identity,
     description,
     presence: false,
   });
@@ -113,6 +114,7 @@ export async function getMetadata(tokenId: string) {
   const data = ref.data();
   return {
     name: data.name,
+    identity: data.identity,
     description: data.description,
     image: data.imageURL,
     createdAt: data.createdAt.toUTCString(),

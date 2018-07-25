@@ -25,7 +25,7 @@
         "function": "add_request"
       },
       {
-        "source": "/erc721/*",
+        "source": "/erc721/**",
         "function": "erc721"
       },
       {

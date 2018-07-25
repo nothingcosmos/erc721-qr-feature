@@ -19,10 +19,11 @@ type RequestItem = {
 //metadata standard formatと連動
 export class TokenDetailStore {
   @observable name = '';
+  @observable identity = '';
   @observable description = '';
-  @observable imageUrl = '';
-  @observable homeUrl = '';
+  @observable image = '';
   @observable owner = '';
+  @observable ownerUid = '';//未実装 functionsの認証と連携させたい
   @observable createdAt = '';
   @observable requests: RequestItem[] = [];
   @observable tags: string[] = [];
@@ -115,12 +116,20 @@ export class GlobalStore {
   }
 
   async registerToken(name: string, identity:string, description: string, image: File) {
-    // Firebaseに書き込む
-    this.snackbar.send('メタデータを書き込んでいます');
-    if (!this.accountAddress) {
-      throw new Error('Cannot get account');
+    if (!this.authUser) {
+      this.snackbar.send(
+        `SignInしてください。`
+      )
+      return;
     }
+
     try {
+      // Firebaseに書き込む
+      this.snackbar.send('メタデータを書き込んでいます');
+      if (!this.accountAddress) {
+        throw new Error('Cannot get account');
+      }
+    
       const tokenId = await this.firebase.registerToken(
         this.accountAddress,
         name,
@@ -136,8 +145,9 @@ export class GlobalStore {
       if (!this.accountAddress) {
         throw new Error('Cannot get account');
       }
-      //await this.ethereum.mint(this.accountAddress, tokenId);
-      const metadata = this.ethereum.createMetadata(tokenId, name, identity, description);
+
+      const image_info = await this.firebase.fetchImageUrl(tokenId);
+      const metadata = this.ethereum.createMetadata(tokenId, name, identity, description, image_info.image);
       await this.ethereum.mintWithMetadata(this.accountAddress, tokenId, metadata);
       this.snackbar.send(
         `${this.networkName || '(null)'} にトランザクションを送信しました`
@@ -176,7 +186,7 @@ export class GlobalStore {
       if (isNullOrUndefined(tokenId)) {
         throw new Error('Invalid tokenId');
       }
-      const metadataPromise = this.firebase.fetchMetadata(tokenId);
+      const metadataPromise = this.firebase.fetchToken(tokenId);
       const ownerOfPromise = this.ethereum.ownerOf(tokenId);
       const requestPromise = this.firebase.getRequests(tokenId);
       const metadata = await metadataPromise;
@@ -185,9 +195,11 @@ export class GlobalStore {
 
       runInAction(() => {
         // console.info("callee reloadTokenDetail::runOnAction");
+        this.tokenDetail = new TokenDetailStore(); //参照箇所わかりやすくするためnewしてる
         this.tokenDetail.name = metadata.name;
+        this.tokenDetail.identity = metadata.identity;
         this.tokenDetail.description = metadata.description;
-        this.tokenDetail.imageUrl = metadata.image;
+        this.tokenDetail.image = metadata.image;
         this.tokenDetail.createdAt = metadata.createdAt;
         this.tokenDetail.owner = ownerOf;
         this.tokenDetail.requests = requests;

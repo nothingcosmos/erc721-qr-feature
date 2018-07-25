@@ -3,9 +3,9 @@ import * as path from 'path';
 
 import * as infrastructure from './infrastructure';
 
-export async function addToken(name: string, description: string): Promise<string> {
-  console.log(`addToken(name = ${name}, description = ${description})`);
-  return await infrastructure.addToken(name, description);
+export async function addToken(name: string, identity:string, description: string): Promise<string> {
+  console.log(`addToken(name = ${name}, identity = ${identity}, description = ${description})`);
+  return await infrastructure.addToken(name, identity, description);
 }
 
 export async function addRequest(from: string, tokenId: string, message: string): Promise<string> {
@@ -29,4 +29,9 @@ export async function generateThumbnail(tokenId: string, imagePath: string) {
   await infrastructure.removeFile(imagePath);
   // Firestoreに画像のURLを書き込み
   await infrastructure.appendUrl(tokenId, infrastructure.makePublicUrl(thumbPath));
+}
+
+export function imageUrl(tokenId:string) : string {
+  const thumbPath = `images/${tokenId}.jpg`;
+  return infrastructure.makePublicUrl(thumbPath);
 }

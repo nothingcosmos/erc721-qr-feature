@@ -7,6 +7,7 @@ import * as infrastructure from './infrastructure';
 
 exports.add_token = functions.https.onRequest(async (req, resp) => {
   const name: string = req.body.name;
+  const identity: string = req.body.identity;
   const description: string = req.body.description;
 
   if (!name) {
@@ -22,6 +23,12 @@ exports.add_token = functions.https.onRequest(async (req, resp) => {
     return;
   }
 
+  if (identity.length > 255) {
+    console.log('identity is too long.');
+    resp.sendStatus(400); // Bad Request
+    return;
+  }
+
   // TEXT at MySQL
   if (description.length > 65536) {
     console.log('description is too long.');
@@ -29,7 +36,7 @@ exports.add_token = functions.https.onRequest(async (req, resp) => {
     return;
   }
 
-  const tokenId = await logic.addToken(name, description);
+  const tokenId = await logic.addToken(name, identity, description);
   resp.status(200).json({ tokenId });
 });
 
@@ -100,13 +107,24 @@ const app = express();
 app.get('/erc721/:id', async (req, resp) => {
   const tokenId = req.params.id;
   if (!(await infrastructure.isTokenExisting(tokenId))) {
-    console.log(`'${tokenId}' is not valid token id.`)
+    console.error(`'${tokenId}' is not valid token id.`)
     resp.sendStatus(400); // Bad Request
     return;
   }
   const metadata = await infrastructure.getMetadata(tokenId);
   resp.set('Cache-Control', 'public, max-age=900');
   resp.status(200).json(metadata);
+});
+app.get('/erc721/:id/image_url', async (req, resp) => {
+  const tokenId = req.params.id;
+  const imageUrl = logic.imageUrl(tokenId);
+  console.log(`response imageUrl: tokenId = ${tokenId}, image = ${imageUrl}`);
+  const ret = {
+    tokenId:tokenId,
+    image:imageUrl,
+  };
+  resp.set('Cache-Control', 'public, max-age=900');
+  resp.status(200).json(ret);
 });
 
 exports.erc721 = functions.https.onRequest(app);

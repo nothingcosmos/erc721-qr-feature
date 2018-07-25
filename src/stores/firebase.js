@@ -121,14 +121,25 @@ export default class {
     return tokenId;
   }
 
-  //erc721のリクエストが爆発しやすい
-  async fetchMetadata(tokenId: string) {
+  //databaseのtokensから取得する
+  //thumbnail未生成の場合400を返すので、登録直後は叩いてはいけない
+  async fetchToken(tokenId: string) {
     const data = await this.getJson(`/erc721/${tokenId}`);
     return {
       name: data.name,
+      identity:data.identity,
       description: data.description,
       image: data.image,
       createdAt: data.createdAt,
+    };
+  }
+
+  //thumbnail生成と並行してurlを取得する
+  async fetchImageUrl(tokenId: string) {
+    const data = await this.getJson(`/erc721/${tokenId}/image_url`);
+    return {
+      tokenId: data.tokenId,
+      image: data.image,
     };
   }
 

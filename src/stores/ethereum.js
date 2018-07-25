@@ -3,8 +3,21 @@ import * as Web3 from 'web3';
 //import contractABI from './ERC721QR-abi.json';
 import contractABI from '../contracts/abi.json'; //truffle deploy時に生成
 
+
+//rarebits準拠
+//https://docs.rarebits.io/v1.0/docs/listing-your-assets
+export type MetadataStandard = {
+  name:string,
+  identity:string, //写真でとったものに固有idがあれば付与する
+  description:string,
+  image_url:string,
+  home_url:string,
+  tags: string[],
+}
+
 export default class {
   domain : string = "https://erc721-qr-feature.firebaseapp";
+  originalTag : string = "erc721-qr";
   contractInstance: any;
 
   constructor(address: string) {
@@ -89,13 +102,14 @@ export default class {
   }
 
   // metadata = {name, description, identity, image_url, home_url, tags:[], }
-  async mintWithMetadata(owner: string, tokenId: string, metadata: string): Promise<void> {
+  async mintWithMetadata(owner: string, tokenId: string, metadata: MetadataStandard): Promise<void> {
     const tokenIdHash = window.web3.sha3(tokenId);
     const tokenIdHashBigNumber = window.web3.toBigNumber(tokenIdHash);
+    const metauri = JSON.stringify(metadata);
     return new Promise((resolve, reject) => {
       this.contractInstance.mint(
         tokenIdHashBigNumber,
-        metadata,
+        metauri,
         { from: owner },
         err => {
           if (err) {
@@ -108,9 +122,14 @@ export default class {
     });
   }
 
-  createMetadata(tokenId:string, name:string, identify:string, description: string) {
+  createMetadata(tokenId:string, name:string, identity:string, description: string, imageUrl:string) : MetadataStandard {
     return {
-        //todo
+        name:name,
+        identity:identity,
+        description:description,
+        image_url:imageUrl,
+        home_url:`${this.domain}/token/${tokenId}`,
+        tags:["erc721-qr"],
     };
   }
 
@@ -160,6 +179,18 @@ export default class {
           return;
         }
         resolve(tokenURI);
+      });
+    });
+  }
+
+  async tokenMetadata(tokenId:string) : Promise<MetadataStandard> {
+    return new Promise((resolve, reject) => {
+      this.contractInstance.tokenURI(tokenId, (err, tokenURI) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(JSON.parse(tokenURI));
       });
     });
   }
