@@ -16,7 +16,8 @@ export type MetadataStandard = {
 }
 
 export default class {
-  domain : string = "https://erc721-qr-feature.firebaseapp";
+  apiEndpoint : string = "https://erc721-qr-feature.firebaseapp";
+  hostingEndpoint : string = "https://erc721-qr-feature.firebaseapp.com";
   originalTag : string = "erc721-qr";
   contractInstance: any;
 
@@ -84,7 +85,7 @@ export default class {
   async mint(owner: string, tokenId: string): Promise<void> {
     const tokenIdHash = window.web3.sha3(tokenId);
     const tokenIdHashBigNumber = window.web3.toBigNumber(tokenIdHash);
-    const uri = `${this.domain}/erc721/${tokenId}`;
+    const uri = `${this.apiEndpoint}/erc721/${tokenId}`;
     return new Promise((resolve, reject) => {
       this.contractInstance.mint(
         tokenIdHashBigNumber,
@@ -128,7 +129,7 @@ export default class {
         identity:identity,
         description:description,
         image_url:imageUrl,
-        home_url:`${this.domain}/token/${tokenId}`,
+        home_url:`${this.hostingEndpoint}/token/${tokenId}`,
         tags:["erc721-qr"],
     };
   }
@@ -198,7 +199,7 @@ export default class {
   async tokenIdByIndex(index: number): Promise<string> {
     const tokenId = await this.tokenByIndex(index);
     const tokenURI = await this.tokenURI(tokenId);
-    const prefix = `${this.domain}/erc721/`;
+    const prefix = `${this.apiEndpoint}/erc721/`;
     return tokenURI.substr(prefix.length);
   }
 

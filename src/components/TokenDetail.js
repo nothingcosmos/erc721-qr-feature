@@ -8,6 +8,7 @@ import {
   CardSubtitle,
   CardText,
   CardImg,
+  CardLink,
 } from 'reactstrap';
 import * as QRCode from 'qrcode.react';
 import {observable, action } from 'mobx';
@@ -50,7 +51,7 @@ export class TokenDetail extends React.Component<Props, State> {
     <CardBody>
       <CardTitle>{this.props.name}</CardTitle>
       <CardSubtitle>{this.props.owner}</CardSubtitle>
-      <CardText>{this.props.identity}</CardText>
+      <CardSubtitle>{this.props.identity}</CardSubtitle>
       <CardText>{this.props.description}</CardText>
       <CardText>
         <small className="text-muted">{this.props.createdAt}</small>

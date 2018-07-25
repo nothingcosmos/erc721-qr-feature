@@ -27,6 +27,7 @@ export class TokenDetailStore {
   @observable createdAt = '';
   @observable requests: RequestItem[] = [];
   @observable tags: string[] = [];
+  //@observable etherscanUrl = ''; //create txとtransferのtxは別ものか。。
 }
 
 export type TokenItem = {
@@ -177,6 +178,14 @@ export class GlobalStore {
         `${tokenId}の削除に失敗しました。detail=${err || '(null)'}`
       );
     }
+  }
+
+  getEtherscanAddressUrl(accountAddress:string) : string {
+    return `https://${this.networkName}.etherscan.io/address/${accountAddress}`;
+  }
+
+  getEtherscanTxUrl(txhash:string) : string {
+    return `https://${this.networkName}.etherscan.io/tx/${txhash}`;
   }
 
   //URLをparseして開く際に呼ばれる,他にdetailをクリックした際にも呼ばれる。
