@@ -1,7 +1,7 @@
 // @flow
 import { observable, action } from 'mobx';
 
-export default class SnackbarStore {
+export class SnackbarStore {
   @observable open = false;
   @observable message = '';
 
@@ -16,3 +16,5 @@ export default class SnackbarStore {
     this.open = false;
   }
 }
+
+export default new SnackbarStore();

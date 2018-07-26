@@ -1,18 +1,19 @@
 // @flow
-import * as firebase from 'firebase/app';
-import 'firebase/firestore';
-import 'firebase/storage';
-import 'firebase/auth';
+import * as firebase from 'firebase';
+import 'firebase/firestore/dist/index.cjs';
+import 'firebase/storage/dist/index.cjs';
+import 'firebase/auth/dist/index.cjs';
 import * as path from 'path';
 import type TokenItem from 'index';
-import type AuthUser from 'index';
+import type AuthUser from './authStore';
 
-export default class {
+export class FirebaseAgent {
   db: firebase.firestore.Firestore;
   storage: firebase.storage.Storage;
   initializerPromise: Promise<void>;
   constructor() {
     this.initializerPromise = this.initializeApp();
+    console.info("firebaseAgent initialized.");
   }
 
   async initializeApp() {
@@ -227,8 +228,21 @@ export default class {
     return;
   }
 
-  async retrieveUser(uid:string) : Promise<AuthUser> {
+  async retrieveUser(uid:string) : Promise<?AuthUser> {
     await this.initializerPromise;
-    return await this.db.collection('users').doc(uid).get();
+    const snapshot = await this.db.collection('users').doc(uid).get();
+    if (!snapshot.exists) {
+      return null;
+    }
+    const data = snapshot.data();
+    return {
+      uid:data.uid,
+      displayName:data.displayName,
+      email: data.email,
+      photoURL: data.photoURL,
+      provider: data.provider,
+    };
   }
 }
+
+export default new FirebaseAgent();

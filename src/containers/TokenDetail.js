@@ -75,7 +75,7 @@ export default inject('store')(
         if (this.props.store.isLoadingDetail) {
           return (
             <React.Fragment>
-            <div><Timer/>
+            <div>
               <Button color="success" outline
                 onClick={() => this.refresh()}>Refresh
               </Button>

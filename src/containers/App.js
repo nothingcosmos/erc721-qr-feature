@@ -15,7 +15,7 @@ import Snackbar from './Snackbar';
 import Web3Status from './Web3Status';
 
 import SignInModal from '../components/SignInModal';
-
+import authStore, { AuthStore } from '../stores/authStore';
 import type { Store, AuthUser, GlobalStore } from '../stores';
 
 //for react-fontawesome
@@ -32,16 +32,52 @@ const styles = {
     display: "flex",
   },
 };
-
 type Props = {
   store: GlobalStore,
+  authStore: AuthStore,
 };
 
 type State = {
   signInModal: boolean,
 };
 
-export default inject('store')(
+const SignedOutView = (props) => {
+  if (isNullOrUndefined(props.authUser)) {
+    return (
+      <div><a
+      style={{ cursor: 'pointer' }}
+      href="/"
+      onClick={e => {
+        e.preventDefault();
+        props.handleClick();
+      }}
+        >SignIn
+      </a></div>
+    );
+  }
+  return null;
+}
+
+const SignedInView = (props) => {
+  if (!!props.authUser) {
+    return (
+      <div>
+      <a
+      style={{ cursor: 'pointer' }}
+      href="/"
+      onClick={e => {
+        e.preventDefault();
+        props.handleClick(props.authUser.uid);
+      }}
+        >{props.authUser.displayName}
+      </a>
+      </div>
+    );
+  }
+  return null; //重要
+}
+
+export default inject('store', 'authStore')(
   observer(
     class extends React.Component<Props, State> {
       state = {
@@ -77,35 +113,14 @@ export default inject('store')(
                this.toggleSignInModal();
               }} />
             </div>
-            {((authUser:?AuthUser) => {
-              if (isNullOrUndefined(authUser)) {
-                return (
-                  <div><a
-                  style={{ cursor: 'pointer' }}
-                  href="/"
-                  onClick={e => {
-                    e.preventDefault();
-                    this.toggleSignInModal();
-                  }}
-                    >SignIn
-                  </a></div>
-                )
-              } else {
-                return (
-                  <div>
-                  <a
-                  style={{ cursor: 'pointer' }}
-                  href="/"
-                  onClick={e => {
-                    e.preventDefault();
-                    this.props.store.router.openAccountPageById(authUser.uid);
-                  }}
-                    >{authUser.displayName}
-                  </a>
-                  </div>
-                )
-              }
-            })(this.props.store.authUser)}
+            <SignedOutView 
+              authUser={this.props.authStore.authUser}
+              handleClick={this.toggleSignInModal}
+            />
+            <SignedInView 
+              authUser={this.props.authStore.authUser}
+              handleClick={this.props.store.router.openAccountPageById}
+            />
           </div>
           <Page />
           <hr />
@@ -118,7 +133,7 @@ export default inject('store')(
             toggle={this.toggleSignInModal}
             accountAddress={this.props.store.accountAddress}
             handleSignIn={(provider:string) => {
-              this.props.store.signin(provider);
+              this.props.authStore.signin(provider);
               this.setState({
                 signInModal: false,
               });

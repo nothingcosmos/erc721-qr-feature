@@ -3,7 +3,7 @@ import { observable, computed, configure, runInAction, action } from 'mobx';
 import RouterStore from './RouterStore';
 import SnackbarStore from './SnackbarStore';
 import Ethereum from './ethereum';
-import Firebase from './firebase';
+import FirebaseAgent from './firebase';
 import { isNullOrUndefined } from 'util';
 import ContractAddress from '../contracts/address.json';
 
@@ -37,20 +37,9 @@ export type TokenItem = {
   createdAt: string,
 };
 
-export type AuthUser = {
-  uid:string, //firebase User uid
-  displayName:string,
-  email:string,
-  photoURL:string,
-  provider:string,
-  //以下はoption
-  provider_id:string,
-  accountAddress : string,
-};
-
 export class GlobalStore {
   @observable router = new RouterStore(this);
-  @observable snackbar = new SnackbarStore();
+  @observable snackbar = SnackbarStore;
 
   ethereum: Ethereum;
   @observable isWeb3Connected: boolean = false;
@@ -61,9 +50,7 @@ export class GlobalStore {
   @observable tokenDetail: TokenDetailStore = new TokenDetailStore(); //ここの更新が問題 伝搬しない？
   @observable isLoadingDetail: boolean = false;
 
-  @observable authUser:?AuthUser = null;
-
-  firebase = new Firebase();
+  firebase = FirebaseAgent;
 
   constructor(contractAddress: string) {
     //console.info("contractAddress="+contractAddress);
@@ -81,26 +68,7 @@ export class GlobalStore {
       this.contractAddress = address;
     });
     this.ethereum.setContractAddress(address);
-  }
-
-  async signin(provider:string) {
-    try {
-      const user = await this.firebase.openOAuth2(provider);
-      if (!isNullOrUndefined(user)) {
-        //console.info(user);
-        runInAction(() => {
-          this.authUser = user;
-        });
-        this.firebase.addUser(user);
-        //localstorageにも保存すべきなのか？         
-      }
-    } catch(err) {
-      this.snackbar.send(
-        `Failed to signin,${err}`
-      );
-      console.error(err);
-    }
-  }
+  }  
 
   async syncAccountAddress() {
     const account = await this.ethereum.getAccount();
@@ -117,13 +85,6 @@ export class GlobalStore {
   }
 
   async registerToken(name: string, identity:string, description: string, image: File) {
-    if (!this.authUser) {
-      this.snackbar.send(
-        `SignInしてください。`
-      )
-      return;
-    }
-
     try {
       // Firebaseに書き込む
       this.snackbar.send('メタデータを書き込んでいます');
@@ -188,7 +149,8 @@ export class GlobalStore {
     return `https://${this.networkName}.etherscan.io/tx/${txhash}`;
   }
 
-  //URLをparseして開く際に呼ばれる,他にdetailをクリックした際にも呼ばれる。
+  //URLをparseして開く際に呼ばれる,他にdetailをクリックした際にも呼ばれる。 
+  @action
   async reloadTokenDetail(tokenId: string) {
     //console.info("callee reloadToken");
     try {
@@ -215,10 +177,12 @@ export class GlobalStore {
         this.isLoadingDetail = false; //trueにするのはindex
       });
     } catch(err) {
+      console.error(`detail:${err}`);
       this.snackbar.send(`Errorが発生し、詳細の取得に失敗しました。detail=${err}`);
     }
   }
 
+  @action
   async reloadHome() {
     // const tokenIds = await this.ethereum.fetchAllTokenIds();
     // const metadataPromise = [];
@@ -244,6 +208,7 @@ export class GlobalStore {
   isAddress = (hexString: string): boolean =>
     this.ethereum.isAddress(hexString);
 
+  //web3 accountとfirebase authの双方が必要
   @computed
   get isAccountAvailable(): boolean {
     return !!this.accountAddress && this.isAddress(this.accountAddress);

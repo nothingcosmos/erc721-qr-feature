@@ -11,8 +11,13 @@ import 'bootstrap/dist/css/bootstrap.css';
 
 import App from './containers/App';
 import createStore from './stores';
+import authStore from './stores/authStore';
 
 const store = createStore();
+const stores = {
+  store,
+  authStore,
+};
 
 // ここで定義したopenXXXが呼び出されるのはブラウザで開いた直後だけで，
 // openXXXでcurrentUrlを変更したときに起こるpushStateの後にはopenXXXは呼び出されない
@@ -40,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const elem = document.getElementById('react-root');
   if (elem) {
     ReactDOM.render(
-      <Provider store={store}>
+      <Provider {...stores}>
         <StrictMode>
           <App />
         </StrictMode>
