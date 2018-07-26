@@ -229,4 +229,4 @@ export type Store = {
 };
 
 //export default () => new GlobalStore('0x4Ae7D4415D41Fd60c36Ef7DBD8F98a6F388FaeEc');
-export default() => new GlobalStore(ContractAddress.contractAddress);
+export default new GlobalStore(ContractAddress.contractAddress);

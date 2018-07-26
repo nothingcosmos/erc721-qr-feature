@@ -15,8 +15,9 @@ import Snackbar from './Snackbar';
 import Web3Status from './Web3Status';
 
 import SignInModal from '../components/SignInModal';
-import authStore, { AuthStore } from '../stores/authStore';
-import type { Store, AuthUser, GlobalStore } from '../stores';
+import { AuthStore } from '../stores/authStore';
+import type { Store,  GlobalStore } from '../stores';
+import type { AuthUser } from '../stores/authStore';
 
 //for react-fontawesome
 import { library } from '@fortawesome/fontawesome-svg-core';

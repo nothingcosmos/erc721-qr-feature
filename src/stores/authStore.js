@@ -1,6 +1,7 @@
 // @flow
 import { observable, action, runInAction, reaction, autorun } from 'mobx';
 import firebase from './firebase';
+import store from './index';
 import { isNullOrUndefined } from 'util';
 import snackbarStore from './SnackbarStore';
 
@@ -74,6 +75,12 @@ export class AuthStore {
           this.authUser = user;
           this.token = user.uid;
         });
+        //両方揃ってたらstore
+        if (store.isAccountAvailable) {
+          user.accountAddress = store.accountAddress;
+        }
+        console.info(store.isAccountAvailable);
+
         firebase.addUser(user);
         snackbarStore.send(`${user.displayName} SignIn.`);
       }

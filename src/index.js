@@ -10,10 +10,9 @@ import { Router } from 'director/build/director';
 import 'bootstrap/dist/css/bootstrap.css';
 
 import App from './containers/App';
-import createStore from './stores';
+import store from './stores';
 import authStore from './stores/authStore';
 
-const store = createStore();
 const stores = {
   store,
   authStore,

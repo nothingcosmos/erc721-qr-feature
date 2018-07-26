@@ -1,6 +1,6 @@
 // @flow
 import * as React from 'react';
-import { Row, Col, Form, Label, Input, FormGroup, CardImg } from 'reactstrap';
+import { Row, Col, Form, Label, Input, FormGroup, CardImg, Button } from 'reactstrap';
 import type {AuthUser} from '../stores';
 function maybeNull(s: ?string) {
   return s || 'Not Available';
@@ -69,6 +69,9 @@ export default class extends React.Component<Props, State> {
                 top
                 src={p.authUser.photoURL}
               />
+              <Button color="danger" outline className="mt-2" onClick={() => this.props.handleSignOut()}>
+                SignOut
+              </Button>
               </div>
             );
           } else {
