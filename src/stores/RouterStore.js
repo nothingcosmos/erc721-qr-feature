@@ -1,21 +1,24 @@
 // @flow
 import { observable, action, computed, autorun } from 'mobx';
-import { GlobalStore } from '.';
+//import { GlobalStore } from '.';
+import store from './index';
 
-export default class {
+export class RouterStore {
   @observable name = 'home'; //Homeで表示を切り替えている
   @observable tokenId = ''; //tokenIdの更新タイミングに注意、nameと同時に更新すると子の更新が遅れる。
   @observable account = '';
 
-  constructor(globalStore: GlobalStore) {
+  //constructor(globalStore: GlobalStore) {
+  constructor() {
     //observableの値更新のたびに呼ばれる
     autorun(() => {
       if (this.name === 'token') {
-        this.setLoadingDetail(globalStore,true);
-        globalStore.reloadTokenDetail(this.tokenId);
+        //this.setLoadingDetail(store,true);
+        //detailから呼び出す
+        //globalStore.reloadTokenDetail(this.tokenId);
       }
       if (this.name === 'home') {
-        globalStore.reloadHome();
+        //store.reloadHome();
       }
     });
   }
@@ -62,3 +65,5 @@ export default class {
     this.name = 'register';
   }
 }
+
+export default new RouterStore();

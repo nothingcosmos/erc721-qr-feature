@@ -8,10 +8,11 @@ import RequestCard from '../components/RequestCard';
 import RequestModal from '../components/RequestModal';
 import TransferModal from '../components/TransferModal';
 import RemoveCardModal from '../components/RemoveCardModal';
-import { trace, observable } from "mobx"
+import {  observable } from "mobx"
 
 type Props = {
   store: GlobalStore,
+  routerStore:RouterStore,
 };
 
 type State = {
@@ -20,7 +21,7 @@ type State = {
   removeCardModal:boolean,
 };
 
-export default inject('store')(
+export default inject('store', 'routerStore')(
   observer(
     class extends React.Component<Props, State> {
       state = {
@@ -65,6 +66,10 @@ export default inject('store')(
           transferModal:false,
         });
       };
+
+      componentDidMount() {
+        this.props.store.reloadTokenDetail(this.props.routerStore.tokenId);
+      }
 
       render = () => {
         //console.info("callee render");

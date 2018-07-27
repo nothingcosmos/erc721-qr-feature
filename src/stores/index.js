@@ -1,6 +1,6 @@
 // @flow
 import { observable, computed, configure, runInAction, action } from 'mobx';
-import RouterStore from './RouterStore';
+import routerStore from './RouterStore';
 import SnackbarStore from './SnackbarStore';
 import Ethereum from './ethereum';
 import FirebaseAgent from './firebase';
@@ -38,7 +38,7 @@ export type TokenItem = {
 };
 
 export class GlobalStore {
-  @observable router = new RouterStore(this);
+  @observable router = routerStore;//= new RouterStore(this);
   @observable snackbar = SnackbarStore;
 
   ethereum: Ethereum;
@@ -47,6 +47,7 @@ export class GlobalStore {
   @observable networkName: ?string = null;
   @observable contractAddress: ?string = null;
   @observable tokenCards: TokenItem[] = [];
+  @observable isLoadingCards : boolean = false;
   @observable tokenDetail: TokenDetailStore = new TokenDetailStore(); //ここの更新が問題 伝搬しない？
   @observable isLoadingDetail: boolean = false;
 
@@ -152,6 +153,7 @@ export class GlobalStore {
   //URLをparseして開く際に呼ばれる,他にdetailをクリックした際にも呼ばれる。 
   @action
   async reloadTokenDetail(tokenId: string) {
+    this.isLoadingDetail = true;
     //console.info("callee reloadToken");
     try {
       if (isNullOrUndefined(tokenId)) {
@@ -186,6 +188,7 @@ export class GlobalStore {
 
   @action
   async reloadHome() {
+    this.isLoadingCards = true;
     // const tokenIds = await this.ethereum.fetchAllTokenIds();
     // const metadataPromise = [];
     // for (let i = 0; i < tokenIds.length; i++) {
@@ -204,6 +207,7 @@ export class GlobalStore {
     const tokenCards = await this.firebase.retrieveTokenList();
     runInAction(() => {
       this.tokenCards = tokenCards;
+      this.isLoadingCards = false;
     });
   }
 

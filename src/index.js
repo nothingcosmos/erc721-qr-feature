@@ -13,10 +13,12 @@ import 'bootstrap/dist/css/bootstrap.css';
 import App from './containers/App';
 import store from './stores';
 import authStore from './stores/authStore';
+import routerStore from './stores/RouterStore';
 
 const stores = {
   store,
   authStore,
+  routerStore,
 };
 
 // ここで定義したopenXXXが呼び出されるのはブラウザで開いた直後だけで，

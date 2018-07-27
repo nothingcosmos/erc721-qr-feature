@@ -1,6 +1,7 @@
 // @flow
 import * as React from 'react';
 import { inject, observer } from 'mobx-react';
+import {action, observable} from 'mobx';
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
@@ -42,8 +43,9 @@ type State = {
   signInModal: boolean,
 };
 
-const SignedOutView = (props) => {
-  if (isNullOrUndefined(props.authUser)) {
+const SignedOutView = inject('authStore')(
+  observer(({ props, authStore }) => {
+  if (isNullOrUndefined(authStore.authUser)) {
     return (
       <div><a
       style={{ cursor: 'pointer' }}
@@ -58,9 +60,11 @@ const SignedOutView = (props) => {
   }
   return null;
 }
+  ));
 
-const SignedInView = (props) => {
-  if (!!props.authUser) {
+const SignedInView = inject('authStore')(
+  observer(({ props, authStore} ) => {
+  if (!!authStore.authUser) {
     return (
       <div>
       <a
@@ -68,15 +72,16 @@ const SignedInView = (props) => {
       href="/"
       onClick={e => {
         e.preventDefault();
-        props.handleClick(props.authUser.uid);
+        props.handleClick(authStore.authUser.uid);
       }}
-        >{props.authUser.displayName}
+        >{authStore.authUser.displayName}
       </a>
       </div>
     );
   }
   return null; //重要
 }
+  ));
 
 export default inject('store', 'authStore')(
   observer(
@@ -89,7 +94,8 @@ export default inject('store', 'authStore')(
           signInModal: !this.state.signInModal,
         });
       };
-      render = ()  => (
+
+    render = ()  => (
     <MuiThemeProvider>
       <React.Fragment>
         <Container>
@@ -115,11 +121,9 @@ export default inject('store', 'authStore')(
               }} />
             </div>
             <SignedOutView 
-              authUser={this.props.authStore.authUser}
               handleClick={this.toggleSignInModal}
             />
             <SignedInView 
-              authUser={this.props.authStore.authUser}
               handleClick={this.props.store.router.openAccountPageById}
             />
           </div>
@@ -147,6 +151,7 @@ export default inject('store', 'authStore')(
   )//observer
 );
 
+//このPageオブジェクトに問題があるっぽい
 const Page = inject('store')(
   observer(({ store }: Store) => {
     switch (store.router.name) {
