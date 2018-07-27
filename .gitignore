@@ -25,4 +25,4 @@ cloud-functions-emulator.log
 firebase-debug.log
 
 src/contracts/abi.json
-src/contracts/address.txt
+src/contracts/address.json
