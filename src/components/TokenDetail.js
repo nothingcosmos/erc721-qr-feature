@@ -79,24 +79,3 @@ export class TokenDetail extends React.Component<Props, State> {
 )
 };
 //);
-
-//ここでobserverはstorybookに悪影響
-//描画の確認用クラス　これは動作する
-// @observer export class Timer extends React.Component {
-//   @observable secondsPassed = 0
-//   componentWillMount() {
-//     setInterval(() => {
-//        this.update();
-//        //old これはinvaliant failed
-//        //this.setState(()=> {})
-//     }, 1000)
-//   }
-//   @action
-//   update() {
-//     this.secondsPassed++;
-//   }
-
-//   render() {
-//       return (<span>waiting { this.secondsPassed } seconds.</span> )
-//   }
-// }

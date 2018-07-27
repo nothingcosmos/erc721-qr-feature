@@ -71,7 +71,7 @@ export default inject('store', 'routerStore')(
         this.props.store.reloadTokenDetail(this.props.routerStore.tokenId);
       }
 
-      render = () => {
+      render() {
         //console.info("callee render");
         //console.info(this.props.store.tokenDetail.image);
         //flag制御でもだめっぽい, containersのレイヤで更新が伝搬しない

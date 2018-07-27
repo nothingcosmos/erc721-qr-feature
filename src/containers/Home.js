@@ -7,31 +7,21 @@ import Home from '../components/Home';
 import TokenCard from '../components/TokenCard';
 
 export default inject('store')(
-  observer(
-    class extends React.Component<Props, State> {
-      componentDidMount() {
-        this.props.store.reloadHome();
-      }
+  observer(({ store }: Store) => {
+    store.reloadHome();
+    return (
+      <Home>
+        {store.tokenCards.map(tokenCard => (
+          <TokenCard
+            key={tokenCard.tokenId}
+            name={tokenCard.name}
+            createdAt={tokenCard.createdAt}
+            image={tokenCard.image}
+            onClick={() => store.router.openTokenPageById(tokenCard.tokenId)}
+          />
+        ))}
+      </Home>
+    )
+  })
+)
 
-      render = () => {
-        const {isLoadingCards, tokenCards} = this.props.store;
-        if (isLoadingCards) {
-          return (<LoadingSpinner />);
-        }
-        return (
-        <Home>
-          {tokenCards.map(tokenCard => (
-            <TokenCard
-              key={tokenCard.tokenId}
-              name={tokenCard.name}
-              createdAt={tokenCard.createdAt}
-              image={tokenCard.image}
-              onClick={() => this.props.store.router.openTokenPageById(tokenCard.tokenId)}
-            />
-          ))}
-        </Home>
-        );
-      }
-    }
-  )
-);
