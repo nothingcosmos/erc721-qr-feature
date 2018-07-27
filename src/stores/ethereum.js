@@ -82,6 +82,7 @@ export default class {
     });
   }
 
+  //deprecated
   async mint(owner: string, tokenId: string): Promise<void> {
     const tokenIdHash = window.web3.sha3(tokenId);
     const tokenIdHashBigNumber = window.web3.toBigNumber(tokenIdHash);
@@ -106,7 +107,7 @@ export default class {
   async mintWithMetadata(owner: string, tokenId: string, metadata: MetadataStandard): Promise<void> {
     const tokenIdHash = window.web3.sha3(tokenId);
     const tokenIdHashBigNumber = window.web3.toBigNumber(tokenIdHash);
-    const metauri = JSON.stringify(metadata);
+    const metauri = unescape(encodeURIComponent(JSON.stringify(metadata)));
     return new Promise((resolve, reject) => {
       this.contractInstance.mint(
         tokenIdHashBigNumber,
@@ -172,9 +173,9 @@ export default class {
     });
   }
 
-  async tokenURI(tokenId: string): Promise<string> {
+  async tokenURI(uint256TokenId: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      this.contractInstance.tokenURI(tokenId, (err, tokenURI) => {
+      this.contractInstance.tokenURI(uint256TokenId, (err, tokenURI) => {
         if (err) {
           reject(err);
           return;
@@ -184,21 +185,24 @@ export default class {
     });
   }
 
-  async tokenMetadata(tokenId:string) : Promise<MetadataStandard> {
+  async tokenURIAsMetadata(tokenId:string) : Promise<MetadataStandard> {
+    const tokenIdHash = window.web3.sha3(tokenId);
+    const tokenIdHashBigNumber = window.web3.toBigNumber(tokenIdHash);
     return new Promise((resolve, reject) => {
-      this.contractInstance.tokenURI(tokenId, (err, tokenURI) => {
+      this.contractInstance.tokenURI(tokenIdHashBigNumber, (err, tokenURI) => {
         if (err) {
           reject(err);
           return;
         }
-        resolve(JSON.parse(tokenURI));
+        resolve(JSON.parse(decodeURIComponent(escape(tokenURI))));
       });
     });
   }
 
+  //deprecated
   async tokenIdByIndex(index: number): Promise<string> {
     const tokenId = await this.tokenByIndex(index);
-    const tokenURI = await this.tokenURI(tokenId);
+    const tokenURI = await this.tokenURI(tokenId); //todo
     const prefix = `${this.apiEndpoint}/erc721/`;
     return tokenURI.substr(prefix.length);
   }

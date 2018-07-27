@@ -157,24 +157,26 @@ export class GlobalStore {
       if (isNullOrUndefined(tokenId)) {
         throw new Error('Invalid tokenId');
       }
-      const metadataPromise = this.firebase.fetchToken(tokenId);
+      //firebaseから参照する
+      //const metadataPromise = this.firebase.fetchToken(tokenId);
+      const metadataPromise = this.ethereum.tokenURIAsMetadata(tokenId);
       const ownerOfPromise = this.ethereum.ownerOf(tokenId);
       const requestPromise = this.firebase.getRequests(tokenId);
       const metadata = await metadataPromise;
       const ownerOf = await ownerOfPromise;
       const requests = await requestPromise;
 
-      runInAction(() => {
+      runInAction(() => { //多分ここが悪いのだと思うが回避策がわからない
         // console.info("callee reloadTokenDetail::runOnAction");
         this.tokenDetail = new TokenDetailStore(); //参照箇所わかりやすくするためnewしてる
         this.tokenDetail.name = metadata.name;
         this.tokenDetail.identity = metadata.identity;
         this.tokenDetail.description = metadata.description;
-        this.tokenDetail.image = metadata.image;
-        this.tokenDetail.createdAt = metadata.createdAt;
+        this.tokenDetail.image = metadata.image_url;
+//        this.tokenDetail.createdAt = metadata.createdAt;
         this.tokenDetail.owner = ownerOf;
         this.tokenDetail.requests = requests;
-        this.isLoadingDetail = false; //trueにするのはindex
+        this.isLoadingDetail = false; //trueにするのはrouterStore
       });
     } catch(err) {
       console.error(`detail:${err}`);
