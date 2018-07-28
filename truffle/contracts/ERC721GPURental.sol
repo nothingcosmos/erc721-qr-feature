@@ -6,11 +6,20 @@ contract ERC721GPURental is ERC721Token {
     constructor(string _name, string _symbol) public
       ERC721Token(_name, _symbol) {}
 
+    // mapping from tokenId to lent address
     mapping (uint256 => address) internal lendOwners;
+    // mapping from tokenId to lent deadline(UnixTime)
     mapping (uint256 => uint256) internal lendDeadlines;
+
+    //force update to inner tokenApproves map
     event ApprovalForLendOwner(
       address indexed _owner,
       address indexed _approved,
+      uint256 indexed _tokenId
+    );
+    event Lending(
+      address indexed _owner,
+      address indexed _to,
       uint256 indexed _tokenId
     );
     
@@ -23,6 +32,7 @@ contract ERC721GPURental is ERC721Token {
     }
     
     function burn(uint256 _tokenId) external onlyOwnerOf(_tokenId) {
+        require(notLent(_tokenId));
         super._burn(msg.sender, _tokenId);
     }
 
@@ -42,6 +52,7 @@ contract ERC721GPURental is ERC721Token {
         return (lendOwner == address(0));
     }
 
+    // @params deadline (UnixTime)
     function lend(uint256 _tokenId, uint256 deadline, address to)
         external onlyOwnerOf(_tokenId)
     {
@@ -66,15 +77,17 @@ contract ERC721GPURental is ERC721Token {
         require(block.timestamp >= deadline(_tokenId));
 
         if (ownerOf(_tokenId) == lendOwnerOf(_tokenId)) {
+          //cleanup
           lendOwners[_tokenId] = address(0);
           lendDeadlines[_tokenId] = 0;
           return;
         }
 
-        //denger
+        //danger, defined ERC721BasicToken.sol
         tokenApprovals[_tokenId] = msg.sender;
         emit ApprovalForLendOwner(ownerOf(_tokenId), msg.sender, _tokenId);
         
+        //clear tokenApprovals
         super.safeTransferFrom(ownerOf(_tokenId), msg.sender, _tokenId);
 
         //cleanup
