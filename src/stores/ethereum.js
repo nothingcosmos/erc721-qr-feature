@@ -240,4 +240,74 @@ export default class {
   isAddress(hexString: string): boolean {
     return window.web3.isAddress(hexString);
   }
+
+  async callPromisedTokenId(fn:(string) => Promise<void>, from:string, tokenId:string) : Promise<void> {
+    const tokenIdHash = window.web3.sha3(tokenId);
+    const tokenIdHashBigNumber = window.web3.toBigNumber(tokenIdHash);
+    return new Promise((resolve, reject) => {
+      this.contractInstance.fn(
+        tokenIdHashBigNumber,
+        { from },
+        err => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve();
+        }
+      );
+    });
+  }
+
+  async getTimestamp(from:string) : Promise<number> {
+    const blockNum = window.web3.getBlockNumber;
+    return new Promise((resolve, reject) => {
+      window.web3.eth.getBlock(
+        blockNum,
+        { from },
+        (err, block) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve(block.timestamp);
+        }
+      );
+    });
+  }
+
+  async lend(from :string, to: string, tokenId: string, afterDay:number): Promise<void> {
+    console.info(`${from}, ${to}`)
+    const tokenIdHash = window.web3.sha3(tokenId);
+    const tokenIdHashBigNumber = window.web3.toBigNumber(tokenIdHash);
+
+    // const timestamp = await this.getTimestamp();
+    // const deadline = timestamp + (afterDay * 24 * 60 * 60);
+    const deadline = 1000;
+    const deadlineBigNumber = window.web3.toBigNumber(deadline);
+
+    return new Promise((resolve, reject) => {
+      this.contractInstance.lend(
+        tokenIdHashBigNumber,
+        deadlineBigNumber,
+        to,
+        { from },
+        err => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve();
+        }
+      );
+    });
+  }
+
+  async burn(from :string, tokenId: string): Promise<void> {
+    return this.callPromisedTokenId(this.contractInstance.burn, from, tokenId);
+  }
+
+  async returnLendOwner(from : string, tokenId: string): Promise<void> {
+    return this.callPromisedTokenId(this.contractInstance.returnLendOwner, from, tokenId);
+  }
 }

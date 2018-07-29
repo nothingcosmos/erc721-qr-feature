@@ -131,6 +131,38 @@ export class GlobalStore {
     );
   }
 
+  async lend(from:string, to:string, tokenId: string, afterDays: number) {
+    this.snackbar.send(
+      `${this.networkName || '(null)'} にlendトランザクションを送信しています`
+    );
+    await this.ethereum.lend(from, to, tokenId, afterDays);
+    this.snackbar.send(
+      `${this.networkName || '(null)'} にlendトランザクションを送信しました`
+    );
+  }
+  //todo tx失敗前のlendOwner確認をすべきか 
+  async returnLendOwner(from: string, to: string, tokenId: string) {
+    this.snackbar.send(
+      `${this.networkName || '(null)'} にreturnLendOwnerトランザクションを送信しています`
+    );
+    await this.ethereum.returnLendOwner(tokenId);
+    this.snackbar.send(
+      `${this.networkName || '(null)'} にreturnLendOwnerトランザクションを送信しました`
+    );
+  }
+
+  async burn(tokenId: string) {
+    this.snackbar.send(
+      `${this.networkName || '(null)'} にburnトランザクションを送信しています`
+    );
+    await this.ethereum.burn(tokenId);
+    this.snackbar.send(
+      `${this.networkName || '(null)'} にburnトランザクションを送信しました`
+    );
+  }
+
+  // todo ownerAddressを記録してdatabase updateしたい
+  // removeなのでburnはせず、databaseのみ消去する。
   async removeToken(ownerAddress:string, tokenId:string) {
     try {
       await this.firebase.removeToken(ownerAddress, tokenId);
@@ -153,6 +185,7 @@ export class GlobalStore {
   //URLをparseして開く際に呼ばれる,他にdetailをクリックした際にも呼ばれる。 
   @action
   async reloadTokenDetail(tokenId: string) {
+    console.info(`callee reloadTokenDetail ${tokenId}`);
     this.isLoadingDetail = true;
     //console.info("callee reloadToken");
     try {
@@ -188,6 +221,7 @@ export class GlobalStore {
 
   @action
   async reloadHome() {
+    console.info(`callee reloadHome`);
     this.isLoadingCards = true;
     // const tokenIds = await this.ethereum.fetchAllTokenIds();
     // const metadataPromise = [];

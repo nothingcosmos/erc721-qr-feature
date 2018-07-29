@@ -8,6 +8,7 @@ import RequestCard from '../components/RequestCard';
 import RequestModal from '../components/RequestModal';
 import TransferModal from '../components/TransferModal';
 import RemoveCardModal from '../components/RemoveCardModal';
+import LoadingSpinner from '../components/LoadingSpinner';
 import {  observable } from "mobx"
 
 type Props = {
@@ -18,6 +19,7 @@ type Props = {
 type State = {
   requestModal: boolean,
   transferModal: boolean,
+  lendModal:boolean,
   removeCardModal:boolean,
 };
 
@@ -27,6 +29,7 @@ export default inject('store', 'routerStore')(
       state = {
         requestModal: false,
         transferModal: false,
+        lendModal : false,
         removeCardModal: false,
       };
       handleSendRequest = () => {
@@ -44,6 +47,13 @@ export default inject('store', 'routerStore')(
           transferModal: true,
         });
       };
+      handleLend = () => {
+        console.info("click lend");
+        this.setState({
+          lendModal: true,
+          transferModal:true,//共通
+        });
+      };
       handleRemove = () => {
         this.setState({
           removeCardModal: true,
@@ -52,6 +62,7 @@ export default inject('store', 'routerStore')(
       toggleTransferModal = () => {
         this.setState({
           transferModal: !this.state.transferModal,
+          lendModal: !this.state.lendModal,
         });
       };
       toggleRemoveCardModal = () => {
@@ -63,7 +74,8 @@ export default inject('store', 'routerStore')(
         this.setState({
           transferModal:false,
           removeCardModal:false,
-          transferModal:false,
+          rendModal:false,
+          removeModal:false,
         });
       };
 
@@ -80,11 +92,7 @@ export default inject('store', 'routerStore')(
         if (this.props.store.isLoadingDetail) {
           return (
             <React.Fragment>
-            <div>
-              <Button color="success" outline
-                onClick={() => this.refresh()}>Refresh
-              </Button>
-            </div>
+              <LoadingSpinner />
             </React.Fragment>
           );
         }
@@ -115,6 +123,7 @@ export default inject('store', 'routerStore')(
                   handleSendRequest={() => this.handleSendRequest()}
                   handleTransfer={() => this.handleTransfer()}
                   handleRemove={() => this.handleRemove()}
+                  handleLend={() => this.handleLend()}
                 />
               </div>
               {this.props.store.tokenDetail.requests && <h2>Requests</h2>}
@@ -165,7 +174,16 @@ export default inject('store', 'routerStore')(
                 this.props.store.router.tokenId
               )
             }
+            onSubmitLend={(to, afterDays) =>
+              this.props.store.lend(
+                this.props.store.accountAddress,
+                to,
+                this.props.store.router.tokenId,
+                afterDays
+              )
+            }
             isAddress={this.props.store.isAddress}
+            modeTransfer={!this.state.lendModal}
           />
           <RemoveCardModal
             modal={this.state.removeCardModal}

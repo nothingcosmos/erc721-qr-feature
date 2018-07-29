@@ -24,6 +24,7 @@ type Props = {
   createdAt: string,
   isAccountAvailable: boolean,
   isOwner: boolean,
+  isLendOwner : boolean, //todo impl
   handleSendRequest: () => any,
   handleTransfer: () => any,
   handleRemove: () => any,
@@ -54,7 +55,13 @@ export class TokenDetail extends React.Component<Props, State> {
             >
               Transfer
             </Button>
-            <Button color="danger" outline className="ml-2" onClick={() => this.props.handleRemove()}>
+            <Button color="info" outline className="ml-2"
+              onClick={() => this.props.handleLend()}
+            >
+              Lend
+            </Button>
+            <Button color="danger" outline className="ml-2"
+              onClick={() => this.props.handleRemove()}>
               Remove
             </Button>
           </React.Fragment>

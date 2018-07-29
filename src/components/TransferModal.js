@@ -19,19 +19,24 @@ type Props = {
   toggle: () => void,
   from: string,
   tokenId: string,
+  modeTransfer: boolean,//transfer/lendと共通化フラグ
   onSubmit: (to: string) => void | Promise<void>,
+  onSubmitLend: (to: string, afterDays: number) => void | Promise<void>,
   isAddress: (address: string) => boolean,
 };
 
 type State = {
   to: string,
   isCameraOpened: boolean,
+  afterDays: number,
 };
 
+//transferとlendingの双方をサポートする
 export default class extends React.Component<Props, State> {
   state = {
     to: '',
     isCameraOpened: false,
+    afterDays: 30, //初期値
   };
 
   onScan = (data: string) => {
@@ -54,6 +59,12 @@ export default class extends React.Component<Props, State> {
     this.props.onSubmit(this.state.to);
     this.props.toggle();
   };
+
+  handleSubmitLend = (e: any) => {
+    e.preventDefault();
+    this.props.onSubmitLend(this.state.to, this.state.afterDays);
+    this.props.toggle();
+  }
 
   openQRScanner = async () => {
     if (
@@ -107,16 +118,40 @@ export default class extends React.Component<Props, State> {
                   value={this.props.tokenId}
                 />
               </FormGroup>
-              <div className="float-right">
-                <Button
-                  color="primary"
-                  outline
-                  onClick={e => this.handleSubmit(e)}
-                  disabled={!this.props.isAddress(this.state.to)}
-                >
-                  Transfer
+              {this.props.modeTransfer ? (
+                <div className="float-right">
+                  <Button
+                    color="primary"
+                    outline
+                    onClick={e => this.handleSubmit(e)}
+                    disabled={!this.props.isAddress(this.state.to)}
+                  >
+                    Transfer
                 </Button>
-              </div>
+                </div>
+              ) : (
+                  <div>
+                    <FormGroup>
+                      <Label for="afterDays">Lending period(days)</Label>
+                      <Input
+                        type="text"
+                        id="afterDays"
+                        value={this.state.afterDays}
+                        onChange={e => this.setState({ afterDays: e.target.value })}
+                      />
+                    </FormGroup>
+                    <div className="float-right">
+                      <Button
+                        color="primary"
+                        outline
+                        onClick={e => this.handleSubmitLend(e)}
+                        disabled={!this.props.isAddress(this.state.to)}
+                      >
+                        Lend
+                      </Button>
+                    </div>
+                  </div>
+                )}
             </Form>
           </ModalBody>
         </Modal>
