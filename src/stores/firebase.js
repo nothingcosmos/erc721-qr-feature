@@ -188,8 +188,12 @@ export class FirebaseAgent {
     const snapshot = await this.db
       .collection('tokens')
       .doc(tokenId)
-      .delete();
-  }
+      .delete().then(() => {
+        console.info(`Succeed removeToken : ${tokenId}`);
+      }).catch((err)=> {
+        console.error(`Failed removeToken, detail : ${err}`);
+      }) ;
+  } 
 
   async addRequest(
     from: string,
@@ -202,6 +206,16 @@ export class FirebaseAgent {
       tokenId,
       message,
     });
+  }
+
+  async deleteRuest(reqId:string) : Promise<void> {
+    await this.initializerPromise;
+    const snapshot = await this.db
+      .collection('requests').doc(reqId).delete(() => {
+          console.info(`Succeed deleteRequest : ${reqId}`);
+      }).catch((err) => {
+          console.error(`Failed deleteRequest : ${err}`);
+      });
   }
 
   async getRequests(tokenId: string) {

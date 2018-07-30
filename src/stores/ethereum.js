@@ -239,24 +239,6 @@ export default class {
     return window.web3.isAddress(hexString);
   }
 
-  async callPromisedTokenId(fn:(string) => Promise<void>, from:string, tokenId:string) : Promise<void> {
-    const tokenIdHash = window.web3.sha3(tokenId);
-    const tokenIdHashBigNumber = window.web3.toBigNumber(tokenIdHash);
-    return new Promise((resolve, reject) => {
-      this.contractInstance.fn(
-        tokenIdHashBigNumber,
-        { from },
-        err => {
-          if (err) {
-            reject(err);
-            return;
-          }
-          resolve();
-        }
-      );
-    });
-  }
-
   async notLent(tokenId: string): Promise<boolean> {
     const tokenIdHash = window.web3.sha3(tokenId);
     const tokenIdHashBigNumber = window.web3.toBigNumber(tokenIdHash);
@@ -281,6 +263,20 @@ export default class {
           return;
         }
         resolve(owner);
+      });
+    });
+  }
+
+  async deadlineAsUTCString(tokenId:string) : Promise<string> {
+    const tokenIdHash = window.web3.sha3(tokenId);
+    const tokenIdHashBigNumber = window.web3.toBigNumber(tokenIdHash);
+    return new Promise((resolve, reject) => {
+      this.contractInstance.deadline(tokenIdHashBigNumber, (err, unixtime) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(new Date(unixtime*1000).toUTCString());
       });
     });
   }
@@ -327,10 +323,38 @@ export default class {
   }
 
   async burn(from :string, tokenId: string): Promise<void> {
-    return this.callPromisedTokenId(this.contractInstance.burn, from, tokenId);
+    const tokenIdHash = window.web3.sha3(tokenId);
+    const tokenIdHashBigNumber = window.web3.toBigNumber(tokenIdHash);
+    return new Promise((resolve, reject) => {
+      this.contractInstance.burn(
+        tokenIdHashBigNumber,
+        { from },
+        err => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve();
+        }
+      );
+    });
   }
 
   async returnLendOwner(from : string, tokenId: string): Promise<void> {
-    return this.callPromisedTokenId(this.contractInstance.returnLendOwner, from, tokenId);
+    const tokenIdHash = window.web3.sha3(tokenId);
+    const tokenIdHashBigNumber = window.web3.toBigNumber(tokenIdHash);
+    return new Promise((resolve, reject) => {
+      this.contractInstance.returnLendOwner(
+        tokenIdHashBigNumber,
+        { from },
+        err => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve();
+        }
+      );
+    });
   }
 }

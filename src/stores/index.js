@@ -152,7 +152,7 @@ export class GlobalStore {
   //todo tx失敗前のlendOwner確認をすべきか 
   async returnLendOwner(lendOwner: string, tokenId: string) {
     try {
-      const notLending = this.ethereum.notLent(tokenId);
+      const notLending:boolean = await this.ethereum.notLent(tokenId);
       if (notLending) {
         this.snackbar.send(
           `${tokenId} は貸出状態にありません。`
@@ -225,8 +225,10 @@ export class GlobalStore {
 
       const notLending : boolean = await this.ethereum.notLent(tokenId);
       let lendOwner : string = '';
+      let deadline : string = '';
       if (!notLending) {
         lendOwner = await this.ethereum.lendOwnerOf(tokenId);
+        deadline = await this.ethereum.deadlineAsUTCString(tokenId);
       }
 
       runInAction(() => {
@@ -240,6 +242,7 @@ export class GlobalStore {
         this.tokenDetail.requests = requests;
         this.tokenDetail.isLent = !notLending;
         this.tokenDetail.lendOwner = lendOwner;
+        this.tokenDetail.deadline = deadline;
 
         this.isLoadingDetail = false; //trueにするのはrouterStore
       });

@@ -24,11 +24,12 @@ type Props = {
   createdAt: string,
   isAccountAvailable: boolean,
   isOwner: boolean,
-  isLendOwner : boolean, //todo impl
+  isLendOwner : boolean,
   handleSendRequest: () => any,
   handleTransfer: () => any,
   handleRemove: () => any,
   handleLend: () => any,
+  handleReturnLendOwner: () => any,
 };
 
 //observerつけても描画は変わらんなー

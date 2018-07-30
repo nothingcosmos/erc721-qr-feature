@@ -58,8 +58,8 @@ export default inject('store', 'routerStore')(
       };
       handleReturnLendOwner() {
         this.setState({
-          returnLendModal:true,
-        })
+          returnLendOwnerModal:true,
+        });
       }
       handleRemove = () => {
         this.setState({
@@ -150,6 +150,9 @@ export default inject('store', 'routerStore')(
                       this.props.store.router.tokenId
                     );
                   }}
+                  handleLend={ () => {
+                    
+                  }}
                   handleDelete={() => {
                     throw new Error('Not implemented yet');
                   }}
@@ -206,7 +209,7 @@ export default inject('store', 'routerStore')(
             modal={this.state.returnLendOwnerModal}
             toggle={this.toggleReturnLendOwnerModal}
             from={this.props.store.tokenDetail.owner}
-            tokenId={this.props.store.tokenDetail.tokenId}
+            tokenId={this.props.store.router.tokenId}
             lendOwner={this.props.store.tokenDetail.lendOwner}
             deadline={this.props.store.tokenDetail.deadline}
             onSubmit={id => {
