@@ -85,7 +85,11 @@ export default class extends React.Component<Props, State> {
     return (
       <React.Fragment>
         <Modal isOpen={this.props.modal}>
-          <ModalHeader toggle={this.props.toggle}>Transfer Token</ModalHeader>
+          {this.props.modeTransfer ? (
+            <ModalHeader toggle={this.props.toggle}>Transfer Token</ModalHeader>
+          ) : (            
+            <ModalHeader toggle={this.props.toggle}>Lend Token</ModalHeader>
+          )}
           <ModalBody>
             <Form>
               <FormGroup>

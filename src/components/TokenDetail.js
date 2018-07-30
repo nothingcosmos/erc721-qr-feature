@@ -28,6 +28,7 @@ type Props = {
   handleSendRequest: () => any,
   handleTransfer: () => any,
   handleRemove: () => any,
+  handleLend: () => any,
 };
 
 //observerつけても描画は変わらんなー
@@ -65,7 +66,16 @@ export class TokenDetail extends React.Component<Props, State> {
               Remove
             </Button>
           </React.Fragment>
-          ) : (
+          ) : 
+            this.props.isLendOwner ? (
+              <Button
+              color="primary"
+              outline
+              onClick={() => this.props.handleReturnLendOwner()}
+            >
+              returnLendOwner
+            </Button>
+            ) : (
             <Button
               color="primary"
               outline

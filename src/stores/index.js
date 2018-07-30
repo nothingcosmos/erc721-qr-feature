@@ -24,6 +24,9 @@ export class TokenDetailStore {
   @observable image = '';
   @observable owner = '';
   @observable ownerUid = '';//未実装 functionsの認証と連携させたい
+  @observable isLent = false;
+  @observable lendOwner = '';
+  @observable deadline = '';
   @observable createdAt = '';
   @observable requests: RequestItem[] = [];
   @observable tags: string[] = [];
@@ -47,8 +50,8 @@ export class GlobalStore {
   @observable networkName: ?string = null;
   @observable contractAddress: ?string = null;
   @observable tokenCards: TokenItem[] = [];
-  @observable isLoadingCards : boolean = false;
-  @observable tokenDetail: TokenDetailStore = new TokenDetailStore(); //ここの更新が問題 伝搬しない？
+  @observable isLoadingCards: boolean = false;
+  @observable tokenDetail: TokenDetailStore = new TokenDetailStore();
   @observable isLoadingDetail: boolean = false;
 
   firebase = FirebaseAgent;
@@ -69,7 +72,7 @@ export class GlobalStore {
       this.contractAddress = address;
     });
     this.ethereum.setContractAddress(address);
-  }  
+  }
 
   async syncAccountAddress() {
     const account = await this.ethereum.getAccount();
@@ -85,14 +88,14 @@ export class GlobalStore {
     });
   }
 
-  async registerToken(name: string, identity:string, description: string, image: File) {
+  async registerToken(name: string, identity: string, description: string, image: File) {
     try {
       // Firebaseに書き込む
       this.snackbar.send('メタデータを書き込んでいます');
       if (!this.accountAddress) {
         throw new Error('Cannot get account');
       }
-    
+
       const tokenId = await this.firebase.registerToken(
         this.accountAddress,
         name,
@@ -115,7 +118,7 @@ export class GlobalStore {
       this.snackbar.send(
         `${this.networkName || '(null)'} にトランザクションを送信しました`
       );
-    } catch(err) {
+    } catch (err) {
       this.snackbar.send(`Errorが発生し、登録に失敗しました。detail=${err}`);
     };
     this.router.openHomePage();
@@ -131,31 +134,50 @@ export class GlobalStore {
     );
   }
 
-  async lend(from:string, to:string, tokenId: string, afterDays: number) {
-    this.snackbar.send(
-      `${this.networkName || '(null)'} にlendトランザクションを送信しています`
-    );
-    await this.ethereum.lend(from, to, tokenId, afterDays);
-    this.snackbar.send(
-      `${this.networkName || '(null)'} にlendトランザクションを送信しました`
-    );
-  }
-  //todo tx失敗前のlendOwner確認をすべきか 
-  async returnLendOwner(from: string, to: string, tokenId: string) {
-    this.snackbar.send(
-      `${this.networkName || '(null)'} にreturnLendOwnerトランザクションを送信しています`
-    );
-    await this.ethereum.returnLendOwner(tokenId);
-    this.snackbar.send(
-      `${this.networkName || '(null)'} にreturnLendOwnerトランザクションを送信しました`
-    );
+  async lend(from: string, to: string, tokenId: string, afterDays: number) {
+    try {
+      this.snackbar.send(
+        `${this.networkName || '(null)'} にlendトランザクションを送信しています`
+      );
+      await this.ethereum.lend(from, to, tokenId, afterDays);
+      this.snackbar.send(
+        `${this.networkName || '(null)'} にlendトランザクションを送信しました`
+      );
+    } catch (err) {
+      this.snackbar.send(`Errorが発生し、トランザクションに失敗しました。detail=${err}`);
+      console.error(`detail:${err}`);
+    }
   }
 
-  async burn(tokenId: string) {
+  //todo tx失敗前のlendOwner確認をすべきか 
+  async returnLendOwner(lendOwner: string, tokenId: string) {
+    try {
+      const notLending = this.ethereum.notLent(tokenId);
+      if (notLending) {
+        this.snackbar.send(
+          `${tokenId} は貸出状態にありません。`
+        );
+        return;
+      }
+
+      this.snackbar.send(
+        `${this.networkName || '(null)'} にreturnLendOwnerトランザクションを送信しています`
+      );
+      await this.ethereum.returnLendOwner(lendOwner, tokenId);
+      this.snackbar.send(
+        `${this.networkName || '(null)'} にreturnLendOwnerトランザクションを送信しました`
+      );
+    } catch (err) {
+      this.snackbar.send(`Errorが発生し、トランザクションに失敗しました。detail=${err}`);
+      console.error(`detail:${err}`);
+    }
+  }
+
+  async burn(from:string, tokenId: string) {
     this.snackbar.send(
       `${this.networkName || '(null)'} にburnトランザクションを送信しています`
     );
-    await this.ethereum.burn(tokenId);
+    await this.ethereum.burn(from, tokenId);
     this.snackbar.send(
       `${this.networkName || '(null)'} にburnトランザクションを送信しました`
     );
@@ -163,22 +185,22 @@ export class GlobalStore {
 
   // todo ownerAddressを記録してdatabase updateしたい
   // removeなのでburnはせず、databaseのみ消去する。
-  async removeToken(ownerAddress:string, tokenId:string) {
+  async removeToken(ownerAddress: string, tokenId: string) {
     try {
       await this.firebase.removeToken(ownerAddress, tokenId);
       this.router.openHomePage();
-    } catch(err) {
+    } catch (err) {
       this.snackbar.send(
         `${tokenId}の削除に失敗しました。detail=${err || '(null)'}`
       );
     }
   }
 
-  getEtherscanAddressUrl(accountAddress:string) : string {
+  getEtherscanAddressUrl(accountAddress: string): string {
     return `https://${this.networkName}.etherscan.io/address/${accountAddress}`;
   }
 
-  getEtherscanTxUrl(txhash:string) : string {
+  getEtherscanTxUrl(txhash: string): string {
     return `https://${this.networkName}.etherscan.io/tx/${txhash}`;
   }
 
@@ -187,11 +209,11 @@ export class GlobalStore {
   async reloadTokenDetail(tokenId: string) {
     console.info(`callee reloadTokenDetail ${tokenId}`);
     this.isLoadingDetail = true;
-    //console.info("callee reloadToken");
     try {
       if (isNullOrUndefined(tokenId)) {
         throw new Error('Invalid tokenId');
       }
+
       //firebaseから参照する
       //const metadataPromise = this.firebase.fetchToken(tokenId);
       const metadataPromise = this.ethereum.tokenURIAsMetadata(tokenId);
@@ -201,19 +223,27 @@ export class GlobalStore {
       const ownerOf = await ownerOfPromise;
       const requests = await requestPromise;
 
-      runInAction(() => { //多分ここが悪いのだと思うが回避策がわからない
-        // console.info("callee reloadTokenDetail::runOnAction");
+      const notLending : boolean = await this.ethereum.notLent(tokenId);
+      let lendOwner : string = '';
+      if (!notLending) {
+        lendOwner = await this.ethereum.lendOwnerOf(tokenId);
+      }
+
+      runInAction(() => {
         this.tokenDetail = new TokenDetailStore(); //参照箇所わかりやすくするためnewしてる
         this.tokenDetail.name = metadata.name;
         this.tokenDetail.identity = metadata.identity;
         this.tokenDetail.description = metadata.description;
         this.tokenDetail.image = metadata.image_url;
-//        this.tokenDetail.createdAt = metadata.createdAt;
+        //        this.tokenDetail.createdAt = metadata.createdAt;
         this.tokenDetail.owner = ownerOf;
         this.tokenDetail.requests = requests;
+        this.tokenDetail.isLent = !notLending;
+        this.tokenDetail.lendOwner = lendOwner;
+
         this.isLoadingDetail = false; //trueにするのはrouterStore
       });
-    } catch(err) {
+    } catch (err) {
       console.error(`detail:${err}`);
       this.snackbar.send(`Errorが発生し、詳細の取得に失敗しました。detail=${err}`);
     }
@@ -221,7 +251,7 @@ export class GlobalStore {
 
   @action
   async reloadHome() {
-    console.info(`callee reloadHome`);
+    //console.info(`callee reloadHome`);
     this.isLoadingCards = true;
     // const tokenIds = await this.ethereum.fetchAllTokenIds();
     // const metadataPromise = [];
@@ -248,7 +278,7 @@ export class GlobalStore {
   isAddress = (hexString: string): boolean =>
     this.ethereum.isAddress(hexString);
 
-  //web3 accountとfirebase authの双方が必要
+  //web3 accountとfirebase authの双方が必要にする？
   @computed
   get isAccountAvailable(): boolean {
     return !!this.accountAddress && this.isAddress(this.accountAddress);

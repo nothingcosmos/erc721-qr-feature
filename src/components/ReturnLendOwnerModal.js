@@ -16,6 +16,8 @@ type Props = {
   toggle: () => void,
   from: string,
   tokenId: string,
+  lendOwner : string,
+  deadline : string,
   onSubmit: (tokenId: string) => void | Promise<void>,
 };
 
@@ -37,14 +39,10 @@ export default class extends React.Component<Props, State> {
     return (
       <React.Fragment>
         <Modal isOpen={this.props.modal}>
-          <ModalHeader toggle={this.props.toggle}>Remove Card</ModalHeader>
+          <ModalHeader toggle={this.props.toggle}>Return LendOwer</ModalHeader>
           <ModalBody>
             <Form>
-              <FormGroup>
-                <Label for="from">From</Label>
-                <Input type="text" id="from" disabled value={this.props.from} />
-              </FormGroup>
-              <FormGroup>
+            <FormGroup>
                 <Label for="tokenId">Token ID</Label>
                 <Input
                   type="text"
@@ -53,13 +51,26 @@ export default class extends React.Component<Props, State> {
                   value={this.props.tokenId}
                 />
               </FormGroup>
+              <FormGroup>
+                <Label for="from">From</Label>
+                <Input type="text" id="from" disabled value={this.props.from} />
+              </FormGroup>
+              <FormGroup>
+                <Label for="lendOwner">LendOwner</Label>
+                <Input type="text" id="lendOwner" disabled value={this.props.lendOwner} />
+              </FormGroup>
+              <FormGroup>
+                <Label for="deadline">Deadline</Label>
+                <Input type="text" id="deadline" disabled value={this.props.deadline} />
+              </FormGroup>
+              
               <div className="float-right">
                 <Button
                   color="danger"
                   outline
                   onClick={e => this.handleSubmit(e)}
                 >
-                  Remove
+                  ReturnLendOwner
                 </Button>
               </div>
             </Form>

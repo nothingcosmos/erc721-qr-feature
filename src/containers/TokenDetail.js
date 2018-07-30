@@ -8,6 +8,7 @@ import RequestCard from '../components/RequestCard';
 import RequestModal from '../components/RequestModal';
 import TransferModal from '../components/TransferModal';
 import RemoveCardModal from '../components/RemoveCardModal';
+import ReturnLendOwnerModal from '../components/ReturnLendOwnerModal';
 import LoadingSpinner from '../components/LoadingSpinner';
 import {  observable } from "mobx"
 
@@ -21,6 +22,7 @@ type State = {
   transferModal: boolean,
   lendModal:boolean,
   removeCardModal:boolean,
+  returnLendOwnerModal:boolean,
 };
 
 export default inject('store', 'routerStore')(
@@ -31,6 +33,7 @@ export default inject('store', 'routerStore')(
         transferModal: false,
         lendModal : false,
         removeCardModal: false,
+        returnLendOwnerModal: false,
       };
       handleSendRequest = () => {
         this.setState({
@@ -48,12 +51,16 @@ export default inject('store', 'routerStore')(
         });
       };
       handleLend = () => {
-        console.info("click lend");
         this.setState({
           lendModal: true,
-          transferModal:true,//共通
+          transferModal:true,//共通利用している
         });
       };
+      handleReturnLendOwner() {
+        this.setState({
+          returnLendModal:true,
+        })
+      }
       handleRemove = () => {
         this.setState({
           removeCardModal: true,
@@ -70,12 +77,9 @@ export default inject('store', 'routerStore')(
           removeCardModal: !this.state.removeCardModal,
         });
       };
-      refresh = () => {
+      toggleReturnLendOwnerModal = () => {
         this.setState({
-          transferModal:false,
-          removeCardModal:false,
-          rendModal:false,
-          removeModal:false,
+          returnLendOwnerModal: !this.state.returnLendOwnerModal,
         });
       };
 
@@ -83,12 +87,8 @@ export default inject('store', 'routerStore')(
         this.props.store.reloadTokenDetail(this.props.routerStore.tokenId);
       }
 
-      render() {
-        //console.info("callee render");
-        //console.info(this.props.store.tokenDetail.image);
-        //flag制御でもだめっぽい, containersのレイヤで更新が伝搬しない
-
-        //苦肉の策で手動refreshしかない
+      //ここの書き方がrender = () => { //だとcontainersの更新が伝搬してrender対象とされなかった。
+      render() { 
         if (this.props.store.isLoadingDetail) {
           return (
             <React.Fragment>
@@ -119,11 +119,16 @@ export default inject('store', 'routerStore')(
                     this.props.store.accountAddress ===
                       this.props.store.tokenDetail.owner
                   }
+                  isLendOwner={this.props.store.tokenDetail.isLent &&
+                    this.props.store.accountAddress ===
+                    this.props.store.tokenDetail.lendOwner
+                  }
                   isAccountAvailable={this.props.store.isAccountAvailable}
                   handleSendRequest={() => this.handleSendRequest()}
                   handleTransfer={() => this.handleTransfer()}
                   handleRemove={() => this.handleRemove()}
                   handleLend={() => this.handleLend()}
+                  handleReturnLendOwner={() => this.handleReturnLendOwner()}
                 />
               </div>
               {this.props.store.tokenDetail.requests && <h2>Requests</h2>}
@@ -192,6 +197,20 @@ export default inject('store', 'routerStore')(
             tokenId={this.props.store.router.tokenId}
             onSubmit={id => {
               this.props.store.removeToken(
+                this.props.store.accountAddress,
+                id
+              );
+            }}
+          />
+          <ReturnLendOwnerModal
+            modal={this.state.returnLendOwnerModal}
+            toggle={this.toggleReturnLendOwnerModal}
+            from={this.props.store.tokenDetail.owner}
+            tokenId={this.props.store.tokenDetail.tokenId}
+            lendOwner={this.props.store.tokenDetail.lendOwner}
+            deadline={this.props.store.tokenDetail.deadline}
+            onSubmit={id => {
+              this.props.store.returnLendOwner(
                 this.props.store.accountAddress,
                 id
               );

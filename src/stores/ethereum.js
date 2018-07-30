@@ -1,8 +1,6 @@
 // @flow
 import * as Web3 from 'web3';
-//import contractABI from './ERC721QR-abi.json';
-import contractABI from '../contracts/abi.json'; //truffle deploy時に生成
-
+import contractABI from '../contracts/abi.json'; //truffle migrate時にmigrate scriptが生成する
 
 //rarebits準拠
 //https://docs.rarebits.io/v1.0/docs/listing-your-assets
@@ -259,12 +257,38 @@ export default class {
     });
   }
 
-  async getTimestamp(from:string) : Promise<number> {
-    const blockNum = window.web3.getBlockNumber;
+  async notLent(tokenId: string): Promise<boolean> {
+    const tokenIdHash = window.web3.sha3(tokenId);
+    const tokenIdHashBigNumber = window.web3.toBigNumber(tokenIdHash);
+    return new Promise((resolve, reject) => {
+      this.contractInstance.notLent(tokenIdHashBigNumber, (err, ret) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(ret);
+      });
+    });
+  }
+
+  async lendOwnerOf(tokenId: string): Promise<string> {
+    const tokenIdHash = window.web3.sha3(tokenId);
+    const tokenIdHashBigNumber = window.web3.toBigNumber(tokenIdHash);
+    return new Promise((resolve, reject) => {
+      this.contractInstance.lendOwnerOf(tokenIdHashBigNumber, (err, owner) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(owner);
+      });
+    });
+  }
+
+  async getTimestamp() {
     return new Promise((resolve, reject) => {
       window.web3.eth.getBlock(
-        blockNum,
-        { from },
+        "latest",
         (err, block) => {
           if (err) {
             reject(err);
@@ -281,9 +305,8 @@ export default class {
     const tokenIdHash = window.web3.sha3(tokenId);
     const tokenIdHashBigNumber = window.web3.toBigNumber(tokenIdHash);
 
-    // const timestamp = await this.getTimestamp();
-    // const deadline = timestamp + (afterDay * 24 * 60 * 60);
-    const deadline = 1000;
+    const timestamp = await this.getTimestamp();
+    const deadline = timestamp + (afterDay * 24 * 60 * 60);
     const deadlineBigNumber = window.web3.toBigNumber(deadline);
 
     return new Promise((resolve, reject) => {

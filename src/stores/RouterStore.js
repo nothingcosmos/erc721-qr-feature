@@ -1,7 +1,7 @@
 // @flow
 import { observable, action, computed, autorun } from 'mobx';
 //import { GlobalStore } from '.';
-import store from './index';
+import store from '.';
 
 export class RouterStore {
   @observable name = 'home'; //Homeで表示を切り替えている
