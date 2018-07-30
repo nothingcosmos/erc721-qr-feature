@@ -15,6 +15,7 @@ service cloud.firestore {
     }
     match /requests/{request} {
       allow read;
+      allow delete: if signedIn();
     }
     match /users/{user} {
       allow read: if signedIn();

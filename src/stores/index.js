@@ -1,10 +1,10 @@
 // @flow
 import { observable, computed, configure, runInAction, action } from 'mobx';
+import { isNullOrUndefined } from 'util';
 import routerStore from './RouterStore';
 import SnackbarStore from './SnackbarStore';
 import Ethereum from './ethereum';
 import FirebaseAgent from './firebase';
-import { isNullOrUndefined } from 'util';
 import ContractAddress from '../contracts/address.json';
 
 configure({ enforceActions: 'strict' });

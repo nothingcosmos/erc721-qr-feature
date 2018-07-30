@@ -4,23 +4,15 @@ import { observable, action, computed, autorun } from 'mobx';
 import store from '.';
 
 export class RouterStore {
-  @observable name = 'home'; //Homeで表示を切り替えている
-  @observable tokenId = ''; //tokenIdの更新タイミングに注意、nameと同時に更新すると子の更新が遅れる。
+  @observable name = 'home'; //Homeで表示を切り替えるために参照している
+  @observable tokenId = ''; //parseUriの他に、クリック時にページ遷移でも変更する
   @observable account = '';
 
   //constructor(globalStore: GlobalStore) {
   constructor() {
     //observableの値更新のたびに呼ばれる
-    autorun(() => {
-      if (this.name === 'token') {
-        //this.setLoadingDetail(store,true);
-        //detailから呼び出す
-        //globalStore.reloadTokenDetail(this.tokenId);
-      }
-      if (this.name === 'home') {
-        //store.reloadHome();
-      }
-    });
+    //autorunは廃止、各containersのcomponentDidMountに移譲
+    //autorun(()=> {});
   }
 
   @computed
