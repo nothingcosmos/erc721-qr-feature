@@ -74,7 +74,7 @@ export class TokenDetail extends React.Component<Props, State> {
               outline
               onClick={() => this.props.handleReturnLendOwner()}
             >
-              returnLendOwner
+              Return LendOwner
             </Button>
             ) : (
             <Button

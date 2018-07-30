@@ -10,6 +10,7 @@ import ContractAddress from '../contracts/address.json';
 configure({ enforceActions: 'strict' });
 
 type RequestItem = {
+  requestId:string,
   client: string,
   tokenId: string,
   message: string,
@@ -194,6 +195,11 @@ export class GlobalStore {
         `${tokenId}の削除に失敗しました。detail=${err || '(null)'}`
       );
     }
+  }
+
+  async deleteRequest(tokenId:string, requestId:string) {
+    await this.firebase.deleteRequest(requestId);
+    this.reloadTokenDetail(tokenId);
   }
 
   getEtherscanAddressUrl(accountAddress: string): string {

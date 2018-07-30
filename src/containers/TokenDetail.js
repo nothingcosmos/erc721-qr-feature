@@ -151,10 +151,20 @@ export default inject('store', 'routerStore')(
                     );
                   }}
                   handleLend={ () => {
-                    
+                    //throw new Error("Not implemented yet.")
+                    this.props.store.lend(
+                      this.props.store.accountAddress,
+                      request.client,
+                      this.props.store.router.tokenId,
+                      30 //初期値
+                    );
                   }}
                   handleDelete={() => {
-                    throw new Error('Not implemented yet');
+                    // throw new Error('Not implemented yet');
+                    this.props.store.deleteRequest(
+                      this.props.store.router.tokenId,
+                      request.requestId
+                    );
                   }}
                 />
               ))}

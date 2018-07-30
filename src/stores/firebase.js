@@ -208,11 +208,11 @@ export class FirebaseAgent {
     });
   }
 
-  async deleteRuest(reqId:string) : Promise<void> {
+  async deleteRequest(requestId:string) {
     await this.initializerPromise;
     const snapshot = await this.db
-      .collection('requests').doc(reqId).delete(() => {
-          console.info(`Succeed deleteRequest : ${reqId}`);
+      .collection('requests').doc(requestId).delete().then(() => {
+          console.info(`Succeed deleteRequest : ${requestId}`);
       }).catch((err) => {
           console.error(`Failed deleteRequest : ${err}`);
       });
@@ -228,6 +228,7 @@ export class FirebaseAgent {
     return snapshot.docs.map(doc => {
       const data = doc.data();
       return {
+        requestId: doc.id,
         client: data.client,
         tokenId: data.tokenId,
         message: data.message,

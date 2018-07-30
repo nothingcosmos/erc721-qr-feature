@@ -11,6 +11,7 @@ type Props = {
   isClient: boolean,
   handleTransfer: () => void,
   handleDelete: () => void,
+  handleLend: () => void,
 };
 
 export default (props: Props) => (
@@ -26,6 +27,9 @@ export default (props: Props) => (
           <React.Fragment>
             <Button color="danger" outline onClick={() => props.handleDelete()}>
               Reject
+            </Button>
+            <Button color="info" outline className="ml-2" onClick={() => props.handleLend()}>
+              Trial Lend
             </Button>
             <Button
               color="success"
