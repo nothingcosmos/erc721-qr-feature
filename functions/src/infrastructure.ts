@@ -22,6 +22,15 @@ export async function isImageRequired(tokenId: string): Promise<boolean> {
   return true;
 }
 
+export async function isUserExisting(uid: string) : Promise<boolean> {
+  const snapshot = await db.collection('users').doc(uid).get();
+  if (!snapshot.exists) {
+    console.log(`User is not exist: uid = ${uid}`);
+    return false;
+  }
+  return true;
+}
+
 export async function isTokenExisting(tokenId: string): Promise<boolean> {
   const snapshot = await db.collection('tokens').doc(tokenId).get();
   if (!snapshot.exists) {
@@ -87,8 +96,9 @@ export async function appendUrl(tokenId: string, url: string) {
   })
 }
 
-export async function addToken(name: string, identity:string, description: string): Promise<string> {
+export async function addToken(owner:string, name: string, identity:string, description: string): Promise<string> {
   const ref = await db.collection('tokens').add({
+    owner,
     name,
     identity,
     description,
@@ -97,12 +107,14 @@ export async function addToken(name: string, identity:string, description: strin
   return ref.id;
 }
 
-export async function addRequest(client: string, tokenId: string, message: string): Promise<string> {
+export async function addRequest(uid:string, client: string, tokenId: string, message: string): Promise<string> {
   const { FieldValue } = admin.firestore;
   const ref = await db.collection('requests').add({
+    uid,
     client,
     tokenId,
     message,
+    reject:false,
     createdAt: FieldValue.serverTimestamp(),
   });
   return ref.id;

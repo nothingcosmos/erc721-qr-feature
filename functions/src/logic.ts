@@ -3,14 +3,14 @@ import * as path from 'path';
 
 import * as infrastructure from './infrastructure';
 
-export async function addToken(name: string, identity:string, description: string): Promise<string> {
-  console.log(`addToken(name = ${name}, identity = ${identity}, description = ${description})`);
-  return await infrastructure.addToken(name, identity, description);
+export async function addToken(owner:string, name: string, identity:string, description: string): Promise<string> {
+  console.log(`addToken(owner = ${owner}, name = ${name}, identity = ${identity}, description = ${description})`);
+  return await infrastructure.addToken(owner, name, identity, description);
 }
 
-export async function addRequest(from: string, tokenId: string, message: string): Promise<string> {
-  console.log(`addRequest(client = ${from}, tokenId = ${tokenId}, message = ${message})`);
-  return await infrastructure.addRequest(from, tokenId, message);
+export async function addRequest(uid:string, from: string, tokenId: string, message: string): Promise<string> {
+  console.log(`addRequest(uid = ${uid}, client = ${from}, tokenId = ${tokenId}, message = ${message})`);
+  return await infrastructure.addRequest(uid, from, tokenId, message);
 }
 
 export async function generateThumbnail(tokenId: string, imagePath: string) {

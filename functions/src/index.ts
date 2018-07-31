@@ -6,9 +6,16 @@ import * as logic from './logic';
 import * as infrastructure from './infrastructure';
 
 exports.add_token = functions.https.onRequest(async (req, resp) => {
+  const owner:string = req.body.owner;
   const name: string = req.body.name;
   const identity: string = req.body.identity;
   const description: string = req.body.description;
+
+  if (!owner) {
+    console.log('owner is empty.');
+    resp.sendStatus(400);
+    return;
+  }
 
   if (!name) {
     console.log('name is empty.')
@@ -36,17 +43,24 @@ exports.add_token = functions.https.onRequest(async (req, resp) => {
     return;
   }
 
-  const tokenId = await logic.addToken(name, identity, description);
+  const tokenId = await logic.addToken(owner, name, identity, description);
   resp.status(200).json({ tokenId });
 });
 
 exports.add_request = functions.https.onRequest(async (req, resp) => {
+  const uid : string = req.body.uid;
   const from: string = req.body.from;
   const tokenId: string = req.body.tokenId;
   const message: string = req.body.message;
 
   if (!util.isValidAddress(from)) {
     console.log(`'${from}' is not valid address.`)
+    resp.sendStatus(400); // Bad Request
+    return;
+  }
+
+  if (! (await infrastructure.isUserExisting(uid))) {
+    console.log(`'${uid}' is not valid uid.`)
     resp.sendStatus(400); // Bad Request
     return;
   }
@@ -64,7 +78,7 @@ exports.add_request = functions.https.onRequest(async (req, resp) => {
     return;
   }
 
-  const requestId = await logic.addRequest(from, tokenId, message);
+  const requestId = await logic.addRequest(uid, from, tokenId, message);
   resp.status(200).json({ requestId });
 });
 
