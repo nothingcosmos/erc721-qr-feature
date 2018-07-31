@@ -15,12 +15,12 @@ service cloud.firestore {
     }
     match /tokens/{token} {
       allow read;
-      allow update: if ownerOf();
-      allow delete: if ownerOf();
+      allow update: if signedIn(); //todo ownerOf()
+      allow delete: if signedIn(); //todo ownerOf()
     }
     match /requests/{req} {
       allow read;
-      allow update: if signedIn();
+      allow update: if signedIn(); //todo requestOf()
     }
     match /users/{user} {
       allow read: if signedIn();
