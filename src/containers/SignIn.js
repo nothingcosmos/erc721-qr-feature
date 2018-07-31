@@ -77,12 +77,12 @@ export default inject('store', 'authStore')(
                     </a>
                   )}
               </div>
-            </div>
-            <div>
+            </div>            
+            {/* <div>
               <dd className="text-truncate">
                 {this.textTo(this.props.store.accountAddress)}
               </dd>
-            </div>
+            </div> */}
             <SignInModal
               modal={this.state.signInModal}
               toggle={this.toggleSignInModal}

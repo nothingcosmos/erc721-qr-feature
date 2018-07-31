@@ -5,8 +5,6 @@ import {
   FormGroup,
   Label,
   Input,
-  InputGroup,
-  InputGroupAddon,
   Button,
   Modal,
   ModalHeader,

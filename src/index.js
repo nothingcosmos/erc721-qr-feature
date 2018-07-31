@@ -2,7 +2,7 @@
 import React, { StrictMode } from 'react';
 import ReactDOM from 'react-dom';
 import { autorun } from 'mobx';
-import DevTools from 'mobx-react-devtools'
+//import DevTools from 'mobx-react-devtools'
 import { Provider } from 'mobx-react';
 // https://github.com/flatiron/director/issues/332
 // https://github.com/flatiron/director/issues/349
@@ -50,7 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
       <Provider {...stores}>
         <StrictMode>
           <App />
-          <DevTools />
         </StrictMode>
       </Provider>,
       elem

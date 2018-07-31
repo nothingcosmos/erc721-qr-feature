@@ -1,21 +1,27 @@
 service cloud.firestore {
   match /databases/{database}/documents {
     function ownerOf() {
-      return request.auth.uid == resource.data.owner_uid;
+      return root.child('users/'+request.auth.uid+'/accountAddress').val()
+             == resource.data.owner;
     }
     function userOf(uid) {
       return request.auth.uid == uid;
+    }
+    function requestOf(req,uid) {
+      return root.child('requests/'+req+'/uid').val() == uid;
     }
     function signedIn() {
       return request.auth.uid != null;
     }
     match /tokens/{token} {
       allow read;
+      allow update: if ownerOf();
       allow delete: if ownerOf();
     }
-    match /requests/{request} {
+    match /requests/{req} {
       allow read;
-      allow delete: if signedIn();
+      allow update: if signedIn() && requestOf(req, request.auth.uid);
+      allow delete: if signedIn() && requestOf(req, request.auth.uid);
     }
     match /users/{user} {
       allow read: if signedIn();

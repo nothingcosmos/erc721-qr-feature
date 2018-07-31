@@ -6,12 +6,14 @@ import SnackbarStore from './SnackbarStore';
 import Ethereum from './ethereum';
 import FirebaseAgent from './firebase';
 import ContractAddress from '../contracts/address.json';
+import authStore from './authStore';
 
 configure({ enforceActions: 'strict' });
 
 type RequestItem = {
   requestId:string,
   client: string,
+  uid:string,
   tokenId: string,
   message: string,
   createdAt: string,
@@ -91,12 +93,15 @@ export class GlobalStore {
 
   async registerToken(name: string, identity: string, description: string, image: File) {
     try {
-      // Firebaseに書き込む
-      this.snackbar.send('メタデータを書き込んでいます');
       if (!this.accountAddress) {
         throw new Error('Cannot get account');
       }
+      if (!authStore.authUser) {
+        throw new Error('AuthUser not found. please signIn.');
+      }
 
+      // Firebaseに書き込む
+      this.snackbar.send('メタデータを書き込んでいます');
       const tokenId = await this.firebase.registerToken(
         this.accountAddress,
         name,
@@ -109,10 +114,7 @@ export class GlobalStore {
       this.snackbar.send(
         `${this.networkName || '(null)'} にトランザクションを送信しています`
       );
-      if (!this.accountAddress) {
-        throw new Error('Cannot get account');
-      }
-
+      
       const image_info = await this.firebase.fetchImageUrl(tokenId);
       const metadata = this.ethereum.createMetadata(tokenId, name, identity, description, image_info.image);
       await this.ethereum.mintWithMetadata(this.accountAddress, tokenId, metadata);
@@ -130,6 +132,7 @@ export class GlobalStore {
       `${this.networkName || '(null)'} にトランザクションを送信しています`
     );
     await this.ethereum.transfer(from, to, tokenId);
+    await this.firebase.updateTokenOwner(tokenId, to);
     this.snackbar.send(
       `${this.networkName || '(null)'} にトランザクションを送信しました`
     );
@@ -198,7 +201,7 @@ export class GlobalStore {
   }
 
   async deleteRequest(tokenId:string, requestId:string) {
-    await this.firebase.deleteRequest(requestId);
+    await this.firebase.rejectRequest(requestId);
     this.reloadTokenDetail(tokenId);
   }
 
@@ -259,6 +262,16 @@ export class GlobalStore {
   }
 
   @action
+  async reloadItems() {
+    this.isLoadingCards = true;
+    const tokenCards = await this.firebase.retrieveTokenListByOwner(this.accountAddress);
+    runInAction(() => {
+      this.tokenCards = tokenCards;
+      this.isLoadingCards = false;
+    });
+  }
+
+  @action
   async reloadHome() {
     //console.info(`callee reloadHome`);
     this.isLoadingCards = true;
@@ -297,7 +310,10 @@ export class GlobalStore {
     if (!this.accountAddress) {
       throw new Error('this.accountAddress is null');
     }
-    this.firebase.addRequest(this.accountAddress, tokenId, message);
+    if (!authStore.authUser) {
+      throw new Error('authUser is null, please signIn.');
+    }
+    this.firebase.addRequest(authStore.authUser.uid, this.accountAddress, tokenId, message);
   }
 }
 

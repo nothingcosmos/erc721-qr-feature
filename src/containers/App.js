@@ -14,6 +14,7 @@ import FloatingButtons from './FloatingButtons';
 import Snackbar from './Snackbar';
 import Web3Status from './Web3Status';
 import Home from './Home';
+import Items from './Items';
 import SignIn from './SignIn';
 import type { Store,  GlobalStore } from '../stores';
 
@@ -78,6 +79,8 @@ const Page = inject('store')(
         return <AccountDetail />;
       case 'register':
         return <RegisterToken />;
+      case 'items':
+        return <Items />;
       default:
         return null;
     }

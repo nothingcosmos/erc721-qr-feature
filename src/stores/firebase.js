@@ -13,7 +13,7 @@ export class FirebaseAgent {
   initializerPromise: Promise<void>;
   constructor() {
     this.initializerPromise = this.initializeApp();
-    console.info("firebaseAgent initialized.");
+    //console.info("firebaseAgent initialized.");
   }
 
   async initializeApp() {
@@ -136,6 +136,7 @@ export class FirebaseAgent {
   }
 
   //thumbnail生成と並行してurlを取得する
+  //本来ならthumbnail生成が完了しないとurlが取得できないため、予約済みのurlを取得する。
   async fetchImageUrl(tokenId: string) {
     const data = await this.getJson(`/erc721/${tokenId}/image_url`);
     return {
@@ -163,11 +164,11 @@ export class FirebaseAgent {
     });
   }
 
-  async retrieveTokenListByOwner(ownerAddress: string) : TokenItem[] {
+  async retrieveTokenListByOwner(owner: string) : TokenItem[] {
       await this.initializerPromise;
       const snapshot = await this.db
         .collection('tokens')
-        .where('ownerAddress', '==', ownerAddress)
+        .where('owner', '==', owner)
         .orderBy('createdAt', 'desc')
         .get();
       return snapshot.docs.map(doc => {
@@ -182,8 +183,18 @@ export class FirebaseAgent {
       });
   }
 
+  async updateTokenOwner(tokenId:string, newOwner:string) {
+    await this.initializerPromise;
+    const snapshot = await this.db
+      .collection('tokens').doc(tokenId);
+      
+    await snapshot.set({
+      owner:newOwner,
+    }, {merge: true});
+  }
+
   //owenerAddressは現状参照されない
-  async removeToken(ownerAddress: string, tokenId: string) {
+  async removeToken(ownerUid: string, tokenId: string) {
     await this.initializerPromise;
     const snapshot = await this.db
       .collection('tokens')
@@ -196,12 +207,14 @@ export class FirebaseAgent {
   } 
 
   async addRequest(
+    uid:string,
     from: string,
     tokenId: string,
     message: string
   ): Promise<void> {
     await this.initializerPromise;
     await this.postJson('/api/add_request', {
+      uid,
       from,
       tokenId,
       message,
@@ -218,11 +231,21 @@ export class FirebaseAgent {
       });
   }
 
+  async rejectRequest(requestId:string) {
+    await this.initializerPromise;
+    const snapshot = await this.db
+      .collection('requests').doc(requestId);
+      
+    await snapshot.set({
+      reject:true,
+    }, {merge: true});
+  }
+
   async getRequests(tokenId: string) {
     await this.initializerPromise;
     const snapshot = await this.db
       .collection('requests')
-      .where('tokenId', '==', tokenId)
+      .where('tokenId', '==', tokenId).where('reject', '==', false)
       .orderBy('createdAt', 'desc')
       .get();
     return snapshot.docs.map(doc => {
@@ -230,6 +253,7 @@ export class FirebaseAgent {
       return {
         requestId: doc.id,
         client: data.client,
+        uid: data.uid,
         tokenId: data.tokenId,
         message: data.message,
         createdAt: data.createdAt.toDate().toUTCString(),
@@ -240,6 +264,12 @@ export class FirebaseAgent {
   async addUser(user): Promise<void> {
     await this.initializerPromise;
     await this.db.collection('users').doc(user.uid).set(user, { merge: true });
+    return;
+  }
+
+  async updateUserAccountAddress(uid:string, accountAddress:string) : Promise<void> {
+    await this.initializerPromise;
+    await this.db.collection('users').doc(uid).set({accountAddress:accountAddress}, { merge: true });
     return;
   }
 
@@ -256,6 +286,7 @@ export class FirebaseAgent {
       email: data.email,
       photoURL: data.photoURL,
       provider: data.provider,
+      accountAddress: data.accountAddress,
     };
   }
 }

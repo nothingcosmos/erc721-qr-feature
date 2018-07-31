@@ -19,6 +19,7 @@ export type AuthUser = {
 export class AuthStore {
   @observable authUser: ?AuthUser = null;
   @observable token = window.localStorage.getItem('erc721-qr-auth');
+  @observable viewUser: ?AuthUser = null;
 
   constructor() {
     //reaction動かない、何かしらactionの伝搬に問題を抱えている
@@ -42,7 +43,7 @@ export class AuthStore {
         window.localStorage.setItem('erc721-qr-auth', this.token);
         if (isNullOrUndefined(this.authUser)) {
           //console.info(`fetch User:${this.token}`);
-          this.fetchUser(this.token);
+          this.fetchAuthUser(this.token);
         }
       } else {
         window.localStorage.removeItem('erc721-qr-auth');
@@ -51,8 +52,23 @@ export class AuthStore {
     );
   }
 
+  //他のユーザーを参照する
   @action
-  async fetchUser(uid: string) {
+  async fetchViewUser(uid:string) {
+    try {
+      const user = await firebase.retrieveUser(uid);
+      if (!isNullOrUndefined(user)) {
+        runInAction(() => {
+          this.viewUser = user;
+        });
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  @action
+  async fetchAuthUser(uid: string) {
     try {
       const user = await firebase.retrieveUser(uid);
       if (!isNullOrUndefined(user)) {
