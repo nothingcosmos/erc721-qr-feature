@@ -1,0 +1,6 @@
+{
+  "presets": ["mobx", "react"],
+  "plugins": [
+    "babel-plugin-styled-components",
+  ]
+}

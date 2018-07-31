@@ -20,7 +20,7 @@ import FloatingButtons from '../components/FloatingButtons';
 import CameraModal from '../components/CameraModal';
 import RequestModal from '../components/RequestModal';
 import TransferModal from '../components/TransferModal';
-import AccountDetailModal from '../components/AccountDetailModal';
+import UserDetailModal from '../components/UserDetailModal';
 import RemoveCardModal from '../components/RemoveCardModal';
 import Web3Status from '../components/Web3Status';
 import AccountDetail from '../components/AccountDetail';
@@ -178,16 +178,15 @@ storiesOf('RemoveCardModal', module).add('default', () => (
 
 storiesOf('AccountDetail', module).add('default', () => (
   <AccountDetail
-    accountAddress={address}
     authUser={authUser}
   />
 ));
 
-storiesOf('AccountDetailModal', module).add('default', () => (
-  <AccountDetailModal
+storiesOf('UserDetailModal', module).add('default', () => (
+  <UserDetailModal
     modal
     toggle={action('toggle')}
-    accountAddress={address}
+    authUser={authUser}
   />
 ));
 
