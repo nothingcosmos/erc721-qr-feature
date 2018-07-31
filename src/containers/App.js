@@ -49,10 +49,17 @@ export default inject('store')(
                 }}
               >
                 ERC721 QR
-              </a>          
+              </a>
             </h1>
             </div>
             <SignIn />
+            <a
+              className="ml-2" 
+              style={{cursor:'pointer'}}
+              href="/items" onClick={e=> {
+              e.preventDefault();
+              this.props.store.router.openItemsPageByAccountAddress();
+            }}>MyItems</a>
           </div>
           <Page />
           <hr />

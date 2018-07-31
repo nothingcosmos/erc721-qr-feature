@@ -28,6 +28,7 @@ new Router({
   '/token/:tokenId': tokenId => store.router.openTokenPageById(tokenId),
   '/user/:userId': account => store.router.openAccountPageById(account),
   '/register': () => store.router.openRegisterPage(),
+  '/items': () => store.router.openItemsPageByAccountAddress(),
 })
   .configure({
     html5history: true,

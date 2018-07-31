@@ -20,8 +20,7 @@ service cloud.firestore {
     }
     match /requests/{req} {
       allow read;
-      allow update: if signedIn() && requestOf(req, request.auth.uid);
-      allow delete: if signedIn() && requestOf(req, request.auth.uid);
+      allow update: if signedIn();
     }
     match /users/{user} {
       allow read: if signedIn();

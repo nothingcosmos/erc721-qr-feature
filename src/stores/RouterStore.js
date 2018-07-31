@@ -6,7 +6,7 @@ import store from '.';
 export class RouterStore {
   @observable name = 'home'; //Homeで表示を切り替えるために参照している
   @observable tokenId = ''; //parseUriの他に、クリック時にページ遷移でも変更する
-  @observable account = ''; //
+  @observable account = ''; //uid
 
   //constructor(globalStore: GlobalStore) {
   constructor() {
@@ -26,8 +26,8 @@ export class RouterStore {
         return `/token/${this.tokenId}`;
       case 'register':
         return '/register';
-      case '/items':
-        return `/items/${this.account}`;
+      case 'items':
+        return `/items`;
       default:
         return '/404';
     }
