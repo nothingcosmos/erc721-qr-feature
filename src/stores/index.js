@@ -222,9 +222,6 @@ export class GlobalStore {
       if (isNullOrUndefined(tokenId)) {
         throw new Error('Invalid tokenId');
       }
-
-      //firebaseから参照する
-      //const metadataPromise = this.firebase.fetchToken(tokenId);
       const metadataPromise = this.ethereum.tokenURIAsMetadata(tokenId);
       const ownerOfPromise = this.ethereum.ownerOf(tokenId);
       const requestPromise = this.firebase.getRequests(tokenId);
@@ -257,7 +254,7 @@ export class GlobalStore {
       });
     } catch (err) {
       console.error(`detail:${err}`);
-      this.snackbar.send(`Errorが発生し、詳細の取得に失敗しました。detail=${err}`);
+      //this.snackbar.send(`Errorが発生し、詳細の取得に失敗しました。detail=${err}`);
     }
   }
 
