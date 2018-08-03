@@ -38,6 +38,32 @@ export class AuthStore {
     //   }
     // );
     autorun(() => {
+      firebase.auth().getRedirectResult().then(function(result) {
+        if (result.credential) {
+          // This gives you a Google Access Token. You can use it to access the Google API.
+          this.token = result.credential.accessToken;
+        }
+        const provider_name = result.provider_name;
+        const user = result.user;
+        this.authUser =  {
+          uid:user.uid,
+          displayName:user.displayName,
+          email:user.email,
+          photoURL:user.photoURL,
+          provider:provider_name,
+        };
+      }).catch(function(error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        // The email of the user's account used.
+        var email = error.email;
+        // The firebase.auth.AuthCredential type that was used.
+        var credential = error.credential;
+        // ...
+      });
+
+
       //console.info(`autorun token:${this.token}, user:${this.authUser}`);
       if (!!this.token) {
         window.localStorage.setItem('erc721-qr-auth', this.token);

@@ -53,7 +53,7 @@ export class FirebaseAgent {
   }
 
   async openOAuth2(provider_name:string) : Promise<?AuthUser> {
-    const provier = (() => {
+    const provider = (() => {
       switch(provider_name) {
         case "google":
           return new firebase.auth.GoogleAuthProvider();
@@ -69,7 +69,11 @@ export class FirebaseAgent {
           return new firebase.auth.TwitterAuthProvider();
       }
     })();
-    return firebase.auth().signInWithPopup(provier).then(function(result) {
+    const isMobile = true;
+    if (isMobile) {
+      firebase.auth().signInWithRedirect(provider);
+    } else {
+    return firebase.auth().signInWithPopup(provider).then(function(result) {
       // This gives you a the Twitter OAuth 1.0 Access Token and Secret.
       // You can use these server side with your app's credentials to access the Twitter API.
       //var token = result.credential.accessToken;
@@ -95,6 +99,7 @@ export class FirebaseAgent {
       console.error(errorCode + ":" + errorMessage);
       return null;
     });
+  }
   }
 
   async registerToken(
