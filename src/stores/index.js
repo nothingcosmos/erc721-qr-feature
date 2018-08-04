@@ -292,6 +292,9 @@ export class GlobalStore {
       this.tokenCards = tokenCards;
       this.isLoadingCards = false;
     });
+
+    //遅延実行
+    await authStore.fetchOAuthRedirect();
   }
 
   isAddress = (hexString: string): boolean =>

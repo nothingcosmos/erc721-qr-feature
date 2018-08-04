@@ -38,16 +38,17 @@ export default inject('store', 'authStore')(
 
       textTo(accountAddress: string) {
         if (isNullOrUndefined(accountAddress)) {
-          return "AccountAddress : Not Available.";
+          return "Please signIn to MetaMask.";
         } else {
-          return `AccountAddress : ${accountAddress}`;
+          const addr = accountAddress.substr(0, 6) + "..." + accountAddress.substr(-4,4);
+          return `${addr}`;
         }
       }
 
       render() {
         return (
           <div className="d-flex flex-column">
-            <div className="d-flex flex-row">
+            <div className="d-flex flex-row ml-4">
               <div><FontAwesomeIcon icon="sign-in-alt"
                 onClick={e => {
                   e.preventDefault();
@@ -78,11 +79,11 @@ export default inject('store', 'authStore')(
                   )}
               </div>
             </div>            
-            {/* <div>
+            {<div className="ml-4">
               <dd className="text-truncate">
                 {this.textTo(this.props.store.accountAddress)}
               </dd>
-            </div> */}
+            </div>}
             <SignInModal
               modal={this.state.signInModal}
               toggle={this.toggleSignInModal}

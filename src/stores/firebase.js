@@ -24,6 +24,7 @@ export class FirebaseAgent {
     this.db = firebase.firestore();
     this.db.settings({ timestampsInSnapshots: true });
     this.storage = firebase.storage();
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
   }
 
   async postJson(url: string, value: any) {
@@ -52,42 +53,77 @@ export class FirebaseAgent {
     throw new Error(response);
   }
 
-  async openOAuth2(provider_name:string) : Promise<?AuthUser> {
-    const provider = (() => {
-      switch(provider_name) {
-        case "google":
-          return new firebase.auth.GoogleAuthProvider();
-        case "twitter":
-          return new firebase.auth.TwitterAuthProvider();
-        case "facebook":
-          return new firebase.auth.FacebookAuthProvider();
-        case "github":
-          return new firebase.auth.GithubAuthProvider();
-        //todo
-        //SMSによる認証もある
-        default:
-          return new firebase.auth.TwitterAuthProvider();
+  async fetchRedirectResult() : Promise<?AuthUser> {
+    firebase.auth().getRedirectResult().then(function(result) {
+      if (result.credential) {
+//        console.log(`token : ${result.credential.accessToken}`);
       }
-    })();
-    const isMobile = true;
-    if (isMobile) {
-      firebase.auth().signInWithRedirect(provider);
-    } else {
-    return firebase.auth().signInWithPopup(provider).then(function(result) {
-      // This gives you a the Twitter OAuth 1.0 Access Token and Secret.
-      // You can use these server side with your app's credentials to access the Twitter API.
-      //var token = result.credential.accessToken;
-      //var secret = result.credential.secret;
-      // The signed-in user info.
       const user = result.user;
       return {
           uid:user.uid,
           displayName:user.displayName,
           email:user.email,
           photoURL:user.photoURL,
-          provider:provider_name,
+          provider:user.provider_name,
       };
     }).catch(function(error) {
+      // Handle Errors here.
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      console.error(errorCode + ":" + errorMessage);
+      return null;
+    });
+  }
+
+  newAuthProvider(provider_name: string) {
+    switch (provider_name) {
+      case "google":
+        return new firebase.auth.GoogleAuthProvider();
+      case "twitter":
+        return new firebase.auth.TwitterAuthProvider();
+      case "facebook":
+        return new firebase.auth.FacebookAuthProvider();
+      case "github":
+        return new firebase.auth.GithubAuthProvider();
+      //todo
+      //SMSによる認証もある
+      default:
+        return new firebase.auth.TwitterAuthProvider();
+    }
+  }
+
+  async redirectOAuth(provider_name: string): Promise<?AuthUser> {
+    const provider = this.newAuthProvider(provider_name);
+    return firebase.auth().signInWithRedirect(provider).then(function (result) {
+      const user = result.user;
+      return {
+        uid: user.uid,
+        displayName: user.displayName,
+        email: user.email,
+        photoURL: user.photoURL,
+        provider: provider_name,
+      };
+    }).catch(function (error) {
+      // Handle Errors here.
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      console.error(errorCode + ":" + errorMessage);
+      return null;
+    });
+  }
+
+  async openOAuth(provider_name: string): Promise<?AuthUser> {
+    const provider = this.newAuthProvider(provider_name);
+    return firebase.auth().signInWithPopup(provider).then(function (result) {
+      const user = result.user;
+      return {
+        uid: user.uid,
+        displayName: user.displayName,
+        email: user.email,
+        photoURL: user.photoURL,
+        provider: provider_name,
+      };
+    }).catch(function (error) {
       // Handle Errors here.
       var errorCode = error.code;
       var errorMessage = error.message;
@@ -99,7 +135,6 @@ export class FirebaseAgent {
       console.error(errorCode + ":" + errorMessage);
       return null;
     });
-  }
   }
 
   async registerToken(

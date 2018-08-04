@@ -36,34 +36,8 @@ export class AuthStore {
     //       window.localStorage.removeItem('erc721-qr-auth');
     //     }
     //   }
-    // );
+    // );    
     autorun(() => {
-      firebase.auth().getRedirectResult().then(function(result) {
-        if (result.credential) {
-          // This gives you a Google Access Token. You can use it to access the Google API.
-          this.token = result.credential.accessToken;
-        }
-        const provider_name = result.provider_name;
-        const user = result.user;
-        this.authUser =  {
-          uid:user.uid,
-          displayName:user.displayName,
-          email:user.email,
-          photoURL:user.photoURL,
-          provider:provider_name,
-        };
-      }).catch(function(error) {
-        // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        // The email of the user's account used.
-        var email = error.email;
-        // The firebase.auth.AuthCredential type that was used.
-        var credential = error.credential;
-        // ...
-      });
-
-
       //console.info(`autorun token:${this.token}, user:${this.authUser}`);
       if (!!this.token) {
         window.localStorage.setItem('erc721-qr-auth', this.token);
@@ -80,7 +54,7 @@ export class AuthStore {
 
   //他のユーザーを参照する
   @action
-  async fetchViewUser(uid:string) {
+  async fetchViewUser(uid: string) {
     try {
       const user = await firebase.retrieveUser(uid);
       if (!isNullOrUndefined(user)) {
@@ -108,9 +82,53 @@ export class AuthStore {
   }
 
   @action
+  async fetchOAuthRedirect() {
+    try {
+      if (!!this.authUser || !this.isMobile()) {
+        return;
+      }
+      const user = await firebase.fetchRedirectResult();
+      //const user = null;
+      if (!isNullOrUndefined(user)) {
+        runInAction(() => {
+          console.info("update user from redirect");
+          this.authUser = user;
+          this.token = user.uid;
+        });
+        //両方揃ってたらstore
+        if (store.isAccountAvailable) {
+          user.accountAddress = store.accountAddress;
+        }
+
+        firebase.addUser(user);
+        snackbarStore.send(`${user.displayName} SignIn.`);
+      }
+    } catch (err) {
+      console.error(`Failed fetchRedirect : ${err}`);
+    }
+  }
+
+  isMobile(): boolean {
+    var ua = navigator.userAgent;
+    if ((ua.indexOf('iPhone') > 0 || ua.indexOf('iPod') > 0 || ua.indexOf('Android') > 0) 
+      && ua.indexOf('Mobile') > 0) {
+      return true;
+    } else if (ua.indexOf('iPad') > 0 || ua.indexOf('Android') > 0) {
+      return false;
+    } else {
+      return false;
+    }
+  }
+
+  @action
   async signin(provider: string) {
     try {
-      const user = await firebase.openOAuth2(provider);
+      if (this.isMobile()) {
+        await firebase.redirectOAuth(provider);
+        return;
+      }
+
+      const user = await firebase.openOAuth(provider);
       if (!isNullOrUndefined(user)) {
         //console.info(user);
         runInAction(() => {
@@ -121,8 +139,6 @@ export class AuthStore {
         if (store.isAccountAvailable) {
           user.accountAddress = store.accountAddress;
         }
-        console.info(store.isAccountAvailable);
-
         firebase.addUser(user);
         snackbarStore.send(`${user.displayName} SignIn.`);
       }
