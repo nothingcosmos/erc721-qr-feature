@@ -54,7 +54,7 @@ export class FirebaseAgent {
   }
 
   async fetchRedirectResult() : Promise<?AuthUser> {
-    firebase.auth().getRedirectResult().then(function(result) {
+    return firebase.auth().getRedirectResult().then(function(result) {
       if (result.credential) {
 //        console.log(`token : ${result.credential.accessToken}`);
       }

@@ -44,6 +44,8 @@ export class AuthStore {
         if (isNullOrUndefined(this.authUser)) {
           //console.info(`fetch User:${this.token}`);
           this.fetchAuthUser(this.token);
+        } else {
+          //console.info("change token, already auth.");
         }
       } else {
         window.localStorage.removeItem('erc721-qr-auth');
@@ -74,6 +76,7 @@ export class AuthStore {
       if (!isNullOrUndefined(user)) {
         runInAction(() => {
           this.authUser = user;
+          //this.tokenはsetしない
         });
       }
     } catch (err) {
@@ -89,6 +92,7 @@ export class AuthStore {
       }
       const user = await firebase.fetchRedirectResult();
       //const user = null;
+      console.info(user);
       if (!isNullOrUndefined(user)) {
         runInAction(() => {
           console.info("update user from redirect");
@@ -102,6 +106,8 @@ export class AuthStore {
 
         firebase.addUser(user);
         snackbarStore.send(`${user.displayName} SignIn.`);
+      } else {
+        console.error("Failed redirectOAuth.");
       }
     } catch (err) {
       console.error(`Failed fetchRedirect : ${err}`);
