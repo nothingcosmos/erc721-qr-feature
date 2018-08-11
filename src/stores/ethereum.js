@@ -14,9 +14,9 @@ export type MetadataStandard = {
 }
 
 export default class {
-  apiEndpoint : string = "https://erc721-qr-feature.firebaseapp";
-  hostingEndpoint : string = "https://erc721-qr-feature.firebaseapp.com";
-  originalTag : string = "erc721-qr";
+  apiEndpoint : string = "https://erc721-gpu-rental.firebaseapp";
+  hostingEndpoint : string = "https://erc721-gpu-rental.firebaseapp.com";
+  originalTag : string = "erc721-gpu-rental";
   contractInstance: any;
 
   constructor(address: string) {
@@ -129,7 +129,7 @@ export default class {
         description:description,
         image_url:imageUrl,
         home_url:`${this.hostingEndpoint}/token/${tokenId}`,
-        tags:["erc721-qr"],
+        tags:[this.originalTag],
     };
   }
 

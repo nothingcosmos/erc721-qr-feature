@@ -44,6 +44,8 @@ export type TokenItem = {
 };
 
 export class GlobalStore {
+  serviceName : string = "ERC721GPURental";
+
   @observable router = routerStore;//= new RouterStore(this);
   @observable snackbar = SnackbarStore;
 

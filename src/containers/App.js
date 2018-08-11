@@ -48,7 +48,7 @@ export default inject('store')(
                   this.props.store.router.openHomePage();
                 }}
               >
-                ERC721 QR
+                {this.props.store.serviceName}
               </a>
             </h1>
             </div>
