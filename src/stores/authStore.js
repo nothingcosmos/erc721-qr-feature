@@ -18,7 +18,7 @@ export type AuthUser = {
 
 export class AuthStore {
   @observable authUser: ?AuthUser = null;
-  @observable token = window.localStorage.getItem('erc721-qr-auth');
+  @observable token = window.localStorage.getItem(store.serviceName);
   @observable viewUser: ?AuthUser = null;
 
   constructor() {
@@ -40,7 +40,7 @@ export class AuthStore {
     autorun(() => {
       //console.info(`autorun token:${this.token}, user:${this.authUser}`);
       if (!!this.token) {
-        window.localStorage.setItem('erc721-qr-auth', this.token);
+        window.localStorage.setItem(store.serviceName, this.token);
         if (isNullOrUndefined(this.authUser)) {
           //console.info(`fetch User:${this.token}`);
           this.fetchAuthUser(this.token);
@@ -48,7 +48,7 @@ export class AuthStore {
           //console.info("change token, already auth.");
         }
       } else {
-        window.localStorage.removeItem('erc721-qr-auth');
+        window.localStorage.removeItem(store.serviceName);
       }
     }
     );

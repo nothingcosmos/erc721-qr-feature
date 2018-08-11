@@ -11,9 +11,9 @@ import authStore from './authStore';
 configure({ enforceActions: 'strict' });
 
 type RequestItem = {
-  requestId:string,
+  requestId: string,
   client: string,
-  uid:string,
+  uid: string,
   tokenId: string,
   message: string,
   createdAt: string,
@@ -44,7 +44,8 @@ export type TokenItem = {
 };
 
 export class GlobalStore {
-  serviceName : string = "ERC721GPURental";
+  serviceName: string = "ERC721 GPU Rental";
+  deployedNetwork: string = "Rinkeby";
 
   @observable router = routerStore;//= new RouterStore(this);
   @observable snackbar = SnackbarStore;
@@ -116,7 +117,7 @@ export class GlobalStore {
       this.snackbar.send(
         `${this.networkName || '(null)'} にトランザクションを送信しています`
       );
-      
+
       const image_info = await this.firebase.fetchImageUrl(tokenId);
       const metadata = this.ethereum.createMetadata(tokenId, name, identity, description, image_info.image);
       await this.ethereum.mintWithMetadata(this.accountAddress, tokenId, metadata);
@@ -158,7 +159,7 @@ export class GlobalStore {
   //todo tx失敗前のlendOwner確認をすべきか 
   async returnLendOwner(lendOwner: string, tokenId: string) {
     try {
-      const notLending:boolean = await this.ethereum.notLent(tokenId);
+      const notLending: boolean = await this.ethereum.notLent(tokenId);
       if (notLending) {
         this.snackbar.send(
           `${tokenId} は貸出状態にありません。`
@@ -179,7 +180,7 @@ export class GlobalStore {
     }
   }
 
-  async burn(from:string, tokenId: string) {
+  async burn(from: string, tokenId: string) {
     this.snackbar.send(
       `${this.networkName || '(null)'} にburnトランザクションを送信しています`
     );
@@ -202,9 +203,25 @@ export class GlobalStore {
     }
   }
 
-  async deleteRequest(tokenId:string, requestId:string) {
+  async deleteRequest(tokenId: string, requestId: string) {
     await this.firebase.rejectRequest(requestId);
     this.reloadTokenDetail(tokenId);
+  }
+
+  async sendRequest(tokenId: string, message: string) {
+    try {
+      if (!this.accountAddress) {
+        throw new Error('this.accountAddress is null');
+      }
+      if (!authStore.authUser) {
+        throw new Error('authUser is null, please signIn.');
+      }
+      await this.firebase.addRequest(authStore.authUser.uid, this.accountAddress, tokenId, message);
+      this.reloadRequests(tokenId);
+    } catch (err) {
+      console.error(`Failed sendRequest, detail:${err}`);
+      //this.snackbar.send(`Errorが発生し、詳細の取得に失敗しました。detail=${err}`);
+    }
   }
 
   getEtherscanAddressUrl(accountAddress: string): string {
@@ -213,6 +230,21 @@ export class GlobalStore {
 
   getEtherscanTxUrl(txhash: string): string {
     return `https://${this.networkName}.etherscan.io/tx/${txhash}`;
+  }
+
+  @action
+  async reloadRequests(tokenId: string) {
+    try {
+      const requests = await this.firebase.getRequests(tokenId);
+      runInAction(() => {
+        if (!!this.tokenDetail) {
+          this.tokenDetail.requests = requests;
+        }
+      });
+    } catch (err) {
+      console.error(`Failed reloadRequest, detail:${err}`);
+      //this.snackbar.send(`Errorが発生し、詳細の取得に失敗しました。detail=${err}`);
+    }
   }
 
   //URLをparseして開く際に呼ばれる,他にdetailをクリックした際にも呼ばれる。 
@@ -231,9 +263,9 @@ export class GlobalStore {
       const ownerOf = await ownerOfPromise;
       const requests = await requestPromise;
 
-      const notLending : boolean = await this.ethereum.notLent(tokenId);
-      let lendOwner : string = '';
-      let deadline : string = '';
+      const notLending: boolean = await this.ethereum.notLent(tokenId);
+      let lendOwner: string = '';
+      let deadline: string = '';
       if (!notLending) {
         lendOwner = await this.ethereum.lendOwnerOf(tokenId);
         deadline = await this.ethereum.deadlineAsUTCString(tokenId);
@@ -305,17 +337,7 @@ export class GlobalStore {
   //web3 accountとfirebase authの双方が必要にする？
   @computed
   get isAccountAvailable(): boolean {
-    return !!this.accountAddress && this.isAddress(this.accountAddress);
-  }
-
-  sendRequest(tokenId: string, message: string) {
-    if (!this.accountAddress) {
-      throw new Error('this.accountAddress is null');
-    }
-    if (!authStore.authUser) {
-      throw new Error('authUser is null, please signIn.');
-    }
-    this.firebase.addRequest(authStore.authUser.uid, this.accountAddress, tokenId, message);
+    return !!this.accountAddress && this.isAddress(this.accountAddress) && (this.deployedNetwork == this.networkName);
   }
 }
 

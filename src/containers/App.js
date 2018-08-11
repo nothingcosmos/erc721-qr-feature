@@ -53,13 +53,6 @@ export default inject('store')(
             </h1>
             </div>
             <SignIn />
-            <a
-              className="ml-2" 
-              style={{cursor:'pointer'}}
-              href="/items" onClick={e=> {
-              e.preventDefault();
-              this.props.store.router.openItemsPageByAccountAddress();
-            }}>MyItems</a>
           </div>
           <Page />
           <hr />

@@ -36,11 +36,15 @@ export default inject('store', 'authStore')(
         });
       };
 
+      handleSync() {
+        this.props.store.syncAccountAddress();
+      }
+
       textTo(accountAddress: string) {
-        if (isNullOrUndefined(accountAddress)) {
-          return "Please signIn to MetaMask.";
+        if (isNullOrUndefined(accountAddress) || !this.props.store.isAccountAvailable) {
+          return `Please SignIn to ${this.props.store.deployedNetwork}.`;
         } else {
-          const addr = accountAddress.substr(0, 6) + "..." + accountAddress.substr(-4,4);
+          const addr = accountAddress.substr(0, 6) + "..." + accountAddress.substr(-4, 4);
           return `${addr}`;
         }
       }
@@ -65,25 +69,42 @@ export default inject('store', 'authStore')(
                       this.toggleSignInModal();
                     }}
                   >SignIn
-              </a>
+                  </a>
                 ) : (
-                    <a
+                  <a
                       style={{ cursor: 'pointer' }}
                       href="/"
                       onClick={e => {
                         e.preventDefault();
                         this.props.store.router.openAccountPageById(this.props.authStore.authUser.uid);
                       }}
-                    >{authStore.authUser.displayName}
-                    </a>
-                  )}
+                  >{authStore.authUser.displayName}
+                  </a>
+                )}
               </div>
-            </div>            
-            {<div className="ml-4">
-              <dd className="text-truncate">
-                {this.textTo(this.props.store.accountAddress)}
-              </dd>
-            </div>}
+            </div>
+            <div className="ml-4">
+              {this.textTo(this.props.store.accountAddress)}
+              <span className="ml-2">
+              {!this.props.store.isAccountAvailable ?
+                  <a style={{ cursor: 'pointer' }}
+                    href="/"
+                    onClick={e => {
+                      e.preventDefault();
+                      this.handleSync();
+                    }}
+                  > Sync
+                  </a>:
+                <a
+                  style={{ cursor: 'pointer' }}
+                  href="/items" onClick={e => {
+                    e.preventDefault();
+                    this.props.store.router.openItemsPageByAccountAddress();
+                  }}>MyItems
+                </a>
+              }
+              </span>
+            </div>
             <SignInModal
               modal={this.state.signInModal}
               toggle={this.toggleSignInModal}
