@@ -16,6 +16,9 @@ import Web3Status from './Web3Status';
 import Home from './Home';
 import Items from './Items';
 import SignIn from './SignIn';
+import Footer from './Footer';
+import Privacy from '../components/Privacy';
+import Terms from '../components/Terms';
 import type { Store,  GlobalStore } from '../stores';
 
 type Props = {
@@ -51,6 +54,8 @@ export default inject('store')(
           <Page />
           <hr />
           <Web3Status />
+          <hr />
+          <Footer />
         </Container>
         <FloatingButtons />
         <Snackbar />
@@ -75,6 +80,10 @@ const Page = inject('store')(
         return <RegisterToken />;
       case 'items':
         return <Items />;
+      case 'privacy':
+        return <Privacy />;
+      case 'terms':
+        return <Terms />;
       default:
         return null;
     }

@@ -28,6 +28,10 @@ export class RouterStore {
         return '/register';
       case 'items':
         return `/items`;
+      case 'privacy':
+        return '/privacy';
+      case 'terms':
+        return '/terms';
       default:
         return '/404';
     }
@@ -62,6 +66,16 @@ export class RouterStore {
   @action.bound
   openRegisterPage() {
     this.name = 'register';
+  }
+
+  @action.bound
+  openPrivacyPage() {
+    this.name = 'privacy';
+  }
+  
+  @action.bound
+  openTermsPage() {
+    this.name = 'terms';
   }
 }
 

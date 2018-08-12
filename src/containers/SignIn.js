@@ -111,9 +111,15 @@ export default inject('store', 'authStore')(
               accountAddress={this.props.store.accountAddress}
               handleSignIn={(provider: string) => {
                 this.props.authStore.signin(provider);
-                this.setState({
-                  signInModal: false,
-                });
+                this.toggleSignInModal();
+              }}
+              handleOpenPrivacy={ () => {
+                this.props.store.router.openPrivacyPage();
+                this.toggleSignInModal();
+              }}
+              handleOpenTerms={ () => {
+                this.props.store.router.openTermsPage();
+                this.toggleSignInModal();
               }}
             />
           </div >

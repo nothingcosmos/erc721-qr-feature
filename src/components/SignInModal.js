@@ -10,6 +10,7 @@ import {
   ModalHeader,
   ModalBody,
 } from 'reactstrap';
+import Footer from './Footer';
 
 //for react-fontawesome
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -23,6 +24,8 @@ type Props = {
   toggle: () => void,
   accountAddress: ?string,
   handleSignIn(provider:string) : any,
+  handleOpenTerms() : any,
+  handleOpenPrivacy() : any,
 };
 
 type State = {
@@ -65,6 +68,11 @@ export default class extends React.Component<Props, State> {
                   this.props.handleSignIn("google")}}>Sign in with Google</Button>
               </FormGroup>
             </Form>
+            <hr />
+            <Footer
+              handleOpenPrivacy={this.props.handleOpenPrivacy}
+              handleOpenTerms={this.props.handleOpenTerms}
+            />
           </ModalBody>
         </Modal>
       </React.Fragment>
