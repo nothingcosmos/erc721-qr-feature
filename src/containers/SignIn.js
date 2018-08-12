@@ -52,7 +52,7 @@ export default inject('store', 'authStore')(
       render() {
         return (
           <div className="d-flex flex-column">
-            <div className="d-flex flex-row ml-4">
+            <div className="d-flex flex-row">
               <div><FontAwesomeIcon icon="sign-in-alt"
                 onClick={e => {
                   e.preventDefault();
@@ -83,7 +83,7 @@ export default inject('store', 'authStore')(
                 )}
               </div>
             </div>
-            <div className="ml-4">
+            <div >
               {this.textTo(this.props.store.accountAddress)}
               <span className="ml-2">
               {!this.props.store.isAccountAvailable ?

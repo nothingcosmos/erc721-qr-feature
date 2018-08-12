@@ -18,11 +18,6 @@ import Items from './Items';
 import SignIn from './SignIn';
 import type { Store,  GlobalStore } from '../stores';
 
-const styles = {
-  flex: {
-    display: "flex",
-  },
-};
 type Props = {
   store: GlobalStore,
 };
@@ -37,11 +32,10 @@ export default inject('store')(
     <MuiThemeProvider>
       <React.Fragment>
         <Container>
-          <div style={styles.flex}>
             <div>
             <h1>
               <a
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: 'pointer', width:'50px' }}
                 href="/"
                 onClick={e => {
                   e.preventDefault();
@@ -53,7 +47,7 @@ export default inject('store')(
             </h1>
             </div>
             <SignIn />
-          </div>
+          <hr />
           <Page />
           <hr />
           <Web3Status />
