@@ -49,6 +49,10 @@ export default inject('store', 'authStore')(
         }
       }
 
+      componentDidMount() {
+        this.props.authStore.fetchOAuthRedirect();
+      }
+
       render() {
         return (
           <div className="d-flex flex-column">
