@@ -36,7 +36,7 @@ export class AuthStore {
     //       window.localStorage.removeItem('erc721-qr-auth');
     //     }
     //   }
-    // );    
+    // );
     autorun(() => {
       //console.info(`autorun token:${this.token}, user:${this.authUser}`);
       if (!!this.token) {
@@ -90,12 +90,17 @@ export class AuthStore {
       if (!!this.authUser || !this.isMobile()) {
         return;
       }
+
+      //initializeをsleepまち
+      if (!firebase.initialized) {
+          await firebase.sleepByPromise(1);
+      }
+
       const user = await firebase.fetchRedirectResult();
       //const user = null;
-      console.info(user);
       if (!isNullOrUndefined(user)) {
         runInAction(() => {
-          console.info("update user from redirect");
+          //console.info("update user from redirect");
           this.authUser = user;
           this.token = user.uid;
         });
@@ -115,6 +120,7 @@ export class AuthStore {
   }
 
   isMobile(): boolean {
+    
     var ua = navigator.userAgent;
     if ((ua.indexOf('iPhone') > 0 || ua.indexOf('iPod') > 0 || ua.indexOf('Android') > 0) 
       && ua.indexOf('Mobile') > 0) {

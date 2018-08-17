@@ -11,9 +11,10 @@ export class FirebaseAgent {
   db: firebase.firestore.Firestore;
   storage: firebase.storage.Storage;
   initializerPromise: Promise<void>;
+  initialized : boolean = false;
+
   constructor() {
     this.initializerPromise = this.initializeApp();
-    //console.info("firebaseAgent initialized.");
   }
 
   async initializeApp() {
@@ -25,7 +26,13 @@ export class FirebaseAgent {
     this.db.settings({ timestampsInSnapshots: true });
     this.storage = firebase.storage();
     firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+    this.initialized = true;
+    console.info("firebase initialized.");
   }
+
+  async sleepByPromise(sec) {
+    return new Promise(resolve => setTimeout(resolve, sec*1000));
+}
 
   async postJson(url: string, value: any) {
     const method = 'POST';
