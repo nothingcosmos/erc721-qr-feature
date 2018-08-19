@@ -113,8 +113,12 @@ export default inject('store', 'authStore')(
               modal={this.state.signInModal}
               toggle={this.toggleSignInModal}
               accountAddress={this.props.store.accountAddress}
-              handleSignIn={(provider: string) => {
-                this.props.authStore.signin(provider);
+              handleSignIn={(email: string, password:string, create:boolean) => {
+                this.props.authStore.signInEmailPassword(email, password, create);
+                this.toggleSignInModal();
+              }}
+              handleOAuth={(provider: string) => {
+                this.props.authStore.openOAuth(provider);
                 this.toggleSignInModal();
               }}
               handleOpenPrivacy={ () => {

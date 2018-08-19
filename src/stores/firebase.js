@@ -25,9 +25,9 @@ export class FirebaseAgent {
     this.db = firebase.firestore();
     this.db.settings({ timestampsInSnapshots: true });
     this.storage = firebase.storage();
-    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
     this.initialized = true;
     console.info("firebase initialized.");
+    this.setAuthHandler();
   }
 
   async sleepByPromise(sec) {
@@ -58,6 +58,17 @@ export class FirebaseAgent {
       return response.json();
     }
     throw new Error(response);
+  }
+
+  setAuthHandler() {
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        console.info("handler:"+user);
+      } else {
+        console.info("singout???");
+      }
+    });
   }
 
   async fetchRedirectResult() : Promise<?AuthUser> {
@@ -142,6 +153,28 @@ export class FirebaseAgent {
       console.error(errorCode + ":" + errorMessage);
       return null;
     });
+  }
+
+  async createAndSignInUser(email:string, password:string) {
+    firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
+      // Handle Errors here.
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      console.info(error);
+    });
+  }
+
+  async signInUser(email:string, password:string) {
+    firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
+      // Handle Errors here.
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      console.info(error);
+    });
+  }
+
+  async signOut() {
+    firebase.auth().signOut();
   }
 
   async registerToken(

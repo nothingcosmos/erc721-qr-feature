@@ -120,7 +120,6 @@ export class AuthStore {
   }
 
   isMobile(): boolean {
-    
     var ua = navigator.userAgent;
     if ((ua.indexOf('iPhone') > 0 || ua.indexOf('iPod') > 0 || ua.indexOf('Android') > 0) 
       && ua.indexOf('Mobile') > 0) {
@@ -133,8 +132,9 @@ export class AuthStore {
   }
 
   @action
-  async signin(provider: string) {
+  async openOAuth(provider: string) {
     try {
+      //mobileは別タブを開かずにredirectで戻す
       if (this.isMobile()) {
         await firebase.redirectOAuth(provider);
         return;
@@ -163,9 +163,30 @@ export class AuthStore {
   }
 
   @action
+  signInEmailPassword(email:string, password:string, create:boolean) {
+    try {
+      console.info({email,password,create});
+      if (create) {
+        firebase.createAndSignInUser(email, password);
+      } else {
+        firebase.signInUser(email, password);
+      }
+    } catch (err) {
+      snackbarStore.send(
+        `Failed to singin, detail:${err}`
+      );
+      console.error(err);
+    }
+  }
+
+  //@action
+  //todo PasswordReset
+
+  @action
   signout() {
     this.authUser = null;
-    this.token = null;;
+    this.token = null;
+    firebase.signOut();
   }
 }
 
