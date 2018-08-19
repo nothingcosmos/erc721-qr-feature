@@ -32,12 +32,14 @@ type Props = {
 type State = {
   email:string,
   password:string,
+  create:boolean,
 };
 
 export default class extends React.Component<Props, State> {
   state = {
     email : "",
     password : "",
+    create : false,
   };
 
   render() {
@@ -61,8 +63,8 @@ export default class extends React.Component<Props, State> {
               </FormGroup>
               <FormGroup check>
                 <Label check>
-                  <Input type="checkbox" />{' '}
-                  SignUp
+                  <Input type="checkbox" onChange={e => this.setState({create: e.target.value })} />{' '}
+                  CreateAccount
               </Label>
               </FormGroup>
               <FormGroup>

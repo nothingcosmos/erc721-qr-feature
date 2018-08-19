@@ -119,6 +119,13 @@ export class AuthStore {
     }
   }
 
+  notifyAuthUser(user:AuthUser) {
+    runInAction(() => {
+      this.authUser = user;
+      //this.tokenはsetしない
+    });
+  }
+
   isMobile(): boolean {
     var ua = navigator.userAgent;
     if ((ua.indexOf('iPhone') > 0 || ua.indexOf('iPod') > 0 || ua.indexOf('Android') > 0) 
@@ -165,17 +172,12 @@ export class AuthStore {
   @action
   signInEmailPassword(email:string, password:string, create:boolean) {
     try {
-      console.info({email,password,create});
-      if (create) {
-        firebase.createAndSignInUser(email, password);
-      } else {
-        firebase.signInUser(email, password);
-      }
+      firebase.signInUser(email, password, create);
     } catch (err) {
-      snackbarStore.send(
-        `Failed to singin, detail:${err}`
-      );
-      console.error(err);
+      var errorCode = err.code;
+      var errorMessage = err.message;
+      snackbarStore.send(err.message);
+      console.error("detail : " + errorMessage);
     }
   }
 

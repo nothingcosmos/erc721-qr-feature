@@ -3,9 +3,12 @@ import * as firebase from 'firebase';
 import 'firebase/firestore/dist/index.cjs';
 import 'firebase/storage/dist/index.cjs';
 import 'firebase/auth/dist/index.cjs';
+import { isNullOrUndefined } from 'util';
+import authStore from './authStore';
 import * as path from 'path';
 import type TokenItem from 'index';
 import type AuthUser from './authStore';
+
 
 export class FirebaseAgent {
   db: firebase.firestore.Firestore;
@@ -64,9 +67,18 @@ export class FirebaseAgent {
     firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
-        console.info("handler:"+user);
+        console.info("handle :"+user);
+        const authUser = {
+            uid: user.uid,
+            displayName: isNullOrUndefined(user.displayName) ? user.email : user.displayName,
+            email: user.email,
+            photoURL: user.photoURL,
+            provider: user.provider,
+        };
+        authStore.notifyAuthUser(authUser);
+        //console.info(authUser);
       } else {
-        console.info("singout???");
+        console.info("handle singout???");
       }
     });
   }
@@ -155,22 +167,16 @@ export class FirebaseAgent {
     });
   }
 
-  async createAndSignInUser(email:string, password:string) {
-    firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
-      // Handle Errors here.
-      var errorCode = error.code;
-      var errorMessage = error.message;
-      console.info(error);
-    });
-  }
-
-  async signInUser(email:string, password:string) {
-    firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
-      // Handle Errors here.
-      var errorCode = error.code;
-      var errorMessage = error.message;
-      console.info(error);
-    });
+  async signInUser(email:string, password:string, create:boolean)  {
+    if (create) {
+      firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
+        throw new Error(error);
+      });
+    } else {
+      firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
+        throw new Error(error);
+      });
+    }    
   }
 
   async signOut() {
