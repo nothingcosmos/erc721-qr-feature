@@ -1,7 +1,7 @@
 // @flow
 import { observable, action, runInAction, reaction, autorun } from 'mobx';
 import firebase from './firebase';
-import store from './index';
+import store from '.';
 import { isNullOrUndefined } from 'util';
 import snackbarStore from './SnackbarStore';
 
@@ -74,10 +74,7 @@ export class AuthStore {
     try {
       const user = await firebase.retrieveUser(uid);
       if (!isNullOrUndefined(user)) {
-        runInAction(() => {
-          this.authUser = user;
-          //this.tokenはsetしない
-        });
+        this.notifyAuthUser(user);
       }
     } catch (err) {
       console.error(err);
@@ -97,19 +94,8 @@ export class AuthStore {
       }
 
       const user = await firebase.fetchRedirectResult();
-      //const user = null;
       if (!isNullOrUndefined(user)) {
-        runInAction(() => {
-          //console.info("update user from redirect");
-          this.authUser = user;
-          this.token = user.uid;
-        });
-        //両方揃ってたらstore
-        if (store.isAccountAvailable) {
-          user.accountAddress = store.accountAddress;
-        }
-
-        firebase.addUser(user);
+        this.notifyAuthUser(user);
         snackbarStore.send(`${user.displayName} SignIn.`);
       } else {
         console.error("Failed redirectOAuth.");
@@ -120,9 +106,14 @@ export class AuthStore {
   }
 
   notifyAuthUser(user:AuthUser) {
+    if (!!store.accountAddress) {
+      user.accountAddress = store.accountAddress;
+      console.info(user);
+      firebase.addUser(user);
+    }
     runInAction(() => {
       this.authUser = user;
-      //this.tokenはsetしない
+      this.token = user.uid;
     });
   }
 
@@ -149,16 +140,7 @@ export class AuthStore {
 
       const user = await firebase.openOAuth(provider);
       if (!isNullOrUndefined(user)) {
-        //console.info(user);
-        runInAction(() => {
-          this.authUser = user;
-          this.token = user.uid;
-        });
-        //両方揃ってたらstore
-        if (store.isAccountAvailable) {
-          user.accountAddress = store.accountAddress;
-        }
-        firebase.addUser(user);
+        this.notifyAuthUser(user);
         snackbarStore.send(`${user.displayName} SignIn.`);
       }
     } catch (err) {

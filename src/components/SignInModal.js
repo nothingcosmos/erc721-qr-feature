@@ -70,7 +70,7 @@ export default class extends React.Component<Props, State> {
               <FormGroup>
                 <Button outline onClick={e => {
                   e.preventDefault();
-                  this.props.handleSignIn(this.state.email, this.state.password, true)
+                  this.props.handleSignIn(this.state.email, this.state.password, this.state.create)
                 }}
                 disabled={this.state.email.length === 0 || this.state.password.length === 0}
                 >Sign in</Button>

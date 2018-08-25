@@ -73,7 +73,7 @@ export class FirebaseAgent {
             displayName: isNullOrUndefined(user.displayName) ? user.email : user.displayName,
             email: user.email,
             photoURL: user.photoURL,
-            provider: user.provider,
+            provider: isNullOrUndefined(user.provider) ? "firebase" : user.provider,
         };
         authStore.notifyAuthUser(authUser);
         //console.info(authUser);
@@ -348,6 +348,7 @@ export class FirebaseAgent {
   }
 
   async addUser(user): Promise<void> {
+    console.info("add users:"+user.uid);
     await this.initializerPromise;
     await this.db.collection('users').doc(user.uid).set(user, { merge: true });
     return;
