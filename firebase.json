@@ -17,31 +17,6 @@
       "**/.*",
       "**/node_modules/**"
     ],
-    "headers": [
-      {
-        "source" : "**",
-        "headers" : [ {
-          "key" : "Access-Control-Allow-Origin",
-          "value" : "http://localhost:5000"
-        } ]
-      },
-      {
-        "source" : "**",
-        "headers" : [ {
-          "key" : "Access-Control-Allow-Origin",
-          "value" : "https://erc721-gpu-rental.firebaseapp.com/"
-        } ]
-      }, 
-      {
-        "source": "**/*.@(eot|otf|ttf|ttc|woff|font.css)",
-        "headers": [
-          {
-            "key": "Access-Control-Allow-Origin",
-            "value": "*"
-          }
-        ]
-      }
-    ],
     "rewrites": [
       {
         "source": "/api/add_token",

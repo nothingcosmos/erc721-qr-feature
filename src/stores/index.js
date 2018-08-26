@@ -225,21 +225,46 @@ export class GlobalStore {
     }
   }
 
-  async sendSignDocument(tokenId:string, requestId:string, toId:string) {
+  async sendSignDocument(accessToken:string, tokenId:string, requestId:string, toId:string, message:string) {
+    console.info(`callee ${accessToken}, ${message}`);
     console.info(`callee ${tokenId} ${requestId} ${toId} ${authStore.authUser.uid}`);
      try {
-      await this.cloudsign.updateToken();
+      await this.cloudsign.updateToken(accessToken);
+      //await this.cloudsign.getSignDocuments();
 
-      const title = this.serviceName + "レンタル契約書"; //todo
-      const message = this.router.getTokenLink(tokenId);
+      const title = this.serviceName + "レンタル契約書";
+      const concatMessage = message + ", link:" + this.router.getTokenLink(tokenId);
 
-      const doc = this.cloudsign.createSignDocument(title, message);
+      const doc = await this.cloudsign.createSignDocument(title, concatMessage);
       doc.requestId = requestId;
       doc.requestUid = toId;
       doc.ownerUid = authStore.authUser.uid;
-      this.firebase.saveSignDocument(doc);
+      
+      await this.firebase.saveSignDocument(doc);
 
-      //todo
+      const beforeStatus = await this.cloudsign.getSignDocument(doc);
+      console.info("Status=" + beforeStatus);
+
+      console.info("updateFrom");
+      //await this.cloudsign.updateFrom(doc, authStore.authUser.email);
+      await this.cloudsign.addParticipant(doc, authStore.authUser.email);
+
+      console.info("retrieveUser");
+      const toUser = await this.firebase.retrieveUser(toId);
+      if (isNullOrUndefined(toUser)) {
+        this.snackbar.send(`送信先のEmail取得に失敗しました。`);
+        return;
+      }
+      console.info("addTo");
+      //await this.cloudsign.updateTo(doc, toUser.email);
+      await this.cloudsign.addParticipant(doc, toUser.email);
+     
+      console.info("postSignDocument");
+      const status = await this.cloudsign.postSignDocument(doc);
+      console.info("post status=" + status);
+
+      doc.status = status;
+      await this.firebase.saveSignDocument(doc);
 
      } catch (err) {
       console.error(`Failed signDocument, detail:${err}`);

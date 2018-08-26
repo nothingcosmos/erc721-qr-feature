@@ -12,6 +12,7 @@ import TransferModal from '../components/TransferModal';
 import RemoveCardModal from '../components/RemoveCardModal';
 import ReturnLendOwnerModal from '../components/ReturnLendOwnerModal';
 import UserDetailModal from '../components/UserDetailModal';
+import ContractRequestModal from '../components/ContractRequestModal';
 import LoadingSpinner from '../components/LoadingSpinner';
 
 type Props = {
@@ -27,6 +28,7 @@ type State = {
   removeCardModal: boolean,
   returnLendOwnerModal: boolean,
   userDetailModal: boolean,
+  contractRequestModal : boolean,
 };
 
 //todo modalの制御が肥大化してるのでなんとかしたい
@@ -40,6 +42,7 @@ export default inject('store', 'routerStore', 'authStore')(
         removeCardModal: false,
         returnLendOwnerModal: false,
         userDetailModal: false,
+        contractRequestModal: false,
       };
       handleSendRequest = () => {
         this.setState({
@@ -77,6 +80,12 @@ export default inject('store', 'routerStore', 'authStore')(
           userDetailModal: true,
         });
       }
+      handleContractRequest = () => {
+        this.setState({
+          contractRequestModal:true,
+        });
+      }
+
       toggleTransferModal = () => {
         this.setState({
           transferModal: !this.state.transferModal,
@@ -96,6 +105,11 @@ export default inject('store', 'routerStore', 'authStore')(
       toggleUserDetailModal = () => {
         this.setState({
           userDetailModal : !this.state.userDetailModal,
+        });
+      }
+      toggleContractRequestModal = () => {
+        this.setState({
+          contractRequestModal : !this.state.contractRequestModal,
         });
       }
 
@@ -149,6 +163,7 @@ export default inject('store', 'routerStore', 'authStore')(
                 </div>
                 {this.props.store.tokenDetail.requests && <h2>Requests</h2>}
                 {this.props.store.tokenDetail.requests.map(request => (
+                  <React.Fragment>
                   <RequestCard
                     key={request.createdAt}
                     client={request.client}
@@ -188,13 +203,23 @@ export default inject('store', 'routerStore', 'authStore')(
                       this.handleUserDetail();
                     }}
                     handleContract={() => {
-                      this.props.store.sendSignDocument(
-                          request.tokenId,
-                          request.requestId,                      
-                          request.uid
-                      );
+                      this.handleContractRequest();
                     }}
                   />
+                  <ContractRequestModal
+              modal={this.state.contractRequestModal}
+              toggle={this.toggleContractRequestModal}
+              onSubmit={(accessToken:string, message:string)=> {
+                this.props.store.sendSignDocument(
+                  accessToken,
+                  request.tokenId,
+                  request.requestId,                      
+                  request.uid,
+                  message
+              );
+              }}
+            />
+            </React.Fragment>
                 ))}
               </Col>
             </Row>

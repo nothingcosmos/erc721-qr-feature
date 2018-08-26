@@ -27,5 +27,10 @@ service cloud.firestore {
       allow update: if signedIn() && userOf(user);
       allow create: if signedIn();
     }
+    match /documents/{doc} {
+      allow read: if signedIn();
+      allow update: if signedIn();
+      allow create: if signedIn();
+    }
   }
 }
