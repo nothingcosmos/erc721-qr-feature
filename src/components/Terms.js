@@ -10,7 +10,7 @@ type State = {
 export default class extends React.Component<Props, State> {
   render() {
     return (
-      <iframe width="100%" src="./tos.md.html"/>
+      <iframe width="100%" height="500px" src="./tos.md.html"/>
     )
   }
 }

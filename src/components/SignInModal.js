@@ -69,7 +69,7 @@ export default class extends React.Component<Props, State> {
               </Label>
               </FormGroup>
               <FormGroup>
-                <Button color="info" outline onClick={e => {
+                <Button color="primary" outline onClick={e => {
                   e.preventDefault();
                   this.props.handleSignIn(this.state.email, this.state.password, this.state.create)
                 }}
@@ -91,7 +91,7 @@ export default class extends React.Component<Props, State> {
 
               <FormGroup>
                 <FontAwesomeIcon icon="github-square" />
-                <Button color="info" disabled={this.props.isMobile} outline onClick={e => {
+                <Button color="primary" disabled={this.props.isMobile} outline onClick={e => {
                   e.preventDefault();
                   this.props.handleOAuth("github")
                 }}>Sign in with GitHub</Button>
@@ -99,7 +99,7 @@ export default class extends React.Component<Props, State> {
 
               <FormGroup>
                 <FontAwesomeIcon icon="google" />
-                <Button color="info" disabled={this.props.isMobile} outline onClick={e => {
+                <Button color="primary" disabled={this.props.isMobile} outline onClick={e => {
                   e.preventDefault();
                   this.props.handleOAuth("google")
                 }}>Sign in with Google</Button>

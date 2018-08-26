@@ -22,7 +22,14 @@
         "source" : "**",
         "headers" : [ {
           "key" : "Access-Control-Allow-Origin",
-          "value" : "*"
+          "value" : "http://localhost:5000"
+        } ]
+      },
+      {
+        "source" : "**",
+        "headers" : [ {
+          "key" : "Access-Control-Allow-Origin",
+          "value" : "https://erc721-gpu-rental.firebaseapp.com/"
         } ]
       }, 
       {
@@ -31,23 +38,6 @@
           {
             "key": "Access-Control-Allow-Origin",
             "value": "*"
-          }
-        ]
-      },
-      {
-        "source": "**",
-        "headers": [
-          {
-            "key": "Access-Control-Allow-Origin",
-            "value": "https://api-sandbox.cloudsign.jp"
-          },
-          {
-            "key": "Access-Control-Allow-Credentials",
-            "value": "true"
-          },
-          {
-            "key": "Access-Control-Allow-Methods",
-            "value": "POST, GET, OPTIONS, PUT"
           }
         ]
       }

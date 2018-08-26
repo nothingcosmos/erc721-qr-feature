@@ -34,7 +34,7 @@ export default (props: Props) => (
           </React.Fragment>
         )}
       </div>
-      <div className="float-right">
+      <div className="float-right mt-2">
         {props.isOwner && (
           <React.Fragment>
           <Button color="info" outline

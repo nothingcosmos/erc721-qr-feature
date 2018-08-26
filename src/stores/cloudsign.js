@@ -50,6 +50,7 @@ export class CloudSignAgent {
       method,
       headers,
       body,
+      mode : "cors",
     };
     const response = await fetch(url, init);
     if (response.ok) {
@@ -91,6 +92,7 @@ export class CloudSignAgent {
     const init = {
       method,
       headers,
+      mode : "cors",
     };
     const response = await fetch(api, init);
     if (response.ok) {
@@ -118,6 +120,7 @@ export class CloudSignAgent {
       method,
       headers,
       body:form,
+      mode : "cors",
     };
     const response = await fetch(api, init);
     if (response.ok) {
@@ -157,6 +160,7 @@ export class CloudSignAgent {
       method,
       headers,
       body:form,
+      mode : "cors",
     };
     const response = await fetch(api, init);
     if (response.ok) {
@@ -181,6 +185,7 @@ export class CloudSignAgent {
       method,
       headers,
       body:form,
+      mode : "cors",
     };
     const response = await fetch(api, init);
     if (response.ok) {
