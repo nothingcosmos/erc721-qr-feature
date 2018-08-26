@@ -12,9 +12,7 @@ type State = {
 export default class extends React.Component<Props, State> {
   render() {
     return (
-      <div>
-        プライバシーポリシー
-      </div>
+      <iframe width="100%" src="./privacy-policy.md.html"/>
     )
   }
 }
