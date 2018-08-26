@@ -1,6 +1,7 @@
 // @flow
 import * as Web3 from 'web3';
 import contractABI from '../contracts/abi.json'; //truffle migrate時にmigrate scriptが生成する
+import routerStore from './RouterStore';
 
 //rarebits準拠
 //https://docs.rarebits.io/v1.0/docs/listing-your-assets
@@ -14,8 +15,7 @@ export type MetadataStandard = {
 }
 
 export default class {
-  apiEndpoint : string = "https://erc721-gpu-rental.firebaseapp";
-  hostingEndpoint : string = "https://erc721-gpu-rental.firebaseapp.com";
+  router = routerStore;
   originalTag : string = "erc721-gpu-rental";
   contractInstance: any;
 
@@ -84,7 +84,7 @@ export default class {
   async mint(owner: string, tokenId: string): Promise<void> {
     const tokenIdHash = window.web3.sha3(tokenId);
     const tokenIdHashBigNumber = window.web3.toBigNumber(tokenIdHash);
-    const uri = `${this.apiEndpoint}/erc721/${tokenId}`;
+    const uri = `${this.router.apiEndpoint}/erc721/${tokenId}`;
     return new Promise((resolve, reject) => {
       this.contractInstance.mint(
         tokenIdHashBigNumber,
@@ -128,7 +128,7 @@ export default class {
         identity:identity,
         description:description,
         image_url:imageUrl,
-        home_url:`${this.hostingEndpoint}/token/${tokenId}`,
+        home_url:`${this.router.hostingEndpoint}/token/${tokenId}`,
         tags:[this.originalTag],
     };
   }
@@ -201,7 +201,7 @@ export default class {
   async tokenIdByIndex(index: number): Promise<string> {
     const tokenId = await this.tokenByIndex(index);
     const tokenURI = await this.tokenURI(tokenId); //todo
-    const prefix = `${this.apiEndpoint}/erc721/`;
+    const prefix = `${this.router.apiEndpoint}/erc721/`;
     return tokenURI.substr(prefix.length);
   }
 

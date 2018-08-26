@@ -4,6 +4,9 @@ import { observable, action, computed, autorun } from 'mobx';
 import store from '.';
 
 export class RouterStore {
+  apiEndpoint : string = "https://erc721-gpu-rental.firebaseapp";
+  hostingEndpoint : string = "https://erc721-gpu-rental.firebaseapp.com";
+
   @observable name = 'home'; //Homeで表示を切り替えるために参照している
   @observable tokenId = ''; //parseUriの他に、クリック時にページ遷移でも変更する
   @observable account = ''; //uid
@@ -36,6 +39,11 @@ export class RouterStore {
         return '/404';
     }
   }
+
+  getTokenLink(tokenId:string) : string {
+    return this.hostingEndpoint + `/token/${tokenId}`;
+  }
+
   @action.bound
   openHomePage() {
     this.name = 'home';

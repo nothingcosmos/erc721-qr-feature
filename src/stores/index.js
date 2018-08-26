@@ -7,6 +7,7 @@ import Ethereum from './ethereum';
 import FirebaseAgent from './firebase';
 import ContractAddress from '../contracts/address.json';
 import authStore from './authStore';
+import CloudSignAgent from './cloudsign';
 
 configure({ enforceActions: 'strict' });
 
@@ -61,6 +62,7 @@ export class GlobalStore {
   @observable isLoadingDetail: boolean = false;
 
   firebase = FirebaseAgent;
+  cloudsign = CloudSignAgent;
 
   constructor(contractAddress: string) {
     //console.info("contractAddress="+contractAddress);
@@ -190,8 +192,7 @@ export class GlobalStore {
     );
   }
 
-  // todo ownerAddressを記録してdatabase updateしたい
-  // removeなのでburnはせず、databaseのみ消去する。
+  // removeなのでburnはせず、databaseのみ消去する。rejectはしない。
   async removeToken(ownerAddress: string, tokenId: string) {
     try {
       await this.firebase.removeToken(ownerAddress, tokenId);
@@ -222,6 +223,28 @@ export class GlobalStore {
       console.error(`Failed sendRequest, detail:${err}`);
       //this.snackbar.send(`Errorが発生し、詳細の取得に失敗しました。detail=${err}`);
     }
+  }
+
+  async sendSignDocument(tokenId:string, requestId:string, toId:string) {
+    console.info(`callee ${tokenId} ${requestId} ${toId} ${authStore.authUser.uid}`);
+     try {
+      await this.cloudsign.updateToken();
+
+      const title = this.serviceName + "レンタル契約書"; //todo
+      const message = this.router.getTokenLink(tokenId);
+
+      const doc = this.cloudsign.createSignDocument(title, message);
+      doc.requestId = requestId;
+      doc.requestUid = toId;
+      doc.ownerUid = authStore.authUser.uid;
+      this.firebase.saveSignDocument(doc);
+
+      //todo
+
+     } catch (err) {
+      console.error(`Failed signDocument, detail:${err}`);
+      this.snackbar.send(`契約書の送付に失敗しました。`);
+     }
   }
 
   getEtherscanAddressUrl(accountAddress: string): string {

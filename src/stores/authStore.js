@@ -108,7 +108,7 @@ export class AuthStore {
   notifyAuthUser(user:AuthUser) {
     if (!!store.accountAddress) {
       user.accountAddress = store.accountAddress;
-      console.info(user);
+      //console.info(user);
       firebase.addUser(user);
     }
     runInAction(() => {

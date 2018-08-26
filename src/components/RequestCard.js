@@ -1,7 +1,7 @@
 // @flow
 import * as React from 'react';
 
-import { Card, CardText, CardBody, CardSubtitle, Button, CardLink } from 'reactstrap';
+import { Card, CardText, CardBody, CardSubtitle, Button, Row } from 'reactstrap';
 
 type Props = {
   client: string,
@@ -13,7 +13,8 @@ type Props = {
   handleTransfer: () => void,
   handleDelete: () => void,
   handleLend: () => void,
-  handleUserDetail : (string) => void,
+  handleContract : () => void,
+  handleUserDetail : () => void,
 };
 
 export default (props: Props) => (
@@ -24,23 +25,35 @@ export default (props: Props) => (
       <CardText>
         <small className="text-muted">{props.createdAt}</small>
       </CardText>
-      {props.isOwner && (
-        <a
-        style={{ cursor: 'pointer' }}
-        href="/"
-        onClick={e => {
-          e.preventDefault();
-          props.handleUserDetail(props.uid);
-        }}
-        >UserDetail
-        </a>
-      )}
       <div className="float-right">
         {props.isOwner && (
           <React.Fragment>
-            <Button color="danger" outline onClick={() => props.handleDelete()}>
+            <Button color="danger" outline className="ml-2" onClick={() => props.handleDelete()}>
               Reject
             </Button>
+          </React.Fragment>
+        )}
+      </div>
+      <div className="float-right">
+        {props.isOwner && (
+          <React.Fragment>
+          <Button color="info" outline
+            href="/"
+            onClick={e => {
+              e.preventDefault();
+              props.handleUserDetail();
+            }}
+          >UserDetail
+          </Button>
+          <Button color="success" outline className="ml-2" onClick={() => props.handleContract()}>
+            Contract
+          </Button>
+          </React.Fragment>
+        )}
+      </div>
+      <div className="float-right mt-2">
+        {props.isOwner && (
+          <React.Fragment>
             <Button color="info" outline className="ml-2" onClick={() => props.handleLend()}>
               Trial Lend
             </Button>

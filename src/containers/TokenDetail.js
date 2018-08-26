@@ -183,9 +183,16 @@ export default inject('store', 'routerStore', 'authStore')(
                         request.requestId
                       );
                     }}
-                    handleUserDetail={(uid: string) => {
-                      this.props.authStore.fetchViewUser(uid);
+                    handleUserDetail={() => {
+                      this.props.authStore.fetchViewUser(request.uid);
                       this.handleUserDetail();
+                    }}
+                    handleContract={() => {
+                      this.props.store.sendSignDocument(
+                          request.tokenId,
+                          request.requestId,                      
+                          request.uid
+                      );
                     }}
                   />
                 ))}

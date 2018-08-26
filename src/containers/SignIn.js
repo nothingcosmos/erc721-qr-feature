@@ -113,6 +113,7 @@ export default inject('store', 'authStore')(
               modal={this.state.signInModal}
               toggle={this.toggleSignInModal}
               accountAddress={this.props.store.accountAddress}
+              isMobile={this.props.authStore.isMobile()}
               handleSignIn={(email: string, password:string, create:boolean) => {
                 this.props.authStore.signInEmailPassword(email, password, create);
                 this.toggleSignInModal();

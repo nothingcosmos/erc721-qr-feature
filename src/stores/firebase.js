@@ -8,7 +8,7 @@ import authStore from './authStore';
 import * as path from 'path';
 import type TokenItem from 'index';
 import type AuthUser from './authStore';
-
+import SignDocument from './cloudsign';
 
 export class FirebaseAgent {
   db: firebase.firestore.Firestore;
@@ -67,7 +67,6 @@ export class FirebaseAgent {
     firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
-        console.info("handle :"+user);
         const authUser = {
             uid: user.uid,
             displayName: isNullOrUndefined(user.displayName) ? user.email : user.displayName,
@@ -76,9 +75,8 @@ export class FirebaseAgent {
             provider: isNullOrUndefined(user.provider) ? "firebase" : user.provider,
         };
         authStore.notifyAuthUser(authUser);
-        //console.info(authUser);
       } else {
-        console.info("handle singout???");
+        console.info("handle singout.");
       }
     });
   }
@@ -375,6 +373,13 @@ export class FirebaseAgent {
       provider: data.provider,
       accountAddress: data.accountAddress,
     };
+  }
+
+  async saveSignDocument(doc:SignDocument): Promise<void> {
+    console.info(`save signDocument:${doc.id}`);
+    await this.initializerPromise;
+    await this.db.collection('documents').doc(doc.id).set(doc, { merge: true });
+    return;
   }
 }
 

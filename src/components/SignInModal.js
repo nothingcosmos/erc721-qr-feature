@@ -23,6 +23,7 @@ type Props = {
   modal: boolean,
   toggle: () => void,
   accountAddress: ?string,
+  isMobile : boolean,
   handleSignIn(email: string, password: string, create: boolean): any,
   handleOAuth(provider: string): any,
   handleOpenTerms(): any,
@@ -68,7 +69,7 @@ export default class extends React.Component<Props, State> {
               </Label>
               </FormGroup>
               <FormGroup>
-                <Button outline onClick={e => {
+                <Button color="info" outline onClick={e => {
                   e.preventDefault();
                   this.props.handleSignIn(this.state.email, this.state.password, this.state.create)
                 }}
@@ -79,17 +80,18 @@ export default class extends React.Component<Props, State> {
               <FormGroup>
                 <Label>{' '}OR</Label>
               </FormGroup>
-              <FormGroup>
+              
+              {/* <FormGroup>
                 <FontAwesomeIcon icon="twitter-square" />
                 <Button outline onClick={e => {
                   e.preventDefault();
                   this.props.handleOAuth("twitter")
                 }}>Sign in with Twitter</Button>
-              </FormGroup>
+              </FormGroup> */}
 
               <FormGroup>
                 <FontAwesomeIcon icon="github-square" />
-                <Button outline onClick={e => {
+                <Button color="info" disabled={this.props.isMobile} outline onClick={e => {
                   e.preventDefault();
                   this.props.handleOAuth("github")
                 }}>Sign in with GitHub</Button>
@@ -97,7 +99,7 @@ export default class extends React.Component<Props, State> {
 
               <FormGroup>
                 <FontAwesomeIcon icon="google" />
-                <Button outline onClick={e => {
+                <Button color="info" disabled={this.props.isMobile} outline onClick={e => {
                   e.preventDefault();
                   this.props.handleOAuth("google")
                 }}>Sign in with Google</Button>
