@@ -239,15 +239,14 @@ export class GlobalStore {
       doc.requestId = requestId;
       doc.requestUid = toId;
       doc.ownerUid = authStore.authUser.uid;
-      
+      console.info(doc);
       await this.firebase.saveSignDocument(doc);
 
       const beforeStatus = await this.cloudsign.getSignDocument(doc);
       console.info("Status=" + beforeStatus);
 
       console.info("updateFrom");
-      //await this.cloudsign.updateFrom(doc, authStore.authUser.email);
-      await this.cloudsign.addParticipant(doc, authStore.authUser.email);
+      //await this.cloudsign.updateFrom(doc, authStore.authUser.email); //creator not change
 
       console.info("retrieveUser");
       const toUser = await this.firebase.retrieveUser(toId);
@@ -255,9 +254,9 @@ export class GlobalStore {
         this.snackbar.send(`送信先のEmail取得に失敗しました。`);
         return;
       }
-      console.info("addTo");
+      console.info(toUser);
       //await this.cloudsign.updateTo(doc, toUser.email);
-      await this.cloudsign.addParticipant(doc, toUser.email);
+      await this.cloudsign.addParticipants(doc, toUser.email);
      
       console.info("postSignDocument");
       const status = await this.cloudsign.postSignDocument(doc);

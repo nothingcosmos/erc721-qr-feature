@@ -32,12 +32,8 @@ export class CloudSignAgent {
   constructor() {
   }
 
-  json2form(data) : FormData {
-    const form = new FormData();
-    Object
-      .keys(data)
-      .forEach(key => form.append(key, data[key]));
-    return form;
+  json2form_urlencoded(obj) : string {
+    return Object.keys(obj).map((key)=>key+"="+encodeURIComponent(obj[key])).join("&");
   }
 
   async template(url: string, value: any) {
@@ -130,16 +126,17 @@ export class CloudSignAgent {
       'Authorization':'Bearer ' + this.token,
       'Content-Type': 'application/x-www-form-urlencoded',
     };
-    const form = new FormData();
-    form.append("title", encodeURIComponent(title));
-    form.append("message", encodeURIComponent(message));
-    form.append("template_id", this.templateId);
-    form.append("can_transfer", "false");
+    const params = {
+      title:title,
+      message:message,
+      template_id:this.templateId,
+      can_transfer:false,
+    }
 
     const init = {
       method,
       headers,
-      body:form,
+      body: this.json2form_urlencoded(params),
       mode : "cors",
     };
     const response = await fetch(api, init);
@@ -166,79 +163,60 @@ export class CloudSignAgent {
     throw new Error(response);
   }
 
-  async updateFrom(doc:SignDocument, email:string) {
-    const api = this.endpoint + `documents/${doc.id}/participants/${doc.participant0}`;
+  async updateParticipants(doc:SignDocument, participantsId:string, email:string) {
+    const api = this.endpoint + `documents/${doc.id}/participants/${participantsId}`;
     const method = 'PUT';
     const headers = {
       'accept': 'application/json',
       'Authorization':'Bearer ' + this.token,
       'Content-Type': 'application/x-www-form-urlencoded',
     };
-    const form = new FormData();
-    form.append("email", email);
-    form.append("name", email);
+    const params = {
+      name:email,
+      email:email,
+    }
 
     const init = {
       method,
       headers,
-      body:form,
+      body:this.json2form_urlencoded(params),
       mode : "cors",
     };
     const response = await fetch(api, init);
     if (response.ok) {
       return await response.json();
     }
+    const err = await response.json();
+    console.info("err:" + err);
     throw new Error(response);
-  }
+  }  
 
-  async updateTo(doc:SignDocument, email:string) {
-    const api = this.endpoint + `documents/${doc.id}/participants/${doc.participant1}`;
-    const method = 'PUT';
-    const headers = {
-      'accept': 'application/json',
-      'Authorization':'Bearer ' + this.token,
-      'Content-Type': 'application/x-www-form-urlencoded',
-    };
-    const form = new FormData();
-    form.append("email", email);
-    form.append("name", email);
-
-    const init = {
-      method,
-      headers,
-      body:form,
-      mode : "cors",
-    };
-    const response = await fetch(api, init);
-    if (response.ok) {
-      return await response.json();
-    }
-    throw new Error(response);
-  }
-
-  async addParticipant(doc:SignDocument, email:string) {
-    const api = this.endpoint + `documents/${doc.id}/participants/`;
+  async addParticipants(doc:SignDocument, email:string) {
+    const api = this.endpoint + `documents/${doc.id}/participants`;
     const method = 'POST';
     const headers = {
       'accept': 'application/json',
       'Authorization':'Bearer ' + this.token,
       'Content-Type': 'application/x-www-form-urlencoded',
     };
-    const form = new FormData();
-    form.append("email", encodeURIComponent(email));
-    form.append("name", encodeURIComponent(email));
+    const params = {
+      name:email,
+      email:email,
+    }
 
     const init = {
       method,
       headers,
-      body:form,
+      body: this.json2form_urlencoded(params),
       mode : "cors",
     };
     const response = await fetch(api, init);
     if (response.ok) {
       return await response.json();
     }
-    throw new Error(response);
+    const errbody = await response.json();
+    const err = `${response.status}:${JSON.stringify(errbody)}`;
+    throw new Error(err);
   }
 
   async fetchToken() {
