@@ -26,3 +26,21 @@ render() {return ();}
 
 ### NG
 render = () => {return ();}
+
+
+### local library
+
+cloudsign swagger hub
+
+https://app.swaggerhub.com/apis/CloudSign/cloudsign-web_api/0.7.3
+
+javascript codegen
+
+unzip xxx cloudsign_api
+cd cloudsign_api
+vi package.json // _web_api -> cloudsign_api
+npm install
+sudo npm link
+
+cd erc721_qr_feature
+npm link cloudsign_api
