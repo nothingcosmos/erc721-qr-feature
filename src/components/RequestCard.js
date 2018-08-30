@@ -25,37 +25,38 @@ export default (props: Props) => (
       <CardText>
         <small className="text-muted">{props.createdAt}</small>
       </CardText>
-        {props.isOwner && (
+      {/* <Button color="success" outline className="ml-2" onClick={() => props.handleContract()}>
+              Contract
+            </Button> */}        
+        {/* {props.isOwner && (
           <div className="float-right mt-2">
-            <Button color="danger" outline className="ml-2" onClick={() => props.handleDelete()}>
-              Reject
-            </Button>
           </div>
-        )}
+        )} */}
         {props.isOwner && (
           <div className="float-right mt-2">
-            <Button color="info" outline  href="/"
+          <Button color="info" outline  href="/"
               onClick={e => {
                 e.preventDefault();
                 props.handleUserDetail();
               }}>
               UserDetail
             </Button>
-            <Button color="success" outline className="ml-2" onClick={() => props.handleContract()}>
-              Contract
-            </Button>
-          </div>
-        )}
-        {props.isOwner && (
-          <div className="float-right mt-2">
             <Button color="info" outline  onClick={() => props.handleLend()}>
               Trial Lend
             </Button>
             <Button color="success" outline className="ml-2" onClick={() => props.handleTransfer()}>
-              Accept
+              Transfer
+            </Button>
+            <Button color="danger" outline className="ml-2" onClick={() => props.handleDelete()}>
+              Reject
             </Button>
           </div>
         )}
+        {/* {props.isOwner && (
+          <div className="float-right mt-2">
+            
+          </div>
+        )} */}
         {/* props.isClient && (
           <Button color="warning" outline onClick={() => props.handleDelete()}>
             Cancel

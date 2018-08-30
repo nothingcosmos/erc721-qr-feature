@@ -56,6 +56,28 @@ export default inject('store', 'authStore')(
       render() {
         return (
           <div className="d-flex flex-column">
+            <div >
+              {this.textTo(this.props.store.accountAddress)}
+              <span className="ml-2">
+              {!this.props.store.isAccountAvailable ?
+                  <a style={{ cursor: 'pointer' }}
+                    href="/"
+                    onClick={e => {
+                      e.preventDefault();
+                      this.handleSync();
+                    }}
+                  > Sync
+                  </a>:
+                <a
+                  style={{ cursor: 'pointer' }}
+                  href="/items" onClick={e => {
+                    e.preventDefault();
+                    this.props.store.router.openItemsPageByAccountAddress();
+                  }}>MyItems
+                </a>
+              }
+              </span>
+            </div>
             <div className="d-flex flex-row">
               <div><FontAwesomeIcon icon="sign-in-alt"
                 onClick={e => {
@@ -86,28 +108,6 @@ export default inject('store', 'authStore')(
                   </a>
                 )}
               </div>
-            </div>
-            <div >
-              {this.textTo(this.props.store.accountAddress)}
-              <span className="ml-2">
-              {!this.props.store.isAccountAvailable ?
-                  <a style={{ cursor: 'pointer' }}
-                    href="/"
-                    onClick={e => {
-                      e.preventDefault();
-                      this.handleSync();
-                    }}
-                  > Sync
-                  </a>:
-                <a
-                  style={{ cursor: 'pointer' }}
-                  href="/items" onClick={e => {
-                    e.preventDefault();
-                    this.props.store.router.openItemsPageByAccountAddress();
-                  }}>MyItems
-                </a>
-              }
-              </span>
             </div>
             <SignInModal
               modal={this.state.signInModal}
