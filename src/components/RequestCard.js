@@ -41,7 +41,7 @@ export default (props: Props) => (
               }}>
               UserDetail
             </Button>
-            <Button color="info" outline  onClick={() => props.handleLend()}>
+            <Button color="info" outline className="ml-2" onClick={() => props.handleLend()}>
               Trial Lend
             </Button>
             <Button color="success" outline className="ml-2" onClick={() => props.handleTransfer()}>
