@@ -8,14 +8,13 @@ import TokenCard from '../components/TokenCard';
 type Props = {
   store: GlobalStore,
 };
-
 type State = {
 };
 export default inject('store')(
   observer(
     class extends React.Component<Props, State> {
       componentDidMount() {
-        this.props.store.reloadItems();
+        this.props.store.reloadMyItems();
       }
       render() {
         return (

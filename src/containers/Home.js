@@ -12,6 +12,7 @@ type Props = {
 
 type State = {
 };
+
 export default inject('store')(
   observer(
     class extends React.Component<Props, State> {
@@ -27,6 +28,7 @@ export default inject('store')(
                 name={tokenCard.name}
                 createdAt={tokenCard.createdAt}
                 image={tokenCard.image}
+                countRequest={0}
                 onClick={() => this.props.store.router.openTokenPageById(tokenCard.tokenId)}
               />
             ))}

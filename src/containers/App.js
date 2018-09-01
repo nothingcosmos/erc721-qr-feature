@@ -14,7 +14,7 @@ import FloatingButtons from './FloatingButtons';
 import Snackbar from './Snackbar';
 import Web3Status from './Web3Status';
 import Home from './Home';
-import Items from './Items';
+import MyItems from './MyItems';
 import SignIn from './SignIn';
 import Footer from './Footer';
 import Privacy from '../components/Privacy';
@@ -79,7 +79,7 @@ const Page = inject('store')(
       case 'register':
         return <RegisterToken />;
       case 'items':
-        return <Items />;
+        return <MyItems />;
       case 'privacy':
         return <Privacy />;
       case 'terms':

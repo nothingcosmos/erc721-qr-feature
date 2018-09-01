@@ -8,12 +8,14 @@ import {
   CardText,
   CardLink,
   CardImg,
+  Badge,
 } from 'reactstrap';
 
 type Props = {
   name: string,
   createdAt: string,
   image: string,
+  countRequest :number,
   onClick: () => void,
 };
 
@@ -40,6 +42,10 @@ export default (props: Props) => (
         >
           detail
         </CardLink>
+        Request
+        <Badge >
+        {props.countRequest}
+        </Badge>
       </CardBody>
     </Card>
   </Col>

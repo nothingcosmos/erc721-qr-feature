@@ -309,6 +309,7 @@ export class FirebaseAgent {
     });
   }
 
+  //@deprecated
   async deleteRequest(requestId:string) {
     await this.initializerPromise;
     const snapshot = await this.db
@@ -321,10 +322,11 @@ export class FirebaseAgent {
 
   async rejectRequestsByTokenId(tokenId:string) {
     await this.initializerPromise;
-    const snapshot = await this.db.collection("requests").
+    const query = await this.db.collection("requests").
       where('tokenId', "==", tokenId).get();
-    await snapshot.docs.map(doc => {
-      doc.set({reject:true}, {merge:true});
+
+    await query.docs.map( doc => {
+      doc.ref.set({reject:true}, {merge:true});
     });
   }
 
@@ -356,6 +358,12 @@ export class FirebaseAgent {
         createdAt: data.createdAt.toDate().toUTCString(),
       };
     });
+  }
+
+  async getCountRequest(tokenId:string) {
+    const query = await this.db.collection("requests").
+      where('tokenId', "==", tokenId).where("reject", "==", false).get();
+    return query.size;
   }
 
   async addUser(user): Promise<void> {

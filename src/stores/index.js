@@ -60,6 +60,7 @@ export class GlobalStore {
   @observable isLoadingCards: boolean = false;
   @observable tokenDetail: TokenDetailStore = new TokenDetailStore();
   @observable isLoadingDetail: boolean = false;
+  @observable countRequestMap = new Map();
 
   firebase = FirebaseAgent;
   cloudsign = CloudSignAgent;
@@ -306,15 +307,20 @@ export class GlobalStore {
     }
   }
 
+  beforeReloadTokenDetail(tokenId:string) {
+    //console.info(`callee reloadTokenDetail ${tokenId}`);
+  }
+
   //URLをparseして開く際に呼ばれる,他にdetailをクリックした際にも呼ばれる。 
   @action
   async reloadTokenDetail(tokenId: string) {
-    console.info(`callee reloadTokenDetail ${tokenId}`);
     this.isLoadingDetail = true;
     try {
+      this.beforeReloadTokenDetail(tokenId);
       if (isNullOrUndefined(tokenId)) {
         throw new Error('Invalid tokenId');
       }
+
       const metadataPromise = this.ethereum.tokenURIAsMetadata(tokenId);
       const ownerOfPromise = this.ethereum.ownerOf(tokenId);
       const requestPromise = this.firebase.getRequests(tokenId);
@@ -351,8 +357,34 @@ export class GlobalStore {
     }
   }
 
+  //todo home開くたびにitemsの個数だけ呼び出すので改善すべき
   @action
-  async reloadItems() {
+  async updateRequestMap(items:TokenCards[]) {
+    try {
+      for (let i = 0; i< items.length; i++) {
+        const tokenId = items[i].tokenId;
+        const c = await this.firebase.getCountRequest(items[i].tokenId);
+        runInAction(()=> {
+          this.countRequestMap[tokenId] = c;
+        });
+      };
+    } catch (err) {
+      console.error("Failed updateRequestMap detail:${err}");
+    }
+  }
+
+  async countRequests(tokenId:string) {
+    try {
+      const c = await this.firebase.getCountRequest(tokenId);
+      return c;
+    } catch (err) {
+      console.error("Failed updateRequestMap detail:${err}");
+    }
+    return 0;
+  }
+
+  @action
+  async reloadMyItems() {
     this.isLoadingCards = true;
     const tokenCards = await this.firebase.retrieveTokenListByOwner(this.accountAddress);
     runInAction(() => {
@@ -384,6 +416,7 @@ export class GlobalStore {
     runInAction(() => {
       this.tokenCards = tokenCards;
       this.isLoadingCards = false;
+      this.updateRequestMap(tokenCards);
     });
   }
 
