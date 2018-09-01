@@ -15,7 +15,7 @@ type Props = {
   name: string,
   createdAt: string,
   image: string,
-  countRequest :number,
+  countRequest: number,
   onClick: () => void,
 };
 
@@ -32,6 +32,12 @@ export default (props: Props) => (
         <CardTitle>{props.name}</CardTitle>
         <CardText>
           <small className="text-muted">{props.createdAt}</small>
+          <small className="text-muted ml-2">
+          Requests
+            <Badge className="ml-2" >
+              {props.countRequest}
+            </Badge>
+          </small>
         </CardText>
         <CardLink
           onClick={e => {
@@ -42,10 +48,6 @@ export default (props: Props) => (
         >
           detail
         </CardLink>
-        Request
-        <Badge >
-        {props.countRequest}
-        </Badge>
       </CardBody>
     </Card>
   </Col>
