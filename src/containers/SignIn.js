@@ -5,6 +5,7 @@ import type { GlobalStore } from '../stores';
 import { isNullOrUndefined } from 'util';
 
 import SignInModal from '../components/SignInModal';
+import ResetPasswordModal from '../components/ResetPasswordModal';
 import authStore from '../stores/authStore';
 import type { AuthStore } from '../stores/authStore';
 
@@ -22,6 +23,7 @@ type Props = {
 };
 type State = {
   signInModal: boolean,
+  resetPasswordModal:boolean,
 };
 
 export default inject('store', 'authStore')(
@@ -29,10 +31,17 @@ export default inject('store', 'authStore')(
     class extends React.Component<Props, State> {
       state = {
         signInModal: false,
+        resetPasswordModal : false,
       };
       toggleSignInModal = () => {
         this.setState({
           signInModal: !this.state.signInModal,
+        });
+      };
+
+      toggleResetPasswordModal = () => {
+        this.setState({
+          resetPasswordModal: !this.state.resetPasswordModal,
         });
       };
 
@@ -116,19 +125,25 @@ export default inject('store', 'authStore')(
               isMobile={this.props.authStore.isMobile()}
               handleSignIn={(email: string, password:string, create:boolean) => {
                 this.props.authStore.signInEmailPassword(email, password, create);
-                this.toggleSignInModal();
               }}
               handleOAuth={(provider: string) => {
                 this.props.authStore.openOAuth(provider);
-                this.toggleSignInModal();
               }}
               handleOpenPrivacy={ () => {
                 this.props.store.router.openPrivacyPage();
-                this.toggleSignInModal();
               }}
               handleOpenTerms={ () => {
                 this.props.store.router.openTermsPage();
-                this.toggleSignInModal();
+              }}
+              handleOpenResetPassword={ () => {
+                this.toggleResetPasswordModal();
+              }}
+            />
+            <ResetPasswordModal
+              modal={this.state.signInModal}
+              toggle={this.toggleSignInModal}
+              onReset={ (email:string) => {
+                this.props.authStore.resetPassword(email);
               }}
             />
           </div >

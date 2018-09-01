@@ -133,14 +133,20 @@ export class GlobalStore {
   }
 
   async transfer(from: string, to: string, tokenId: string) {
-    this.snackbar.send(
-      `${this.networkName || '(null)'} にトランザクションを送信しています`
-    );
-    await this.ethereum.transfer(from, to, tokenId);
-    await this.firebase.updateTokenOwner(tokenId, to);
-    this.snackbar.send(
-      `${this.networkName || '(null)'} にトランザクションを送信しました`
-    );
+    try {
+      this.snackbar.send(
+        `${this.networkName || '(null)'} にトランザクションを送信しています`
+      );
+      await this.ethereum.transfer(from, to, tokenId);
+      await this.firebase.updateTokenOwner(tokenId, to);
+      await this.deleteRequestsAll(tokenId); //古いのは全部消す
+      this.snackbar.send(
+        `${this.networkName || '(null)'} にトランザクションを送信しました`
+      );
+    } catch (err) {
+      this.snackbar.send(`Errorが発生し、トランザクションに失敗しました。detail=${err}`);
+      console.error(`detail:${err}`);
+    }
   }
 
   async lend(from: string, to: string, tokenId: string, afterDays: number) {
@@ -149,6 +155,7 @@ export class GlobalStore {
         `${this.networkName || '(null)'} にlendトランザクションを送信しています`
       );
       await this.ethereum.lend(from, to, tokenId, afterDays);
+      await this.deleteRequestsAll(tokenId); //古いのは全部消す
       this.snackbar.send(
         `${this.networkName || '(null)'} にlendトランザクションを送信しました`
       );
@@ -204,6 +211,11 @@ export class GlobalStore {
     }
   }
 
+  async deleteRequestsAll(tokenId: string) {
+    await this.firebase.rejectRequestsByTokenId(tokenId);
+    this.reloadTokenDetail(tokenId);
+  }
+
   async deleteRequest(tokenId: string, requestId: string) {
     await this.firebase.rejectRequest(requestId);
     this.reloadTokenDetail(tokenId);
@@ -225,10 +237,10 @@ export class GlobalStore {
     }
   }
 
-  async sendSignDocument(accessToken:string, tokenId:string, requestId:string, toId:string, message:string) {
+  async sendSignDocument(accessToken: string, tokenId: string, requestId: string, toId: string, message: string) {
     console.info(`callee ${accessToken}, ${message}`);
     console.info(`callee ${tokenId} ${requestId} ${toId} ${authStore.authUser.uid}`);
-     try {
+    try {
       await this.cloudsign.updateToken(accessToken);
       //await this.cloudsign.getSignDocuments();
 
@@ -257,7 +269,7 @@ export class GlobalStore {
       console.info(toUser);
       //await this.cloudsign.updateTo(doc, toUser.email);
       await this.cloudsign.addParticipants(doc, toUser.email);
-     
+
       console.info("postSignDocument");
       const status = await this.cloudsign.postSignDocument(doc);
       console.info("post status=" + status);
@@ -265,10 +277,10 @@ export class GlobalStore {
       doc.status = status;
       await this.firebase.saveSignDocument(doc);
 
-     } catch (err) {
+    } catch (err) {
       console.error(`Failed signDocument, detail:${err}`);
       this.snackbar.send(`契約書の送付に失敗しました。`);
-     }
+    }
   }
 
   getEtherscanAddressUrl(accountAddress: string): string {

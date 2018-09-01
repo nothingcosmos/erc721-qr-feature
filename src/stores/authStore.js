@@ -164,7 +164,16 @@ export class AuthStore {
   }
 
   //@action
-  //todo PasswordReset
+  resetPassword(email:string) {
+    try {
+      firebase.resetPassword(email);
+    } catch (err) {
+      var errorCode = err.code;
+      var errorMessage = err.message;
+      snackbarStore.send(err.message);
+      console.error("detail : " + errorMessage);
+    }
+  }
 
   @action
   signout() {

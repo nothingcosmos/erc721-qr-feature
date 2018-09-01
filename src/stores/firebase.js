@@ -181,6 +181,10 @@ export class FirebaseAgent {
     firebase.auth().signOut();
   }
 
+  async resetPassword(email:string) {
+    firebase.auth().sendPasswordResetEmail(email);
+  }
+
   async registerToken(
     owner: string,
     name: string,
@@ -313,6 +317,15 @@ export class FirebaseAgent {
       }).catch((err) => {
           console.error(`Failed deleteRequest : ${err}`);
       });
+  }
+
+  async rejectRequestsByTokenId(tokenId:string) {
+    await this.initializerPromise;
+    const snapshot = await this.db.collection("requests").
+      where('tokenId', "==", tokenId).get();
+    await snapshot.docs.map(doc => {
+      doc.set({reject:true}, {merge:true});
+    });
   }
 
   async rejectRequest(requestId:string) {

@@ -28,6 +28,7 @@ type Props = {
   handleOAuth(provider: string): any,
   handleOpenTerms(): any,
   handleOpenPrivacy(): any,
+  handleOpenResetPassword(): any,
 };
 
 type State = {
@@ -71,10 +72,19 @@ export default class extends React.Component<Props, State> {
               <FormGroup>
                 <Button color="primary" outline onClick={e => {
                   e.preventDefault();
-                  this.props.handleSignIn(this.state.email, this.state.password, this.state.create)
+                  this.props.handleSignIn(this.state.email, this.state.password, this.state.create);
+                  this.props.toggle();
                 }}
                 disabled={this.state.email.length === 0 || this.state.password.length === 0}
                 >Sign in</Button>
+              </FormGroup>
+              <FormGroup>
+                <Button color="warning" outline onClick={e => {
+                  e.preventDefault();
+                  this.props.handleOpenResetPassword();
+                  this.props.toggle();
+                }}
+                >Reset password</Button>
               </FormGroup>
 
               <FormGroup>
@@ -86,6 +96,7 @@ export default class extends React.Component<Props, State> {
                 <Button outline onClick={e => {
                   e.preventDefault();
                   this.props.handleOAuth("twitter")
+                  this.props.toggle();
                 }}>Sign in with Twitter</Button>
               </FormGroup> */}
 
@@ -93,7 +104,8 @@ export default class extends React.Component<Props, State> {
                 <FontAwesomeIcon icon="github-square" />
                 <Button color="primary" disabled={this.props.isMobile} outline onClick={e => {
                   e.preventDefault();
-                  this.props.handleOAuth("github")
+                  this.props.handleOAuth("github");
+                  this.props.toggle();
                 }}>Sign in with GitHub</Button>
               </FormGroup>
 
@@ -101,14 +113,21 @@ export default class extends React.Component<Props, State> {
                 <FontAwesomeIcon icon="google" />
                 <Button color="primary" disabled={this.props.isMobile} outline onClick={e => {
                   e.preventDefault();
-                  this.props.handleOAuth("google")
+                  this.props.handleOAuth("google");
+                  this.props.toggle();
                 }}>Sign in with Google</Button>
               </FormGroup>
             </Form>
             <hr />
             <Footer
-              handleOpenPrivacy={this.props.handleOpenPrivacy}
-              handleOpenTerms={this.props.handleOpenTerms}
+              handleOpenPrivacy={() => {
+                this.props.handleOpenPrivacy();
+                this.props.toggle();
+              }}
+              handleOpenTerms={() => {
+                this.props.handleOpenTerms();
+                this.props.toggle();
+              }}
             />
           </ModalBody>
         </Modal>
