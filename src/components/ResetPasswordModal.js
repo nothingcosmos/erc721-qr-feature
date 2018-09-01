@@ -54,7 +54,7 @@ export default class extends React.Component<Props, State> {
                 onClick={e => this.handleReset(e)}
                 disabled={this.state.email.length === 0}
               >
-                Reset
+                Send confirm
               </Button>
             </div>
           </Form>

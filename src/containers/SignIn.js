@@ -140,8 +140,8 @@ export default inject('store', 'authStore')(
               }}
             />
             <ResetPasswordModal
-              modal={this.state.signInModal}
-              toggle={this.toggleSignInModal}
+              modal={this.state.resetPasswordModal}
+              toggle={this.toggleResetPasswordModal}
               onReset={ (email:string) => {
                 this.props.authStore.resetPassword(email);
               }}

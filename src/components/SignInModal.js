@@ -23,7 +23,7 @@ type Props = {
   modal: boolean,
   toggle: () => void,
   accountAddress: ?string,
-  isMobile : boolean,
+  isMobile: boolean,
   handleSignIn(email: string, password: string, create: boolean): any,
   handleOAuth(provider: string): any,
   handleOpenTerms(): any,
@@ -32,16 +32,16 @@ type Props = {
 };
 
 type State = {
-  email:string,
-  password:string,
-  create:boolean,
+  email: string,
+  password: string,
+  create: boolean,
 };
 
 export default class extends React.Component<Props, State> {
   state = {
-    email : "",
-    password : "",
-    create : false,
+    email: "",
+    password: "",
+    create: false,
   };
 
   render() {
@@ -52,7 +52,7 @@ export default class extends React.Component<Props, State> {
           <ModalBody>
             <Form>
               <FormGroup>
-                <Label for="accountAddress">Address</Label>
+                <Label for="accountAddress">Address (required)</Label>
                 <Input type="text" id="accountAddress" disabled value={this.props.accountAddress} />
               </FormGroup>
               <FormGroup>
@@ -63,11 +63,12 @@ export default class extends React.Component<Props, State> {
                 <Label for="password">Password</Label>
                 <Input type="password" name="password" id="password" value={this.state.password} onChange={e => this.setState({ password: e.target.value })} />
               </FormGroup>
+
               <FormGroup check>
                 <Label check>
-                  <Input type="checkbox" onChange={e => this.setState({create: e.target.value })} />{' '}
+                  <Input type="checkbox" onChange={e => this.setState({ create: e.target.value })} />{' '}
                   CreateAccount
-              </Label>
+                </Label>
               </FormGroup>
               <FormGroup>
                 <Button color="primary" outline onClick={e => {
@@ -75,7 +76,7 @@ export default class extends React.Component<Props, State> {
                   this.props.handleSignIn(this.state.email, this.state.password, this.state.create);
                   this.props.toggle();
                 }}
-                disabled={this.state.email.length === 0 || this.state.password.length === 0}
+                  disabled={(this.state.email.length === 0 || this.state.password.length === 0) || !this.props.accountAddress}
                 >Sign in</Button>
               </FormGroup>
               <FormGroup>
@@ -84,13 +85,14 @@ export default class extends React.Component<Props, State> {
                   this.props.handleOpenResetPassword();
                   this.props.toggle();
                 }}
+                  disabled={ !this.props.accountAddress }
                 >Reset password</Button>
               </FormGroup>
 
               <FormGroup>
                 <Label>{' '}OR</Label>
               </FormGroup>
-              
+
               {/* <FormGroup>
                 <FontAwesomeIcon icon="twitter-square" />
                 <Button outline onClick={e => {
@@ -101,22 +103,22 @@ export default class extends React.Component<Props, State> {
               </FormGroup> */}
 
               <FormGroup>
-                <FontAwesomeIcon icon="github-square" />
-                <Button color="primary" disabled={this.props.isMobile} outline onClick={e => {
+                {/* <FontAwesomeIcon icon="github-square" /> */}
+                <Button color="primary" disabled={this.props.isMobile || !this.props.accountAddress} outline onClick={e => {
                   e.preventDefault();
                   this.props.handleOAuth("github");
                   this.props.toggle();
                 }}>Sign in with GitHub</Button>
               </FormGroup>
 
-              <FormGroup>
+              {/* <FormGroup>
                 <FontAwesomeIcon icon="google" />
-                <Button color="primary" disabled={this.props.isMobile} outline onClick={e => {
+                <Button color="primary" disabled={this.props.isMobile || !this.props.accountAddress} outline onClick={e => {
                   e.preventDefault();
                   this.props.handleOAuth("google");
                   this.props.toggle();
                 }}>Sign in with Google</Button>
-              </FormGroup>
+              </FormGroup> */}
             </Form>
             <hr />
             <Footer
