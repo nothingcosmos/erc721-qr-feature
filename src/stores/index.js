@@ -42,6 +42,7 @@ export type TokenItem = {
   name: string,
   image: string,
   createdAt: string,
+  countRequest : number,
 };
 
 export class GlobalStore {
@@ -60,7 +61,6 @@ export class GlobalStore {
   @observable isLoadingCards: boolean = false;
   @observable tokenDetail: TokenDetailStore = new TokenDetailStore();
   @observable isLoadingDetail: boolean = false;
-  @observable countRequestMap = new Map();
 
   firebase = FirebaseAgent;
   cloudsign = CloudSignAgent;
@@ -357,23 +357,7 @@ export class GlobalStore {
     }
   }
 
-  //todo home開くたびにitemsの個数だけ呼び出すので改善すべき
-  @action
-  async updateRequestMap(items:TokenCards[]) {
-    try {
-      for (let i = 0; i< items.length; i++) {
-        const tokenId = items[i].tokenId;
-        const c = await this.firebase.getCountRequest(items[i].tokenId);
-        runInAction(()=> {
-          this.countRequestMap[tokenId] = c;
-        });
-      };
-    } catch (err) {
-      console.error("Failed updateRequestMap detail:${err}");
-    }
-  }
-
-  async countRequests(tokenId:string) {
+  async countRequests(tokenId:string) : number {
     try {
       const c = await this.firebase.getCountRequest(tokenId);
       return c;
@@ -387,6 +371,10 @@ export class GlobalStore {
   async reloadMyItems() {
     this.isLoadingCards = true;
     const tokenCards = await this.firebase.retrieveTokenListByOwner(this.accountAddress);
+    
+    for (let i = 0; i< tokenCards.length; i++) {
+      tokenCards[i].countRequest = await this.countRequests(tokenCards[i].tokenId);
+    };
     runInAction(() => {
       this.tokenCards = tokenCards;
       this.isLoadingCards = false;
@@ -413,10 +401,14 @@ export class GlobalStore {
     //   });
     // }
     const tokenCards = await this.firebase.retrieveTokenList();
+    //todo 暫定
+    // for (let i = 0; i< tokenCards.length; i++) {
+    //   tokenCards[i].countRequest = await this.countRequests(tokenCards[i].tokenId);
+    // };
+
     runInAction(() => {
       this.tokenCards = tokenCards;
       this.isLoadingCards = false;
-      this.updateRequestMap(tokenCards);
     });
   }
 

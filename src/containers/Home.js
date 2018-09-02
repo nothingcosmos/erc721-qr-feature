@@ -28,7 +28,7 @@ export default inject('store')(
                 name={tokenCard.name}
                 createdAt={tokenCard.createdAt}
                 image={tokenCard.image}
-                countRequest={0}
+                countRequest={tokenCard.countRequest}
                 onClick={() => this.props.store.router.openTokenPageById(tokenCard.tokenId)}
               />
             ))}

@@ -360,7 +360,7 @@ export class FirebaseAgent {
     });
   }
 
-  async getCountRequest(tokenId:string) {
+  async getCountRequest(tokenId:string) : number {
     const query = await this.db.collection("requests").
       where('tokenId', "==", tokenId).where("reject", "==", false).get();
     return query.size;
