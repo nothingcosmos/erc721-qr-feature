@@ -9,13 +9,13 @@ export type SignDocument = {
   id : string;
   title: string;
   message:string;
-  participant0 : string;
-  participant1 : string;
+  participants : string[];
   status:number;
   //
   ownerUid:string;
   requestId:string;
   requestUid:string;
+  tokenId:string;
 };
 
 //cloudsign api
@@ -36,26 +36,7 @@ export class CloudSignAgent {
     return Object.keys(obj).map((key)=>key+"="+encodeURIComponent(obj[key])).join("&");
   }
 
-  async template(url: string, value: any) {
-    const method = 'PUT';
-    const headers = {
-      'Content-Type': 'application/json',
-    };
-    const body = JSON.stringify(value);
-    const init = {
-      method,
-      headers,
-      body,
-      mode : "cors",
-    };
-    const response = await fetch(url, init);
-    if (response.ok) {
-      return response.json();
-    }
-    throw new Error(response);
-  }
-
-  async getSignDocument(doc:SignDocument) : Promise<number> {
+  async getSignDocumentStatus(doc:SignDocument) : Promise<number> {
     const api = this.endpoint + `documents/${doc.id}`;
     const method = 'GET';
     const headers = {
@@ -71,9 +52,12 @@ export class CloudSignAgent {
     const response = await fetch(api, init);
     if (response.ok) {
       const ret = await response.json();
+      //console.info("detail:" + JSON.stringify(ret));
       return ret.status;
     }
-    throw new Error(response);
+    const errbody = await response.json();
+    const err = `${response.status}:${JSON.stringify(errbody)}`;
+    throw new Error(err);
   }
 
   async postSignDocument(doc:SignDocument): Promise<number> {
@@ -93,9 +77,12 @@ export class CloudSignAgent {
     const response = await fetch(api, init);
     if (response.ok) {
       const ret = await response.json();
+      //console.info("postDocument=" + JSON.stringify(ret));
       return ret.status;
     }
-    throw new Error(response);
+    const errbody = await response.json();
+    const err = `${response.status}:${JSON.stringify(errbody)}`;
+    throw new Error(err);
   }
 
   async getSignDocuments() {
@@ -115,10 +102,12 @@ export class CloudSignAgent {
     if (response.ok) {
       return await response.json();
     }
-    throw new Error(response);
+    const errbody = await response.json();
+    const err = `${response.status}:${JSON.stringify(errbody)}`;
+    throw new Error(err);
   }
 
-  async createSignDocument(title:string, message:string) : Promise<SignDocument> {
+  async createSignDocument(title:string, message:string, requiredParNum:number) : Promise<SignDocument> {
     const api = this.endpoint + "documents";
     const method = 'POST';
     const headers = {
@@ -142,25 +131,27 @@ export class CloudSignAgent {
     const response = await fetch(api, init);
     if (response.ok) {
       const ret = await response.json();
-      console.info(ret);
+      //console.info(ret);
 
       const list = ret.participants;
-      // if (list.length != 2) {
-      //    throw new Error("Invalid template, paticipants is not 2.");
-      // }
+      if (list.length != requiredParNum) {
+        throw new Error("Invalid template, paticipants is not " + requiredParNum);
+      }
       return {
         id:ret.id,
         title:ret.title,
         message:ret.message,
         status:ret.status,
-        participant0 : list[0].id,
-        participant1 :"",
+        participants : list.map((p) => p.id),
         ownerUid:"",
         requestId:"",
         requestUid:"",
+        tokenId:"",
       };
     }
-    throw new Error(response);
+    const errbody = await response.json();
+    const err = `${response.status}:${JSON.stringify(errbody)}`;
+    throw new Error(err);
   }
 
   async updateParticipants(doc:SignDocument, participantsId:string, email:string) {
@@ -187,7 +178,7 @@ export class CloudSignAgent {
       return await response.json();
     }
     const err = await response.json();
-    console.info("err:" + err);
+    //console.info("err:" + err);
     throw new Error(response);
   }  
 
@@ -233,8 +224,9 @@ export class CloudSignAgent {
     if (response.ok) {
       return response.json();
     }
-    console.info("failed fetch token.");
-    throw new Error(response);
+    const errbody = await response.json();
+    const err = `${response.status}:${JSON.stringify(errbody)}`;
+    throw new Error(err);
   }
 
   //todo fetchTokenはcorsが無許可なので、functionsで取得しないといけない
@@ -243,8 +235,6 @@ export class CloudSignAgent {
     //this.token = json.access_token;
     this.token = accessToken;
   }
-
-  /// 以降logic
 }
 
 export default new CloudSignAgent();

@@ -5,7 +5,7 @@ service firebase.storage {
     }
     match /postImage/{tokenId}/{basename} {
       allow write: if resource == null
-                   && request.resource.size < 5 * 1024 * 1024
+                   && request.resource.size < 30 * 1024 * 1024
                    && request.resource.contentType.matches('image/.*');
     }
   }

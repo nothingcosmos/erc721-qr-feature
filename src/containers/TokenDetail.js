@@ -28,7 +28,7 @@ type State = {
   removeCardModal: boolean,
   returnLendOwnerModal: boolean,
   userDetailModal: boolean,
-  contractRequestModal : boolean,
+  contractRequestModal: boolean,
 };
 
 //todo modalの制御が肥大化してるのでなんとかしたい
@@ -82,7 +82,7 @@ export default inject('store', 'routerStore', 'authStore')(
       }
       handleContractRequest = () => {
         this.setState({
-          contractRequestModal:true,
+          contractRequestModal: true,
         });
       }
 
@@ -104,12 +104,12 @@ export default inject('store', 'routerStore', 'authStore')(
       };
       toggleUserDetailModal = () => {
         this.setState({
-          userDetailModal : !this.state.userDetailModal,
+          userDetailModal: !this.state.userDetailModal,
         });
       }
       toggleContractRequestModal = () => {
         this.setState({
-          contractRequestModal : !this.state.contractRequestModal,
+          contractRequestModal: !this.state.contractRequestModal,
         });
       }
 
@@ -164,62 +164,63 @@ export default inject('store', 'routerStore', 'authStore')(
                 {this.props.store.tokenDetail.requests && <h2>Requests</h2>}
                 {this.props.store.tokenDetail.requests.map(request => (
                   <React.Fragment>
-                  <RequestCard
-                    key={request.createdAt}
-                    client={request.client}
-                    uid={request.uid}
-                    message={request.message}
-                    createdAt={request.createdAt}
-                    isOwner={
-                      this.props.store.accountAddress ===
-                      this.props.store.tokenDetail.owner
-                    }
-                    isClient={request.client === this.props.store.accountAddress}
-                    handleTransfer={() => {
-                      this.props.store.transfer(
-                        this.props.store.accountAddress,
-                        request.client,
-                        this.props.store.router.tokenId
-                      );
-                    }}
-                    handleLend={() => {
-                      //throw new Error("Not implemented yet.")
-                      this.props.store.lend(
-                        this.props.store.accountAddress,
-                        request.client,
-                        this.props.store.router.tokenId,
-                        30 //初期値
-                      );
-                    }}
-                    handleDelete={() => {
-                      // throw new Error('Not implemented yet');
-                      this.props.store.deleteRequest(
-                        this.props.store.router.tokenId,
-                        request.requestId
-                      );
-                    }}
-                    handleUserDetail={() => {
-                      this.props.authStore.fetchViewUser(request.uid);
-                      this.handleUserDetail();
-                    }}
-                    handleContract={() => {
-                      this.handleContractRequest();
-                    }}
-                  />
-                  <ContractRequestModal
-              modal={this.state.contractRequestModal}
-              toggle={this.toggleContractRequestModal}
-              onSubmit={(accessToken:string, message:string)=> {
-                this.props.store.sendSignDocument(
-                  accessToken,
-                  request.tokenId,
-                  request.requestId,                      
-                  request.uid,
-                  message
-              );
-              }}
-            />
-            </React.Fragment>
+                    <RequestCard
+                      key={request.createdAt}
+                      client={request.client}
+                      uid={request.uid}
+                      message={request.message}
+                      createdAt={request.createdAt}
+                      isOwner={
+                        this.props.store.accountAddress ===
+                        this.props.store.tokenDetail.owner
+                      }
+                      isClient={request.client === this.props.store.accountAddress}
+                      handleTransfer={() => {
+                        this.props.store.transfer(
+                          this.props.store.accountAddress,
+                          request.client,
+                          this.props.store.router.tokenId
+                        );
+                      }}
+                      handleLend={() => {
+                        //throw new Error("Not implemented yet.")
+                        this.props.store.lend(
+                          this.props.store.accountAddress,
+                          request.client,
+                          this.props.store.router.tokenId,
+                          30 //初期値
+                        );
+                      }}
+                      handleDelete={() => {
+                        // throw new Error('Not implemented yet');
+                        this.props.store.deleteRequest(
+                          this.props.store.router.tokenId,
+                          request.requestId
+                        );
+                      }}
+                      handleUserDetail={() => {
+                        this.props.authStore.fetchViewUser(request.uid);
+                        this.handleUserDetail();
+                      }}
+                      handleContract={() => {
+                        this.handleContractRequest();
+                      }}
+                    />
+                    <ContractRequestModal
+                      modal={this.state.contractRequestModal}
+                      toggle={this.toggleContractRequestModal}
+                      onSubmit={(accessToken: string, message: string, email:string) => {
+                        this.props.store.sendSignDocument(
+                          accessToken,
+                          request.tokenId,
+                          request.requestId,
+                          request.uid,
+                          message,
+                          email
+                        );
+                      }}
+                    />
+                  </React.Fragment>
                 ))}
               </Col>
             </Row>

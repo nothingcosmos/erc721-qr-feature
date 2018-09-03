@@ -238,38 +238,32 @@ export class GlobalStore {
     }
   }
 
-  async sendSignDocument(accessToken: string, tokenId: string, requestId: string, toId: string, message: string) {
+  async sendSignDocument(accessToken: string, tokenId: string, requestId: string, toId: string, message: string, email:string) {
     console.info(`callee ${accessToken}, ${message}`);
     console.info(`callee ${tokenId} ${requestId} ${toId} ${authStore.authUser.uid}`);
     try {
       await this.cloudsign.updateToken(accessToken);
-      //await this.cloudsign.getSignDocuments();
 
       const title = this.serviceName + "レンタル契約書";
-      const concatMessage = message + ", link:" + this.router.getTokenLink(tokenId);
+      const concatMessage = message + ", URL: " + this.router.getTokenLink(tokenId);
 
-      const doc = await this.cloudsign.createSignDocument(title, concatMessage);
+      //
+      const doc = await this.cloudsign.createSignDocument(title, concatMessage, 2);
       doc.requestId = requestId;
       doc.requestUid = toId;
       doc.ownerUid = authStore.authUser.uid;
-      console.info(doc);
+      doc.tokenId = tokenId;
       await this.firebase.saveSignDocument(doc);
 
-      const beforeStatus = await this.cloudsign.getSignDocument(doc);
-      console.info("Status=" + beforeStatus);
-
-      console.info("updateFrom");
-      //await this.cloudsign.updateFrom(doc, authStore.authUser.email); //creator not change
-
-      console.info("retrieveUser");
       const toUser = await this.firebase.retrieveUser(toId);
       if (isNullOrUndefined(toUser)) {
         this.snackbar.send(`送信先のEmail取得に失敗しました。`);
         return;
       }
-      console.info(toUser);
-      //await this.cloudsign.updateTo(doc, toUser.email);
-      await this.cloudsign.addParticipants(doc, toUser.email);
+
+      //todo replace toUser.email
+      //await this.cloudsign.addParticipants(doc, email);
+      await this.cloudsign.updateParticipants(doc, doc.participants[1], email);
 
       console.info("postSignDocument");
       const status = await this.cloudsign.postSignDocument(doc);

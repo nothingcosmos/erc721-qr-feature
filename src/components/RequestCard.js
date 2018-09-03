@@ -25,9 +25,9 @@ export default (props: Props) => (
       <CardText>
         <small className="text-muted">{props.createdAt}</small>
       </CardText>
-      {/* <Button color="success" outline className="ml-2" onClick={() => props.handleContract()}>
-              Contract
-            </Button> */}        
+        <Button color="success" outline className="ml-2" onClick={() => props.handleContract()}>
+          Contract
+        </Button>
         {/* {props.isOwner && (
           <div className="float-right mt-2">
           </div>
