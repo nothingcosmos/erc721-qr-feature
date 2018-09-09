@@ -1,7 +1,8 @@
 {
   "private": true,
   "dependencies": {
-    "zeppelin-solidity": "^1.10.0",
-    "mz": "^2.7.0"
+    "mz": "^2.7.0",
+    "openzeppelin-solidity": "^2.0.0-rc.1",
+    "zeppelin-solidity": "^1.10.0"
   }
 }
