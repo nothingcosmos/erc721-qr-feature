@@ -120,7 +120,7 @@ contract ERC721QREscrow is ERC721Full, ERC721Mintable, Ownable {
     e.close();
 
     emit TransferEscrowPayer(owner, msg.sender, address(e), tokenId);
-    _escrows[tokenId] = address(0);
+    delete(_escrows[tokenId]);
   }
 
 }
