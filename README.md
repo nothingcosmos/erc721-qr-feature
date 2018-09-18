@@ -27,6 +27,12 @@ render() {return ();}
 ### NG
 render = () => {return ();}
 
+# AppName
+
+public/index.html title
+stores/ethereum originalTag
+stores/index serviceName
+stores/RouteStore apiEndpoint/hostingEndpoint
 
 ### local library
 

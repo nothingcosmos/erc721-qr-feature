@@ -46,7 +46,7 @@ export type TokenItem = {
 };
 
 export class GlobalStore {
-  serviceName: string = "ERC721 GPU Rental";
+  serviceName: string = "ERC721QR feature";
   deployedNetwork: string = "Rinkeby";
 
   @observable router = routerStore;//= new RouterStore(this);
@@ -116,19 +116,22 @@ export class GlobalStore {
       );
       this.snackbar.send('画像をアップロードしています');
       await this.firebase.uploadImage(tokenId, image);
+      const image_info = await this.firebase.fetchImageUrl(tokenId);
+
       // トランザクションを送信する
       this.snackbar.send(
         `${this.networkName || '(null)'} にトランザクションを送信しています`
       );
-
-      const image_info = await this.firebase.fetchImageUrl(tokenId);
       const metadata = this.ethereum.createMetadata(tokenId, name, identity, description, image_info.image);
+      console.info(metadata);
+      console.info("mintWithMetadata tokenId=" + tokenId);
       await this.ethereum.mintWithMetadata(this.accountAddress, tokenId, metadata);
       this.snackbar.send(
         `${this.networkName || '(null)'} にトランザクションを送信しました`
       );
     } catch (err) {
       this.snackbar.send(`Errorが発生し、登録に失敗しました。detail=${err}`);
+      console.error(err);
     };
     this.router.openHomePage();
   }
@@ -275,6 +278,17 @@ export class GlobalStore {
     } catch (err) {
       console.error(`Failed signDocument, detail:${err}`);
       this.snackbar.send(`契約書の送付に失敗しました。`);
+    }
+  }
+
+  //Escrow
+  async createEscrow(tokenId: string, payer: string) {
+    try {
+      const address = await this.ethereum.createEscrow(this.accountAddress, tokenId, 0, 10, payer);
+      console.info("escrow:"+address);
+    } catch (err) {
+      console.error(`Failed escrow, detail:${err}`);
+      //this.snackbar.send(`Errorが発生し、詳細の取得に失敗しました。detail=${err}`);
     }
   }
 

@@ -2,6 +2,7 @@
 import * as Web3 from 'web3';
 import contractABI from '../contracts/abi.json'; //truffle migrate時にmigrate scriptが生成する
 import routerStore from './RouterStore';
+import escrowJSON from '../contracts/escrow.json';//truffle compileしたもの
 
 //rarebits準拠
 //https://docs.rarebits.io/v1.0/docs/listing-your-assets
@@ -16,8 +17,9 @@ export type MetadataStandard = {
 
 export default class {
   router = routerStore;
-  originalTag : string = "erc721-gpu-rental";
+  originalTag : string = "erc721-qr-feature";
   contractInstance: any;
+  escrowABI:any;
 
   constructor(address: string) {
     if (!window.web3) {
@@ -30,6 +32,7 @@ export default class {
 
   setContractAddress(address: string) {
     this.contractInstance = window.web3.eth.contract(contractABI).at(address);
+    this.escrowABI = window.web3.eth.contract(escrowJSON);
   }
 
   async getAccount(): Promise<?string> {
@@ -343,11 +346,120 @@ export default class {
   async returnLendOwner(from : string, tokenId: string): Promise<void> {
     const tokenIdHash = window.web3.sha3(tokenId);
     const tokenIdHashBigNumber = window.web3.toBigNumber(tokenIdHash);
+
     return new Promise((resolve, reject) => {
       this.contractInstance.returnLendOwner(
         tokenIdHashBigNumber,
         { from },
         err => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve();
+        }
+      );
+    });
+  }
+
+  //
+  // QREscrow
+  //
+  //function createEscrow(uint256 tokenId, uint256 lower,
+  //uint256 deadline, address payer) public returns (address)
+  async createEscrow(from : string, tokenId: string, lowerEth:number, afterDay:number, payer:string): Promise<string> {
+
+    //tokenId
+    const tokenIdHash = window.web3.sha3(tokenId);
+    const tokenIdHashBigNumber = window.web3.toBigNumber(tokenIdHash);
+
+    //afterDay
+    const timestamp = await this.getTimestamp();
+    const deadline = timestamp + (afterDay * 24 * 60 * 60);
+    const deadlineBigNumber = window.web3.toBigNumber(deadline);
+
+    //lowerEth
+    const lowerBigNumber = window.web3.toBigNumber(lowerEth);
+
+    return new Promise((resolve, reject) => {
+      this.contractInstance.createEscrow(
+        tokenIdHashBigNumber,
+        lowerBigNumber,
+        deadlineBigNumber,
+        payer,
+        { from },
+        (err, ret) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve(ret);
+        }
+      );
+    });
+  }
+
+  //function escrowAddress(uint256 tokenId, address target)
+  //  public view returns (bool)
+  async escrowAddress(from : string, tokenId: string, escrow:string): Promise<bool> {
+
+    //tokenId
+    const tokenIdHash = window.web3.sha3(tokenId);
+    const tokenIdHashBigNumber = window.web3.toBigNumber(tokenIdHash);
+
+    return new Promise((resolve, reject) => {
+      this.contractInstance.escrowAddress(
+        tokenIdHashBigNumber,
+        escrow,
+        { from },
+        (err, ret) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve(ret);
+        }
+      );
+    });
+  }
+  
+  //function approveForEscrow(uint256 tokenId) public
+  async approveForEscrow(from : string, tokenId: string): Promise<void> {
+
+    //tokenId
+    const tokenIdHash = window.web3.sha3(tokenId);
+    const tokenIdHashBigNumber = window.web3.toBigNumber(tokenIdHash);
+
+    return new Promise((resolve, reject) => {
+      this.contractInstance.approveForEscrow(
+        tokenIdHashBigNumber,
+        { from },
+        (err) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve();
+        }
+      );
+    });
+  }
+  
+  //function transferEscrowPayer(uint256 tokenId, string meta) public
+  async transferEscrowPayer(from : string, tokenId: string, meta:string): Promise<void> {
+
+    //tokenId
+    const tokenIdHash = window.web3.sha3(tokenId);
+    const tokenIdHashBigNumber = window.web3.toBigNumber(tokenIdHash);
+
+    const metauri = (encodeURIComponent(JSON.stringify(meta)));
+
+    return new Promise((resolve, reject) => {
+      this.contractInstance.transferEscrowPayer(
+        tokenIdHashBigNumber,
+        metauri,
+        { from },
+        (err) => {
           if (err) {
             reject(err);
             return;

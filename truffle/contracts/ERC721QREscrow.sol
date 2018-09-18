@@ -49,7 +49,7 @@ contract QREscrow is ConditionalEscrow{
   }
 }
 
-contract ERC721QREscrow is ERC721Full, ERC721Mintable, Ownable {
+contract ERC721QREscrow is ERC721Full, Ownable {
   using SafeMath for uint256;
   using Address for address;
 
@@ -66,12 +66,12 @@ contract ERC721QREscrow is ERC721Full, ERC721Mintable, Ownable {
   constructor(string _name, string _symbol) public
     ERC721Full(_name, _symbol) {}
     
-  //Reverts if the given tokenId already exists in supermethod.
-  function mint(uint256 tokenId, string metadata) external {
+  //Reverts if the given tokenId already exists in supermethod
+  function mint(uint256 _tokenId, string _metadata) external {
     // keccak256 is the cheapest.
     // https://ethereum.stackexchange.com/q/3184
-    super._mint(msg.sender, tokenId);
-    super._setTokenURI(tokenId, metadata);
+    super._mint(msg.sender, _tokenId);
+    super._setTokenURI(_tokenId, _metadata);
   }
 
   function burn(uint256 tokenId) external {
