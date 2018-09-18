@@ -67,11 +67,11 @@ contract ERC721QREscrow is ERC721Full, Ownable {
     ERC721Full(_name, _symbol) {}
     
   //Reverts if the given tokenId already exists in supermethod
-  function mint(uint256 _tokenId, string _metadata) external {
+  function mint(uint256 tokenId, string metadata) external {
     // keccak256 is the cheapest.
     // https://ethereum.stackexchange.com/q/3184
-    super._mint(msg.sender, _tokenId);
-    super._setTokenURI(_tokenId, _metadata);
+    super._mint(msg.sender, tokenId);
+    super._setTokenURI(tokenId, metadata);
   }
 
   function burn(uint256 tokenId) external {
