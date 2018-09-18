@@ -109,6 +109,8 @@ export default class {
     const tokenIdHash = window.web3.sha3(tokenId);
     const tokenIdHashBigNumber = window.web3.toBigNumber(tokenIdHash);
     const metauri = unescape(encodeURIComponent(JSON.stringify(metadata)));
+    //console.info(`address=${owner} tokenId=${tokenId} bignum=${tokenIdHashBigNumber}`);
+
     return new Promise((resolve, reject) => {
       this.contractInstance.mint(
         tokenIdHashBigNumber,

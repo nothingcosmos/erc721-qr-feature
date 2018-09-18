@@ -10,11 +10,17 @@ type Props = {
   createdAt: string,
   isOwner: boolean,
   isClient: boolean,
+
+  enableRental:boolean,
+  enableCloudSign:boolean,
+  enableEscrow:boolean,
+
   handleTransfer: () => void,
   handleDelete: () => void,
   handleLend: () => void,
   handleContract : () => void,
   handleUserDetail : () => void,
+  handleEscrow: () => void,
 };
 
 export default (props: Props) => (
@@ -25,9 +31,12 @@ export default (props: Props) => (
       <CardText>
         <small className="text-muted">{props.createdAt}</small>
       </CardText>
-        {/* <Button color="success" outline className="ml-2" onClick={() => props.handleContract()}>
+      { props.enableCloudSign ?
+        <Button color="success" outline className="ml-2" onClick={() => props.handleContract()}>
           Contract
-        </Button> */}
+        </Button>
+        :<div/>
+      }
         {/* {props.isOwner && (
           <div className="float-right mt-2">
           </div>
@@ -41,9 +50,11 @@ export default (props: Props) => (
               }}>
               UserDetail
             </Button>
+            { props.enableRental ?
             <Button color="info" outline className="ml-2" onClick={() => props.handleLend()}>
               Trial Lend
             </Button>
+            :<div/>}
             <Button color="success" outline className="ml-2" onClick={() => props.handleTransfer()}>
               Transfer
             </Button>

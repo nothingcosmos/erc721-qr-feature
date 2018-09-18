@@ -48,6 +48,9 @@ export type TokenItem = {
 export class GlobalStore {
   serviceName: string = "ERC721QR feature";
   deployedNetwork: string = "Rinkeby";
+  enableRental:bool = false;
+  enableCloudSign:bool = false;
+  enableEscrow:bool = true;
 
   @observable router = routerStore;//= new RouterStore(this);
   @observable snackbar = SnackbarStore;
@@ -123,8 +126,6 @@ export class GlobalStore {
         `${this.networkName || '(null)'} にトランザクションを送信しています`
       );
       const metadata = this.ethereum.createMetadata(tokenId, name, identity, description, image_info.image);
-      console.info(metadata);
-      console.info("mintWithMetadata tokenId=" + tokenId);
       await this.ethereum.mintWithMetadata(this.accountAddress, tokenId, metadata);
       this.snackbar.send(
         `${this.networkName || '(null)'} にトランザクションを送信しました`
@@ -336,7 +337,7 @@ export class GlobalStore {
       const ownerOf = await ownerOfPromise;
       const requests = await requestPromise;
 
-      const notLending: boolean = await this.ethereum.notLent(tokenId);
+      const notLending: boolean = (this.enableRental) ? await this.ethereum.notLent(tokenId) : true;
       let lendOwner: string = '';
       let deadline: string = '';
       if (!notLending) {

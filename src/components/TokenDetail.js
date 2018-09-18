@@ -25,6 +25,8 @@ type Props = {
   isAccountAvailable: boolean,
   isOwner: boolean,
   isLendOwner : boolean,
+  enableRental : boolean,
+  enableCloudSign : boolean,
   handleSendRequest: () => any,
   handleTransfer: () => any,
   handleRemove: () => any,
@@ -57,11 +59,13 @@ export class TokenDetail extends React.Component<Props, State> {
             >
               Transfer
             </Button>
+            {this.props.enableRental ?
             <Button color="info" outline className="ml-2"
               onClick={() => this.props.handleLend()}
             >
               Lend
             </Button>
+            : <div/>}
             <Button color="danger" outline className="ml-2"
               onClick={() => this.props.handleRemove()}>
               Remove
