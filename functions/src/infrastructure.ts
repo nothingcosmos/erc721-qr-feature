@@ -15,10 +15,11 @@ export async function isImageRequired(tokenId: string): Promise<boolean> {
     console.log(`token does not exist: tokenId = ${tokenId}`);
     return false;
   }
-  if (snapshot.get('presence')) {
-    console.log(`thumbnail already exists: tokenId = ${tokenId}`);
-    return false;
-  }
+  //imageの上書きを許可する。
+  // if (snapshot.get('presence')) {
+  //   console.log(`thumbnail already exists: tokenId = ${tokenId}`);
+  //   return false;
+  // }
   return true;
 }
 

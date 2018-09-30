@@ -11,6 +11,10 @@ type Props = {
   isOwner: boolean,
   isClient: boolean,
 
+  //escrow
+  escrowAddress:string,
+
+  //flag
   enableRental: boolean,
   enableCloudSign: boolean,
   enableEscrow: boolean,
@@ -20,7 +24,10 @@ type Props = {
   handleLend: () => void,
   handleContract: () => void,
   handleUserDetail: () => void,
-  handleEscrow: () => void,
+  handleCreateEscrow: () => void,
+  handleApproveEscrow: () => void,
+  handleTransferEscrowPayer: () => void,
+  handleDepositEscrow: () => void,
 };
 
 export default (props: Props) => (
@@ -30,6 +37,7 @@ export default (props: Props) => (
       <CardText>{props.message}</CardText>
       <CardText>
         <small className="text-muted">{props.createdAt}</small>
+        {props.escrowAddress != '' ? `EscrowAddress=${props.escrowAddress}`: ''}
       </CardText>
       {props.isOwner && (
         <div className="float-right mt-2">
@@ -39,9 +47,15 @@ export default (props: Props) => (
             </Button>
             : <span />
           }
-          {props.enableEscrow ?
-            <Button color="success" outline className="ml-2" onClick={() => props.handleEscrow()}>
-              EscrowTransfer
+          {props.enableEscrow && props.escrowAddress == '' ?
+            <Button color="success" outline className="ml-2" onClick={() => props.handleCreateEscrow()}>
+              StartEscrow
+            </Button>
+            : <span />
+          }
+          {props.enableEscrow && props.escrowAddress != '' ?
+            <Button color="warning" outline className="ml-2" onClick={() => props.handleApproveEscrow()}>
+              ApproveEscrow
             </Button>
             : <span />
           }
@@ -50,13 +64,13 @@ export default (props: Props) => (
           </Button>
           {props.enableRental ?
             <Button color="info" outline className="ml-2" onClick={() => props.handleLend()}>
-              Trial Lend
+              TrialLend
             </Button>
             : <span />}
-          <Button color="success" outline className="ml-2" onClick={() => props.handleTransfer()}>
+            <Button color="success" outline className="ml-2" onClick={() => props.handleTransfer()}>
             Transfer
             </Button>
-          <Button color="danger" outline className="ml-2" onClick={() => props.handleDelete()}>
+            <Button color="danger" outline className="ml-2" onClick={() => props.handleDelete()}>
             Reject
             </Button>
         </div>
@@ -66,11 +80,16 @@ export default (props: Props) => (
             
           </div>
         )} */}
-      {/* props.isClient && (
-          <Button color="warning" outline onClick={() => props.handleDelete()}>
-            Cancel
+      { props.isClient && (
+        <div>
+          <Button color="warning" outline className="ml-2" onClick={() => props.handleDepositEscrow()}>
+            DepositEscrow
           </Button>
-        ) */}
+          <Button color="success" outline className="ml-2" onClick={() => props.handleTransferEscrowPayer()}>
+          TransferEscrow
+          </Button>
+          </div>
+        )}
     </CardBody>
   </Card>
 );

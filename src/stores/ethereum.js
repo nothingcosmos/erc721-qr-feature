@@ -401,9 +401,9 @@ export default class {
     });
   }
 
-  //function escrowAddress(uint256 tokenId, address target)
-  //  public view returns (bool)
-  async escrowAddress(from : string, tokenId: string, escrow:string): Promise<bool> {
+  //function escrowAddress(uint256 tokenId)
+  //  public view returns (address)
+  async escrowAddress(tokenId: string): Promise<string> {
 
     //tokenId
     const tokenIdHash = window.web3.sha3(tokenId);
@@ -412,14 +412,53 @@ export default class {
     return new Promise((resolve, reject) => {
       this.contractInstance.escrowAddress(
         tokenIdHashBigNumber,
-        escrow,
-        { from },
         (err, ret) => {
           if (err) {
             reject(err);
             return;
           }
           resolve(ret);
+        }
+      );
+    });
+  }
+
+  async escrowPayer(tokenId: string): Promise<string> {
+    //tokenId
+    const tokenIdHash = window.web3.sha3(tokenId);
+    const tokenIdHashBigNumber = window.web3.toBigNumber(tokenIdHash);
+
+    return new Promise((resolve, reject) => {
+      this.contractInstance.escrowPayer(
+        tokenIdHashBigNumber,
+        (err, ret) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve(ret);
+        }
+      );
+    });
+  }
+
+  //function resetEscrow(uint256 tokenId)
+  async resetEscrow(from : string, tokenId: string): Promise<void> {
+
+    //tokenId
+    const tokenIdHash = window.web3.sha3(tokenId);
+    const tokenIdHashBigNumber = window.web3.toBigNumber(tokenIdHash);
+
+    return new Promise((resolve, reject) => {
+      this.contractInstance.resetEscrow(
+        tokenIdHashBigNumber,
+        { from },
+        (err) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve();
         }
       );
     });
@@ -446,21 +485,62 @@ export default class {
       );
     });
   }
-  
+
+  //function getApprovedForEscrow(uint256 tokenId)
+  //  public view returns (bool)
+  async isApprovedForEscrow(tokenId: string): Promise<bool> {
+    //tokenId
+    const tokenIdHash = window.web3.sha3(tokenId);
+    const tokenIdHashBigNumber = window.web3.toBigNumber(tokenIdHash);
+
+    return new Promise((resolve, reject) => {
+      this.contractInstance.isApprovedForEscrow(
+        tokenIdHashBigNumber,
+        (err, ret) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve(ret);
+        }
+      );
+    });
+  }
+
   //function transferEscrowPayer(uint256 tokenId, string meta) public
-  async transferEscrowPayer(from : string, tokenId: string, meta:string): Promise<void> {
+  async transferEscrowPayer(from : string, tokenId: string, metadata: MetadataStandard): Promise<void> {
 
     //tokenId
     const tokenIdHash = window.web3.sha3(tokenId);
     const tokenIdHashBigNumber = window.web3.toBigNumber(tokenIdHash);
 
-    const metauri = (encodeURIComponent(JSON.stringify(meta)));
+    const metauri = (encodeURIComponent(JSON.stringify(metadata)));
 
     return new Promise((resolve, reject) => {
       this.contractInstance.transferEscrowPayer(
         tokenIdHashBigNumber,
         metauri,
         { from },
+        (err) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve();
+        }
+      );
+    });
+  }
+
+  async depositEscrow(from:string, escrowAddress:string, eth:number) : Promise<void> {
+    //sendTransaction
+    //>eth.sendTransaction({from: eth.accounts[0], to: eth.accounts[1], value: web3.toWei(10, "ether")}) 
+    const to = escrowAddress;
+    const value = window.web3.toWei(eth, "ether");
+    
+    return new Promise((resolve, reject) => {
+      window.web3.sendTransaction(
+        { from, to, value},
         (err) => {
           if (err) {
             reject(err);

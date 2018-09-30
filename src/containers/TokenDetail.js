@@ -31,6 +31,7 @@ type State = {
   userDetailModal: boolean,
   contractRequestModal: boolean,
   escrowRequestModal:boolean,
+  transferEscrowPayerModal:boolean,
 };
 
 //todo modalの制御が肥大化してるのでなんとかしたい
@@ -46,6 +47,7 @@ export default inject('store', 'routerStore', 'authStore')(
         userDetailModal: false,
         contractRequestModal: false,
         escrowRequestModal: false,
+        transferEscrowPayerModal:false,
       };
       handleSendRequest = () => {
         this.setState({
@@ -89,6 +91,12 @@ export default inject('store', 'routerStore', 'authStore')(
           escrowRequestModal: true,
         });
       }
+      handleTransferEscrowPayer = ()=> {
+        this.setState({
+          transferEscrowPayerModal: true,
+        });
+      }
+
       toggleRequestModal = () => {
         this.setState({
           requestModal: !this.state.requestModal,
@@ -123,6 +131,11 @@ export default inject('store', 'routerStore', 'authStore')(
       toggleEscrowRequestModal = () => {
         this.setState({
           escrowRequestModal: !this.state.escrowRequestModal,
+        });
+      }
+      toggleTransferEscrowPayerModal = () => {
+        this.setState({
+          transferEscrowPayerModal: !this.state.transferEscrowPayerModal,
         });
       }
 
@@ -185,6 +198,7 @@ export default inject('store', 'routerStore', 'authStore')(
                       uid={request.uid}
                       message={request.message}
                       createdAt={request.createdAt}
+                      escrowAddress={this.props.store.tokenDetail.escrowAddress}
                       enableRental={this.props.store.enableRental}
                       enableCloudSign={this.props.store.enableCloudSign}
                       enableEscrow={this.props.store.enableEscrow}
@@ -223,8 +237,17 @@ export default inject('store', 'routerStore', 'authStore')(
                       handleContract={() => {
                         this.handleContractRequest();
                       }}
-                      handleEscrow={() => {
+                      handleCreateEscrow={() => {
                         this.handleEscrowRequest();
+                      }}
+                      handleApproveEscrow={() => {
+                        this.props.store.approveForEscrow(request.tokenId);
+                      }}
+                      handleTransferEscrowPayer={() => {
+                        this.handleTransferEscrowPayer();
+                      }}
+                      handleDepositEscrow={() => {
+                        this.props.store.depositEscrow(request.tokenId, 0.1);//todo
                       }}
                     />
                     <ContractRequestModal
@@ -246,10 +269,12 @@ export default inject('store', 'routerStore', 'authStore')(
                       toggle={this.toggleEscrowRequestModal}
                       tokenId={request.tokenId}
                       client={request.client}
-                      onSubmit={(lowerEth: number, message:string) => {
+                      onSubmit={(lowerEth: number, afterDays:number, message:string) => {
                         this.props.store.createEscrow(
                           request.tokenId,
                           request.client,
+                          lowerEth,
+                          afterDays
                         );
                       }}
                     />

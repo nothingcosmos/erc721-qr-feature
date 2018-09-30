@@ -28,13 +28,16 @@ export class TokenDetailStore {
   @observable image = '';
   @observable owner = '';
   @observable ownerUid = '';//未実装 functionsの認証と連携させたい
-  @observable isLent = false;
-  @observable lendOwner = '';
-  @observable deadline = '';
   @observable createdAt = '';
   @observable requests: RequestItem[] = [];
   @observable tags: string[] = [];
-  //@observable etherscanUrl = ''; //create txとtransferのtxは別ものか。。
+
+  //lend
+  @observable isLent = false;
+  @observable lendOwner = '';
+  @observable deadline = '';
+  //escrow
+  @observable escrowAddress = '';
 }
 
 export type TokenItem = {
@@ -285,9 +288,9 @@ export class GlobalStore {
   //
   // Escrow
   //
-  async createEscrow(tokenId: string, payer: string) {
+  async createEscrow(tokenId: string, payer: string, eth:number, afterDealineDays:number) {
     try {
-      const address = await this.ethereum.createEscrow(this.accountAddress, tokenId, 0, 10, payer);
+      const address = await this.ethereum.createEscrow(this.accountAddress, tokenId, eth, afterDealineDays, payer);
       console.info("escrow:"+address);
     } catch (err) {
       console.error(`Failed escrow, detail:${err}`);
@@ -295,12 +298,92 @@ export class GlobalStore {
     }
   }
 
+  async resetEscrow(tokenId: string) {
+    try {
+      await this.ethereum.resetEscrow(this.accountAddress, tokenId);
+      console.info("resetEscrow:"+tokenId);
+    } catch (err) {
+      console.error(`Failed escrow, detail:${err}`);
+      //this.snackbar.send(`Errorが発生し、詳細の取得に失敗しました。detail=${err}`);
+    }
+  }
+
+  async approveForEscrow(tokenId: string) {
+    try {
+      const address = await this.ethereum.escrowAddress(this.accountAddress, tokenId);
+      console.info("escrow address=" + address);
+
+      await this.ethereum.approveForEscrow(this.accountAddress, tokenId);
+      console.info("approve");
+    } catch (err) {
+      console.error(`Failed escrow, detail:${err}`);
+      //this.snackbar.send(`Errorが発生し、詳細の取得に失敗しました。detail=${err}`);
+    }
+  }
+
+  async depositEscrow(tokenId: string, eth:number) {
+    try {
+      const address = await this.ethereum.escrowAddress(this.accountAddress, tokenId);
+      console.info("deposit escrow address=" + address);
+
+      await this.ethereum.depositEscrow(this.accountAddress, address, eth);
+      console.info("deposit");
+    } catch (err) {
+      console.error(`Failed escrow, detail:${err}`);
+      //this.snackbar.send(`Errorが発生し、詳細の取得に失敗しました。detail=${err}`);
+    }
+  }
+
+  async transferEscrowPayer(tokenId:string, image: File) {
+      try {
+        if (!this.accountAddress) {
+          throw new Error('Cannot get account');
+        }
+        if (!authStore.authUser) {
+          throw new Error('AuthUser not found. please signIn.');
+        }
+        //approve済みか判定
+        const ok = await this.ethereum.isApprovedForEscrow(this.accountAddress, tokenId);
+        if (!ok) {
+          this.snackbar.send(`Escrow決済が承認されていません`);
+          return;
+        }
+  
+        // Firebaseに書き込む
+        this.snackbar.send('画像をアップロードしています');
+        await this.firebase.uploadImage(tokenId, image);
+        const image_info = await this.firebase.fetchImageUrl(tokenId);
+  
+        // トランザクションを送信する
+        this.snackbar.send(
+          `${this.networkName || '(null)'} にトランザクションを送信しています`
+        );
+        const token = await this.firebase.fetchToken(tokenId);
+        console.info(token);
+
+        const metadata = this.ethereum.createMetadata(tokenId, token.name, token.identity, token.description, image_info.image);
+        console.info(metadata);
+        await this.ethereum.transferEscrowPayer(this.accountAddress, tokenId, metadata);
+        this.snackbar.send(
+          `${this.networkName || '(null)'} にトランザクションを送信しました`
+        );
+      } catch (err) {
+        this.snackbar.send(`Errorが発生し、登録に失敗しました。detail=${err}`);
+        console.error(err);
+      };
+      this.router.openHomePage();
+    }
+
   getEtherscanAddressUrl(accountAddress: string): string {
     return `https://${this.networkName}.etherscan.io/address/${accountAddress}`;
   }
 
   getEtherscanTxUrl(txhash: string): string {
     return `https://${this.networkName}.etherscan.io/tx/${txhash}`;
+  }
+
+  async beforeReloadTokenDetail(tokenId:string) {
+    console.info(`callee reloadTokenDetail ${tokenId}`);
   }
 
   @action
@@ -316,10 +399,6 @@ export class GlobalStore {
       console.error(`Failed reloadRequest, detail:${err}`);
       //this.snackbar.send(`Errorが発生し、詳細の取得に失敗しました。detail=${err}`);
     }
-  }
-
-  beforeReloadTokenDetail(tokenId:string) {
-    //console.info(`callee reloadTokenDetail ${tokenId}`);
   }
 
   //URLをparseして開く際に呼ばれる,他にdetailをクリックした際にも呼ばれる。 
@@ -347,6 +426,8 @@ export class GlobalStore {
         deadline = await this.ethereum.deadlineAsUTCString(tokenId);
       }
 
+      const escrowAddress:string = (this.enableEscrow) ? await this.ethereum.escrowAddress(tokenId) : "";
+
       runInAction(() => {
         this.tokenDetail = new TokenDetailStore(); //参照箇所わかりやすくするためnewしてる
         this.tokenDetail.name = metadata.name;
@@ -356,10 +437,14 @@ export class GlobalStore {
         //        this.tokenDetail.createdAt = metadata.createdAt;
         this.tokenDetail.owner = ownerOf;
         this.tokenDetail.requests = requests;
+
+        //lend
         this.tokenDetail.isLent = !notLending;
         this.tokenDetail.lendOwner = lendOwner;
         this.tokenDetail.deadline = deadline;
 
+        //escrow
+        this.tokenDetail.escrowAddress = escrowAddress;
         this.isLoadingDetail = false; //trueにするのはrouterStore
       });
     } catch (err) {
@@ -368,6 +453,7 @@ export class GlobalStore {
     }
   }
 
+  //request数をカウントする。どこかにcacheすべきか。
   async countRequests(tokenId:string) : number {
     try {
       const c = await this.firebase.getCountRequest(tokenId);
@@ -412,11 +498,6 @@ export class GlobalStore {
     //   });
     // }
     const tokenCards = await this.firebase.retrieveTokenList();
-    //todo 暫定
-    // for (let i = 0; i< tokenCards.length; i++) {
-    //   tokenCards[i].countRequest = await this.countRequests(tokenCards[i].tokenId);
-    // };
-
     runInAction(() => {
       this.tokenCards = tokenCards;
       this.isLoadingCards = false;

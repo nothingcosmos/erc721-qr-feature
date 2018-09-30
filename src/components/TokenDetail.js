@@ -25,6 +25,7 @@ type Props = {
   isAccountAvailable: boolean,
   isOwner: boolean,
   isLendOwner : boolean,
+
   enableRental : boolean,
   enableCloudSign : boolean,
   handleSendRequest: () => any,

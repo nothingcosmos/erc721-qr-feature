@@ -123,6 +123,13 @@ contract ERC721QREscrow is ERC721Full, Ownable {
     return e.price();
   }
 
+  function escrowPayer(uint256 tokenId)
+    public view returns (address)
+  {
+    require(_escrows[tokenId] != address(0));
+    QREscrow e = _escrows[tokenId];
+    return e.payer();
+  }
 
   function resetEscrow(uint256 tokenId) public {
     require(ownerOf(tokenId) == msg.sender);
