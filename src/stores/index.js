@@ -54,6 +54,7 @@ export class GlobalStore {
   enableRental:bool = false;
   enableCloudSign:bool = false;
   enableEscrow:bool = true;
+  addressNull:string = '0x0000000000000000000000000000000000000000';
 
   @observable router = routerStore;//= new RouterStore(this);
   @observable snackbar = SnackbarStore;
@@ -80,6 +81,13 @@ export class GlobalStore {
     });
     this.syncAccountAddress();
     this.syncNetworkName();
+  }
+
+  trunkAddress(address:string):string {
+    if (address == '' || address == this.addressNull) {
+      return '';
+    }
+    return address;
   }
 
   setContractAddress(address: string) {
@@ -311,6 +319,9 @@ export class GlobalStore {
   async approveForEscrow(tokenId: string) {
     try {
       const address = await this.ethereum.escrowAddress(this.accountAddress, tokenId);
+      if (address == this.addressNull) {
+        return;
+      }
       console.info("escrow address=" + address);
 
       await this.ethereum.approveForEscrow(this.accountAddress, tokenId);
@@ -324,6 +335,9 @@ export class GlobalStore {
   async depositEscrow(tokenId: string, eth:number) {
     try {
       const address = await this.ethereum.escrowAddress(this.accountAddress, tokenId);
+      if (address == this.addressNull) {
+        return;
+      }
       console.info("deposit escrow address=" + address);
 
       await this.ethereum.depositEscrow(this.accountAddress, address, eth);
@@ -426,7 +440,7 @@ export class GlobalStore {
         deadline = await this.ethereum.deadlineAsUTCString(tokenId);
       }
 
-      const escrowAddress:string = (this.enableEscrow) ? await this.ethereum.escrowAddress(tokenId) : "";
+      const escrowAddress:string = (this.enableEscrow) ? this.trunkAddress(await this.ethereum.escrowAddress(tokenId)) : "";
 
       runInAction(() => {
         this.tokenDetail = new TokenDetailStore(); //参照箇所わかりやすくするためnewしてる
