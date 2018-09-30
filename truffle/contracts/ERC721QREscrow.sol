@@ -28,14 +28,20 @@ contract QREscrow is ConditionalEscrow{
   function deposit() public payable {
     require(_payer == msg.sender);
     require(_lower <= msg.value);
+    require(block.timestamp >= _deadline);
     super.deposit(msg.sender);
   }
 
   function deposited() public view returns (bool) {
     return (address(this).balance >= _lower);
   }
+
   function payer() public view returns(address) {
     return _payer;
+  }
+
+  function deadline() public view returns(uint256) {
+    return _deadline;
   }
 
   function close() public onlyPrimary {
@@ -56,11 +62,18 @@ contract ERC721QREscrow is ERC721Full, Ownable {
   // mapping from tokenId to Escrow
   mapping (uint256 => QREscrow) internal _escrows;
 
+  event CreateEscrow(
+      address indexed owner,
+      address indexed payer,
+      address escrow,
+      uint256 indexed tokenId
+  );
+
   event TransferEscrowPayer(
-      address indexed _owner,
-      address indexed _to,
-      address _escrow,
-      uint256 indexed _tokenId
+      address indexed owner,
+      address indexed payer,
+      address escrow,
+      uint256 indexed tokenId
   );
 
   constructor(string _name, string _symbol) public
@@ -82,18 +95,30 @@ contract ERC721QREscrow is ERC721Full, Ownable {
   function createEscrow(uint256 tokenId, uint256 lower,
     uint256 deadline, address payer) public returns (address)
   {
-    require(_escrows[tokenId] == address(0));
     require(ownerOf(tokenId) == msg.sender);
+
+    require(_escrows[tokenId] == address(0));
     QREscrow e = new QREscrow(lower, deadline, payer, msg.sender);
     _escrows[tokenId] = e;
+
+    emit TransferEscrowPayer(msg.sender, payer, address(e), tokenId);
     return address(e);
   }
 
-  function escrowAddress(uint256 tokenId, address target)
-    public view returns (bool)
+  function escrowAddress(uint256 tokenId)
+    public view returns (address)
   {
+    return (address(_escrows[tokenId]));
+  }
+
+  function resetEscrow(uint256 tokenId) public {
+    require(ownerOf(tokenId) == msg.sender);
     require(_escrows[tokenId] != address(0));
-    return (target == address(_escrows[tokenId]));
+    QREscrow e = _escrows[tokenId];
+    require(e.deposited() == false);
+    require(block.timestamp >= e.deadline());
+
+    delete(_escrows[tokenId]);
   }
 
   //_tokenApprovalsがinternalからprivateに変わったため、
@@ -104,6 +129,16 @@ contract ERC721QREscrow is ERC721Full, Ownable {
     QREscrow e = _escrows[tokenId];
     require(e.deposited());
     super.approve(e.payer(), tokenId);
+  }
+
+  function getApprovedForEscrow(uint256 tokenId)
+  public view returns(bool)
+  {
+    require(_escrows[tokenId] != address(0));
+    QREscrow e = _escrows[tokenId];
+
+    address a = super.getApproved(tokenId);
+    return a == e.payer();
   }
 
   function transferEscrowPayer(uint256 tokenId, string meta) public
@@ -122,5 +157,4 @@ contract ERC721QREscrow is ERC721Full, Ownable {
     emit TransferEscrowPayer(owner, msg.sender, address(e), tokenId);
     delete(_escrows[tokenId]);
   }
-
 }
