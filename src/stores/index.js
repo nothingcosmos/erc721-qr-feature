@@ -282,7 +282,9 @@ export class GlobalStore {
     }
   }
 
-  //Escrow
+  //
+  // Escrow
+  //
   async createEscrow(tokenId: string, payer: string) {
     try {
       const address = await this.ethereum.createEscrow(this.accountAddress, tokenId, 0, 10, payer);

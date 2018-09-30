@@ -242,8 +242,8 @@ export default inject('store', 'routerStore', 'authStore')(
                       }}
                     />
                     <EscrowRequestModal
-                      modal={this.state.contractRequestModal}
-                      toggle={this.toggleContractRequestModal}
+                      modal={this.state.escrowRequestModal}
+                      toggle={this.toggleEscrowRequestModal}
                       tokenId={request.tokenId}
                       client={request.client}
                       onSubmit={(lowerEth: number, message:string) => {

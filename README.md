@@ -50,3 +50,4 @@ sudo npm link
 
 cd erc721_qr_feature
 npm link cloudsign_api
+
