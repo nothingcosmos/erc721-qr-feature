@@ -44,6 +44,10 @@ contract QREscrow is ConditionalEscrow{
     return _deadline;
   }
 
+  function price() public view returns(uint256) {
+    return _lower;
+  }
+
   function close() public onlyPrimary {
     _withdrawalAllowed = true;
   }
@@ -111,6 +115,15 @@ contract ERC721QREscrow is ERC721Full, Ownable {
     return (address(_escrows[tokenId]));
   }
 
+  function escrowPrice(uint256 tokenId)
+    public view returns (uint256)
+  {
+    require(_escrows[tokenId] != address(0));
+    QREscrow e = _escrows[tokenId];
+    return e.price();
+  }
+
+
   function resetEscrow(uint256 tokenId) public {
     require(ownerOf(tokenId) == msg.sender);
     require(_escrows[tokenId] != address(0));
@@ -131,7 +144,7 @@ contract ERC721QREscrow is ERC721Full, Ownable {
     super.approve(e.payer(), tokenId);
   }
 
-  function getApprovedForEscrow(uint256 tokenId)
+  function isApprovedForEscrow(uint256 tokenId)
   public view returns(bool)
   {
     require(_escrows[tokenId] != address(0));
