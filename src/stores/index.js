@@ -318,12 +318,7 @@ export class GlobalStore {
 
   async approveForEscrow(tokenId: string) {
     try {
-      const address = await this.ethereum.escrowAddress(this.accountAddress, tokenId);
-      if (address == this.addressNull) {
-        return;
-      }
-      console.info("escrow address=" + address);
-
+      
       await this.ethereum.approveForEscrow(this.accountAddress, tokenId);
       console.info("approve");
     } catch (err) {
@@ -334,13 +329,8 @@ export class GlobalStore {
 
   async depositEscrow(tokenId: string, eth:number) {
     try {
-      const address = await this.ethereum.escrowAddress(this.accountAddress, tokenId);
-      if (address == this.addressNull) {
-        return;
-      }
-      console.info("deposit escrow address=" + address);
-
-      await this.ethereum.depositEscrow(this.accountAddress, address, eth);
+      
+      await this.ethereum.depositEscrow(this.accountAddress, this.tokenDetail.escrowAddress, eth);
       console.info("deposit");
     } catch (err) {
       console.error(`Failed escrow, detail:${err}`);
